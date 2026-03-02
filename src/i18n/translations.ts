@@ -342,8 +342,8 @@ export const translations = {
     /* Nombres de Pases */
     bpClubTry:    { ES: "Club de Fortnite 1 Mes\nRegión Turquía",      EN: "Fortnite Club 1 Month\nTurkey Region"      },
     bpClubXbox1:  { ES: "Club de Fortnite 1 Mes\nActivación Vía Xbox", EN: "Fortnite Club 1 Month\nXbox Activation"   },
-    bpClubXbox2:  { ES: "Club de Fortnite 2 Mes\nActivación Vía Xbox", EN: "Fortnite Club 2 Months\nXbox Activation"  },
-    bpClubXbox3:  { ES: "Club de Fortnite 3 Mes\nActivación Vía Xbox", EN: "Fortnite Club 3 Months\nXbox Activation"  },
+    bpClubXbox2:  { ES: "Club de Fortnite 2 Meses\nActivación Vía Xbox", EN: "Fortnite Club 2 Months\nXbox Activation"  },
+    bpClubXbox3:  { ES: "Club de Fortnite 3 Meses\nActivación Vía Xbox", EN: "Fortnite Club 3 Months\nXbox Activation"  },
     bpBattlePass: { ES: "Pase de Batalla",  EN: "Battle Pass"  },
     bpOGPass:     { ES: "Pase OG",      EN: "OG Pass"      },
     bpMusicPass:  { ES: "Pase Musical",   EN: "Music Pass"   },
