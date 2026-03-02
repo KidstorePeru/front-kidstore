@@ -43,8 +43,18 @@ const ShopCard = ({ product, onAdd }: { product: FnProduct; onAdd: () => void })
         </div>
       </div>
 
-      <h3 className="font-bold text-sm md:text-base leading-tight min-h-[40px] mb-2 text-white whitespace-pre-line">
-        {product.name}
+      <h3 className="font-bold leading-tight min-h-[40px] mb-2">
+        {product.name.split('\n')[0] && (
+          <span className="block text-white text-sm md:text-base">
+            {product.name.split('\n')[0]}
+          </span>
+        )}
+
+        {product.name.split('\n')[1] && (
+          <span className="block text-[#107C10] text-xs md:text-sm">
+            {product.name.split('\n')[1]}
+          </span>
+        )}
       </h3>
 
       <div className="mt-auto flex items-center justify-between mb-3">
