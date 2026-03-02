@@ -110,6 +110,8 @@ const AppLayout = ({ onCartClick }: { onCartClick: () => void }) => {
           <Route path="/honor-of-kings"    element={<Honor />} />
           <Route path="/discord"           element={<Discord />} />  ── */}
 
+          <Route path="/pokemon-go"        element={<Pokemon />} />
+          
           {/* ── CHECKOUT ── */}
           <Route path="/checkout"         element={<Checkout />} />
           <Route path="/orden-confirmada" element={<OrderSuccess />} />
