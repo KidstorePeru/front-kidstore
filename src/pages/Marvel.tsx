@@ -5,12 +5,12 @@ import { usePriceConverter } from "../hooks/usePriceConverter";
 import { useLang } from "../context/LangContext";
 
 const products = [
-  { id: "lat-100",   name: "100 LATTICE",   basePen: 3.9,   image: "/images/marvelrivals/100-lattices.png" },
-  { id: "lat-500",   name: "500 LATTICE",   basePen: 18.9,  image: "/images/marvelrivals/500-lattices.png" },
-  { id: "lat-1000",  name: "1000 LATTICE",  basePen: 35.9,  image: "/images/marvelrivals/1000-lattices.png" },
-  { id: "lat-2180",  name: "2180 LATTICE",  basePen: 69.9,  image: "/images/marvelrivals/2180-lattices.png" },
-  { id: "lat-5680",  name: "5680 LATTICE",  basePen: 168.9, image: "/images/marvelrivals/5680-lattices.png" },
-  { id: "lat-11680", name: "11680 LATTICE", basePen: 333.9, image: "/images/marvelrivals/11680-lattices.png" },
+  { id: "lat-100",   name: "100 LATTICES",   basePen: 4.9,   image: "/images/marvelrivals/100-lattices.png" },
+  { id: "lat-500",   name: "500 LATTICES",   basePen: 18.9,  image: "/images/marvelrivals/500-lattices.png" },
+  { id: "lat-1000",  name: "1000 LATTICES",  basePen: 35.9,  image: "/images/marvelrivals/1000-lattices.png" },
+  { id: "lat-2180",  name: "2180 LATTICES",  basePen: 69.9,  image: "/images/marvelrivals/2180-lattices.png" },
+  { id: "lat-5680",  name: "5680 LATTICES",  basePen: 168.9, image: "/images/marvelrivals/5680-lattices.png" },
+  { id: "lat-11680", name: "11680 LATTICES", basePen: 333.9, image: "/images/marvelrivals/11680-lattices.png" },
 ];
 
 const Marvel = () => {
