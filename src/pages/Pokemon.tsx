@@ -5,15 +5,15 @@ import { usePriceConverter } from "../hooks/usePriceConverter";
 import { useLang } from "../context/LangContext";
 
 const products = [
-  { id: "pk-100",   name: "100 PokéCoins",                        basePen: 2.9   },
-  { id: "pk-550",   name: "550 PokéCoins",                        basePen: 9.9   },
-  { id: "pk-1200",  name: "1200 PokéCoins",                       basePen: 17.9  },
-  { id: "pk-2500",  name: "2500 PokéCoins",                       basePen: 33.9  },
-  { id: "pk-5200",  name: "5200 PokéCoins",                       basePen: 68.9  },
-  { id: "pk-14500", name: "14500 PokéCoins",                      basePen: 171.9 },
-  { id: "pk-pack",  name: "Paquete de Inicio 📦",                  basePen: 5.9   },
-  { id: "pk-pass",  name: "Pase de GO Deluxe: Febrero 🎫",         basePen: 15.5  },
-  { id: "pk-kalos", name: "Entrada Pokémon GO Tour: Kalos 🎟️ (Global)", basePen: 17.9 },
+  { id: "pk-100",   name: "100 PokéCoins",                        basePen: 2.9, image: "/images/pokemongo/coins/100-coins.png"   },
+  { id: "pk-550",   name: "550 PokéCoins",                        basePen: 9.9, image: "/images/pokemongo/coins/550-coins.png"   },
+  { id: "pk-1200",  name: "1200 PokéCoins",                       basePen: 17.9, image: "/images/pokemongo/coins/1200-coins.png"   },
+  { id: "pk-2500",  name: "2500 PokéCoins",                       basePen: 33.9, image: "/images/pokemongo/coins/2500-coins.png"   },
+  { id: "pk-5200",  name: "5200 PokéCoins",                       basePen: 68.9, image: "/images/pokemongo/coins/5200-coins.png"   },
+  { id: "pk-14500", name: "14500 PokéCoins",                      basePen: 171.9, image: "/images/pokemongo/coins/14500-coins.png"   },
+  { id: "pk-pack",  name: "Paquete de Inicio 📦",                  basePen: 5.9, image: "/images/pokemongo/pack/iniciacion.png"   },
+  { id: "pk-pass",  name: "Pase de GO Deluxe: Febrero 🎫",         basePen: 15.5, image: "/images/pokemongo/pase/godeluxe.png"   },
+  { id: "pk-kalos", name: "Entrada Pokémon GO Tour: Kalos 🎟️ (Global)", basePen: 17.9, image: "/images/pokemongo/pase/gotour.png"   },
 ];
 
 const Pokemon = () => {
