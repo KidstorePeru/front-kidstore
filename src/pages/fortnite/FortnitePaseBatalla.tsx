@@ -8,9 +8,9 @@ const FortnitePaseBatalla = () => {
 
   const PASES: FnProduct[] = [
     { id: "club-try",    name: t("fortnite", "bpClubTry"),   desc: "", pricePEN: 19.90, image: "/images/fortnite/pases/club.png"     },
-    { id: "club-xbox-1", name: t("fortnite", "bpClubXbox1"), desc: "", pricePEN: 12.50, image: "/images/fortnite/pases/club.png"     },
-    { id: "club-xbox-2", name: t("fortnite", "bpClubXbox2"), desc: "", pricePEN: 27.90, image: "/images/fortnite/pases/club.png"     },
-    { id: "club-xbox-3", name: t("fortnite", "bpClubXbox3"), desc: "", pricePEN: 47.90, image: "/images/fortnite/pases/club.png"     },
+    { id: "club-xbox-1", name: t("fortnite", "bpClubXbox1"), desc: "", pricePEN: 14.90, image: "/images/fortnite/pases/club.png"     },
+    { id: "club-xbox-2", name: t("fortnite", "bpClubXbox2"), desc: "", pricePEN: 29.90, image: "/images/fortnite/pases/club.png"     },
+    { id: "club-xbox-3", name: t("fortnite", "bpClubXbox3"), desc: "", pricePEN: 49.90, image: "/images/fortnite/pases/club.png"     },
     { id: "battle-pass", name: t("fortnite", "bpBattlePass"),desc: "", pricePEN: 22.90, image: "/images/fortnite/pases/battle-pass.jpg" },
     { id: "og-pass",     name: t("fortnite", "bpOGPass"),    desc: "", pricePEN: 22.90, image: "/images/fortnite/pases/og-pass.jpg"     },
     { id: "music-pass",  name: t("fortnite", "bpMusicPass"), desc: "", pricePEN: 29.90, image: "/images/fortnite/pases/music-pass.jpg"  },
