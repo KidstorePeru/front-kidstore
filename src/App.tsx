@@ -101,7 +101,6 @@ const AppLayout = ({ onCartClick }: { onCartClick: () => void }) => {
           {/* ── CATEGORÍAS ── */}
           {/* ── <Route path="/wild-rift"         element={<WildRift />} />
           <Route path="/roblox"            element={<Roblox />} />
-          <Route path="/marvel-rivals"     element={<Marvel />} />
           <Route path="/pokemon-go"        element={<Pokemon />} />
           <Route path="/genshin-impact"    element={<Genshin />} />
           <Route path="/zenless-zone-zero" element={<Zzz />} />
@@ -111,6 +110,7 @@ const AppLayout = ({ onCartClick }: { onCartClick: () => void }) => {
           <Route path="/discord"           element={<Discord />} />  ── */}
 
           <Route path="/pokemon-go"        element={<Pokemon />} />
+          <Route path="/marvel-rivals"     element={<Marvel />} />
           
           {/* ── CHECKOUT ── */}
           <Route path="/checkout"         element={<Checkout />} />
