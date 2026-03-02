@@ -335,8 +335,8 @@ export const translations = {
     /* Club de Fortnite */
     bpClubTitle:        { ES: "🎮 Club de Fortnite",                  EN: "🎮 Fortnite Club"                  },
     bpClubDesc:         {
-      ES: "Suscripción mensual que incluye 1.000 paVos al mes, el Pase de Batalla de la temporada actual y cosmético exclusivo del mes. Se activa mediante Xbox.",
-      EN: "Monthly subscription that includes 1,000 V-Bucks per month, the current season Battle Pass and an exclusive monthly cosmetic. Activated via Xbox.",
+      ES: "Suscripción mensual que incluye 1.000 paVos al mes, el Pase de Batalla de la temporada actual y cosmético exclusivo del mes.",
+      EN: "Monthly subscription that includes 1,000 V-Bucks per month, the current season Battle Pass and an exclusive monthly cosmetic.",
     },
 
     /* Nombres de Pases */
