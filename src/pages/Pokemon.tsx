@@ -12,8 +12,8 @@ const products = [
   { id: "pk-5200",  name: "5200 PokéCoins",  basePen: 68.9,  image: "/images/pokemongo/coins/5200-coins.png"   },
   { id: "pk-14500", name: "14500 PokéCoins", basePen: 171.9, image: "/images/pokemongo/coins/14500-coins.png"  },
   { id: "pk-pack",  name: "Caja Iniciación 📦", basePen: 5.9, image: "/images/pokemongo/pack/iniciacion.png" },
-  { id: "pk-pass",  name: "🎫 Pase de GO Deluxe: Marzo", basePen: 15.5, image: "/images/pokemongo/pases/pase-de-go-deluxe-marzo.png" },
-  { id: "pk-kalos", name: "🎟️ Pase de GO Deluxe: Celebración del 30.° aniversario de Pokémon", basePen: 17.9, image: "/images/pokemongo/pases/pase-de-go-deluxe-30-aniversario.png" },
+  { id: "pk-pass",  name: "🎫 Pase de GO Deluxe: Marzo", basePen: 18.9, image: "/images/pokemongo/pases/pase-de-go-deluxe-marzo.png" },
+  { id: "pk-kalos", name: "🎟️ Pase de GO Deluxe: Celebración del 30.° aniversario de Pokémon", basePen: 18.9, image: "/images/pokemongo/pases/pase-de-go-deluxe-30-aniversario.png" },
 ];
 
 const Pokemon = () => {
