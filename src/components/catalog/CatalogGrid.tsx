@@ -2,7 +2,7 @@ import CategoryCard from "./CategoryCard";
 
 const categories = [
   { name: "Fortnite",         image: "/images/fortnite.jpg",  slug: "fortnite",          visible: true  },
-  { name: "Wild Rift",        image: "/images/wildrift.jpg",  slug: "wild-rift",         visible: true },
+  { name: "Wild Rift",        image: "/images/wildrift.jpg",  slug: "wild-rift",         visible: false },
   { name: "Marvel Rivals",    image: "/images/marvel.jpg",    slug: "marvel-rivals",     visible: true },
   { name: "Pokémon GO",       image: "/images/pokemon.jpg",   slug: "pokemon-go",        visible: true },
   { name: "Roblox",           image: "/images/roblox.jpg",    slug: "roblox",            visible: false },
