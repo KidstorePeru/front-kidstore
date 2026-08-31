@@ -1,0 +1,5 @@
+[build]
+buildCommand = "npx next build"
+
+[deploy]
+startCommand = "npm run start"

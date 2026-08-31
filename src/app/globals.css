@@ -1,0 +1,212 @@
+@import "tailwindcss";
+
+/* ─── Fuentes locales ─── */
+@font-face {
+  font-family: 'Manrope';
+  src: url('/fonts/Manrope-Regular.woff2') format('woff2');
+  font-weight: 400; font-display: swap;
+}
+@font-face {
+  font-family: 'Manrope';
+  src: url('/fonts/Manrope-Medium.woff2') format('woff2');
+  font-weight: 500; font-display: swap;
+}
+@font-face {
+  font-family: 'Manrope';
+  src: url('/fonts/Manrope-SemiBold.woff2') format('woff2');
+  font-weight: 600; font-display: swap;
+}
+@font-face {
+  font-family: 'Manrope';
+  src: url('/fonts/Manrope-Bold.woff2') format('woff2');
+  font-weight: 700; font-display: swap;
+}
+@font-face {
+  font-family: 'Readex Pro';
+  src: url('/fonts/ReadexPro-Regular.woff2') format('woff2');
+  font-weight: 400; font-display: swap;
+}
+@font-face {
+  font-family: 'Readex Pro';
+  src: url('/fonts/ReadexPro-Medium.woff2') format('woff2');
+  font-weight: 500; font-display: swap;
+}
+@font-face {
+  font-family: 'Readex Pro';
+  src: url('/fonts/ReadexPro-SemiBold.woff2') format('woff2');
+  font-weight: 600; font-display: swap;
+}
+@font-face {
+  font-family: 'Readex Pro';
+  src: url('/fonts/ReadexPro-Bold.woff2') format('woff2');
+  font-weight: 700; font-display: swap;
+}
+
+/* ══════════════════════════════════════
+   VARIABLES DE TEMA
+══════════════════════════════════════ */
+
+/* Tema claro — DEFAULT */
+:root,
+[data-theme="light"] {
+  --bg:              #F2F2F8;
+  --surface:         #FFFFFF;
+  --card:            #FFFFFF;
+  --card-hover:      #F5F5FC;
+  --border:          #E0E0EE;
+  --border-glow:     rgba(124,58,237,0.25);
+  --text:            #0D0D1A;
+  --text-muted:      #5A5A78;
+  --text-subtle:     #9090B0;
+  --navbar-bg:       rgba(255,255,255,0.96);
+  --brand:           #7C3AED;
+  --brand-light:     #6D28D9;
+  --brand-dark:      #5B21B6;
+  --hero-bg:         #1a0533;
+  --hero-text:       #FFFFFF;
+  --trust-bg:        #FFFFFF;
+  --trust-border:    #E0E0EE;
+  --promo-bg:        linear-gradient(135deg, #f0ebff 0%, #e8e0ff 100%);
+  --promo-border:    rgba(124,58,237,0.2);
+  --section-divider: #E0E0EE;
+}
+
+/* Tema oscuro */
+[data-theme="dark"] {
+  --bg:              #08080E;
+  --surface:         #0F0F18;
+  --card:            #16161F;
+  --card-hover:      #1E1E2A;
+  --border:          #242433;
+  --border-glow:     rgba(124,58,237,0.35);
+  --text:            #E8E8F0;
+  --text-muted:      #8888A8;
+  --text-subtle:     #52526A;
+  --navbar-bg:       rgba(8,8,14,0.94);
+  --brand:           #7C3AED;
+  --brand-light:     #A78BFA;
+  --brand-dark:      #5B21B6;
+  --hero-bg:         #06091a;
+  --hero-text:       #FFFFFF;
+  --trust-bg:        #0F0F18;
+  --trust-border:    #1A1A26;
+  --promo-bg:        linear-gradient(135deg, #16061f 0%, #0f0a1e 50%, #06091a 100%);
+  --promo-border:    rgba(124,58,237,0.2);
+  --section-divider: #1A1A26;
+}
+
+@theme {
+  --font-manrope: 'Manrope', sans-serif;
+  --font-readex:  'Readex Pro', sans-serif;
+}
+
+/* ══════════════════════════════════════
+   BASE
+══════════════════════════════════════ */
+@layer base {
+  *, *::before, *::after { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: 'Manrope', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    transition: background-color 0.35s ease, color 0.35s ease;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Readex Pro', sans-serif;
+    letter-spacing: -0.01em;
+  }
+
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--brand); }
+}
+
+/* ══════════════════════════════════════
+   UTILITIES
+══════════════════════════════════════ */
+@layer utilities {
+
+  .game-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    transition: border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+  }
+  .game-card:hover {
+    border-color: var(--border-glow);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(124,58,237,0.15);
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #7C3AED, #5B21B6);
+    box-shadow: 0 4px 20px rgba(124,58,237,0.35);
+    transition: box-shadow 0.2s ease, transform 0.2s ease, filter 0.2s ease;
+    color: #fff;
+  }
+  .btn-primary:hover {
+    box-shadow: 0 6px 28px rgba(124,58,237,0.55);
+    transform: translateY(-1px);
+    filter: brightness(1.1);
+  }
+
+  .badge-popular { background: rgba(124,58,237,0.18); color: #A78BFA; border: 1px solid rgba(124,58,237,0.3); }
+  .badge-oferta  { background: rgba(239,68,68,0.15);  color: #FCA5A5; border: 1px solid rgba(239,68,68,0.3); }
+  .badge-nuevo   { background: rgba(16,185,129,0.15); color: #6EE7B7; border: 1px solid rgba(16,185,129,0.3); }
+  .badge-valor   { background: rgba(245,158,11,0.15); color: #FCD34D; border: 1px solid rgba(245,158,11,0.3); }
+
+  .gradient-text {
+    background: linear-gradient(135deg, #C4B5FD, #7C3AED);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .section-title {
+    font-family: 'Readex Pro', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-title::before {
+    content: '';
+    display: block;
+    width: 4px;
+    height: 20px;
+    background: linear-gradient(180deg, #7C3AED, #A78BFA);
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  .noise::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+    opacity: 0.025;
+    pointer-events: none;
+    mix-blend-mode: overlay;
+  }
+
+  @keyframes fadeSlideIn {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeUp {
+    from { transform: translateY(12px); opacity: 0.01; }
+    to   { transform: translateY(0); opacity: 1; }
+  }
+  @keyframes marquee {
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+}
