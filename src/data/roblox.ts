@@ -32,9 +32,12 @@ const DT_EN    = "10 min – 7 hours";
 const PLUS_DT_ES = "Activación en 10 min – 2 horas";
 const PLUS_DT_EN = "Activation in 10 min – 2 hours";
 
-// ── VÍA CUENTA — Robux + Roblox Plus ───────────────────────────
+// ── VÍA CUENTA — solo Robux (Roblox Plus tiene su propia pestaña) ──
 export const VIA_CUENTA: RobloxProduct[] = [
-  // Paquetes de Robux (el rango es "pagas por X, recibes hasta Y")
+  { id:"rc1", slug:"cuenta-80-robux",    name:"80 Robux",        nameEN:"80 Robux",        robux:80,    badge:"",            img:IMG,
+    description:"Ideal para accesorios básicos o ítems del Avatar Shop.",
+    descriptionEN:"Ideal for basic accessories or Avatar Shop items.",
+    price:6.90,   priceOld:9.90,   format:"Digital", region:"Global", tab:"cuenta", tabLabel:"Vía Cuenta", tabLabelEN:"Via Account", productType:"cuenta", deliveryTime:DT_ES, deliveryTimeEN:DT_EN },
   { id:"rc2", slug:"cuenta-500-robux",   name:"400-500 Robux",   nameEN:"400-500 Robux",   robux:500,   badge:"",            img:IMG,
     description:"Recibes hasta 500 Robux. Ideal para skins y accesorios del Avatar Shop.",
     descriptionEN:"Get up to 500 Robux. Great for skins and Avatar Shop accessories.",
@@ -43,6 +46,10 @@ export const VIA_CUENTA: RobloxProduct[] = [
     description:"Recibes hasta 1.000 Robux. Buena cantidad para varias compras.",
     descriptionEN:"Get up to 1,000 Robux. A solid amount for multiple purchases.",
     price:37.90,  priceOld:49.90,  format:"Digital", region:"Global", tab:"cuenta", tabLabel:"Vía Cuenta", tabLabelEN:"Via Account", productType:"cuenta", deliveryTime:DT_ES, deliveryTimeEN:DT_EN },
+  { id:"rc4", slug:"cuenta-2000-robux",  name:"1700-2000 Robux", nameEN:"1700-2000 Robux", robux:2000,  badge:"",            img:IMG,
+    description:"Recibes hasta 2.000 Robux. Para varias skins o un ítem premium.",
+    descriptionEN:"Get up to 2,000 Robux. For several skins or one premium item.",
+    price:75.90,  priceOld:99.90,  format:"Digital", region:"Global", tab:"cuenta", tabLabel:"Vía Cuenta", tabLabelEN:"Via Account", productType:"cuenta", deliveryTime:DT_ES, deliveryTimeEN:DT_EN },
   { id:"rc5", slug:"cuenta-5000-robux",  name:"4500-5000 Robux", nameEN:"4500-5000 Robux", robux:5000,  badge:"Oferta",      img:IMG,
     description:"Recibes hasta 5.000 Robux. Para coleccionistas y compras grandes.",
     descriptionEN:"Get up to 5,000 Robux. For collectors and large purchases.",
@@ -51,24 +58,26 @@ export const VIA_CUENTA: RobloxProduct[] = [
     description:"Recibes 10.000 Robux. El paquete de mayor valor por Robux.",
     descriptionEN:"Get 10,000 Robux. The best value per Robux.",
     price:369.90, priceOld:489.90, format:"Digital", region:"Global", tab:"cuenta", tabLabel:"Vía Cuenta", tabLabelEN:"Via Account", productType:"cuenta", deliveryTime:DT_ES, deliveryTimeEN:DT_EN },
+];
 
-  // Roblox Plus (suscripción Premium aplicada a tu cuenta)
+// ── ROBLOX PLUS — pestaña propia (suscripción Premium aplicada a tu cuenta) ──
+export const ROBLOX_PLUS: RobloxProduct[] = [
   { id:"rp0", slug:"roblox-plus",      name:"Roblox Plus",             nameEN:"Roblox Plus",             robux:0, plusTier:0,    badge:"Nuevo",   img:IMG,
     description:"Suscripción Roblox Plus: 10 % de descuento en objetos, servidores privados gratis y envío de Robux gratis.",
     descriptionEN:"Roblox Plus subscription: 10% off items, free private servers and free Robux sending.",
-    price:24.99, priceOld:32.99, format:"Digital", region:"Global", tab:"cuenta", tabLabel:"Vía Cuenta", tabLabelEN:"Via Account", productType:"plus", deliveryTime:PLUS_DT_ES, deliveryTimeEN:PLUS_DT_EN },
+    price:24.99, priceOld:32.99, format:"Digital", region:"Global", tab:"plus", tabLabel:"Roblox Plus", tabLabelEN:"Roblox Plus", productType:"plus", deliveryTime:PLUS_DT_ES, deliveryTimeEN:PLUS_DT_EN },
   { id:"rp1", slug:"roblox-plus-500",  name:"Roblox Plus + 500 Robux",  nameEN:"Roblox Plus + 500 Robux",  robux:0, plusTier:500,  badge:"",        img:IMG,
     description:"Todo lo de Roblox Plus más 500 Robux o más al mes.",
     descriptionEN:"Everything in Roblox Plus plus 500 Robux or more per month.",
-    price:44.99, priceOld:58.99, format:"Digital", region:"Global", tab:"cuenta", tabLabel:"Vía Cuenta", tabLabelEN:"Via Account", productType:"plus", deliveryTime:PLUS_DT_ES, deliveryTimeEN:PLUS_DT_EN },
+    price:44.99, priceOld:58.99, format:"Digital", region:"Global", tab:"plus", tabLabel:"Roblox Plus", tabLabelEN:"Roblox Plus", productType:"plus", deliveryTime:PLUS_DT_ES, deliveryTimeEN:PLUS_DT_EN },
   { id:"rp2", slug:"roblox-plus-1000", name:"Roblox Plus + 1000 Robux", nameEN:"Roblox Plus + 1000 Robux", robux:0, plusTier:1000, badge:"Popular", img:IMG,
     description:"Todo lo de Roblox Plus más 1000 Robux o más al mes.",
     descriptionEN:"Everything in Roblox Plus plus 1000 Robux or more per month.",
-    price:58.99, priceOld:76.99, format:"Digital", region:"Global", tab:"cuenta", tabLabel:"Vía Cuenta", tabLabelEN:"Via Account", productType:"plus", deliveryTime:PLUS_DT_ES, deliveryTimeEN:PLUS_DT_EN },
+    price:58.99, priceOld:76.99, format:"Digital", region:"Global", tab:"plus", tabLabel:"Roblox Plus", tabLabelEN:"Roblox Plus", productType:"plus", deliveryTime:PLUS_DT_ES, deliveryTimeEN:PLUS_DT_EN },
   { id:"rp3", slug:"roblox-plus-2000", name:"Roblox Plus + 2000 Robux", nameEN:"Roblox Plus + 2000 Robux", robux:0, plusTier:2000, badge:"",        img:IMG,
     description:"Todo lo de Roblox Plus más 2000 Robux o más al mes.",
     descriptionEN:"Everything in Roblox Plus plus 2000 Robux or more per month.",
-    price:94.99, priceOld:123.99, format:"Digital", region:"Global", tab:"cuenta", tabLabel:"Vía Cuenta", tabLabelEN:"Via Account", productType:"plus", deliveryTime:PLUS_DT_ES, deliveryTimeEN:PLUS_DT_EN },
+    price:94.99, priceOld:123.99, format:"Digital", region:"Global", tab:"plus", tabLabel:"Roblox Plus", tabLabelEN:"Roblox Plus", productType:"plus", deliveryTime:PLUS_DT_ES, deliveryTimeEN:PLUS_DT_EN },
 ];
 
 // ── Roblox Plus — contenido ────────────────────────────────────
@@ -144,4 +153,4 @@ export function calcRobuxAfterTax(robux: number): number {
   return Math.floor(robux * (1 - GAMEPASS_TAX_RATE));
 }
 
-export const ALL_ROBLOX_PRODUCTS: RobloxProduct[] = [...VIA_CUENTA, ...VIA_GRUPO];
+export const ALL_ROBLOX_PRODUCTS: RobloxProduct[] = [...VIA_CUENTA, ...ROBLOX_PLUS, ...VIA_GRUPO];

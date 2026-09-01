@@ -23,11 +23,12 @@ const BRAND_DARK = "#DC2626";
 
 function getTabs(lang: string) {
   const tabs = [
-    { id:"cuenta",   label: lang === "EN" ? "👤 Via Account" : "👤 Vía Cuenta" },
-    { id:"grupo",    label: lang === "EN" ? "👥 Via Group"   : "👥 Vía Grupo"  },
-    { id:"gamepass", label: "🎮 Game Pass" },
+    { id:"cuenta",   label: lang === "EN" ? "👤 Via Account" : "👤 Vía Cuenta", show: true },
+    { id:"plus",     label: "✨ Roblox Plus",                                   show: isVisible("roblox:plus-tab") },
+    { id:"grupo",    label: lang === "EN" ? "👥 Via Group"   : "👥 Vía Grupo",  show: true },
+    { id:"gamepass", label: "🎮 Game Pass",                                     show: isVisible("roblox:gamepass-tab") },
   ];
-  return tabs.filter(t => t.id !== "gamepass" || isVisible("roblox:gamepass-tab"));
+  return tabs.filter(t => t.show).map(({ id, label }) => ({ id, label }));
 }
 
 const badgeStyle: Record<string, string> = {

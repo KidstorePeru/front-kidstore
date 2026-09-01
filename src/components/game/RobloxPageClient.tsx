@@ -12,10 +12,10 @@ import {
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import {
-  VIA_CUENTA, VIA_GRUPO, GRUPOS,
+  VIA_CUENTA, ROBLOX_PLUS, VIA_GRUPO, GRUPOS,
   GAMEPASS_MIN_ROBUX, GAMEPASS_STEP,
   calcGamePassPrice, calcRobuxAfterTax,
-  plusTierBenefits,
+  plusTierBenefits, PLUS_WHY_JOIN,
   RobloxProduct,
 } from "@/data/roblox";
 import { useCart } from "@/context/CartContext";
@@ -30,11 +30,12 @@ const IMG        = "/roblox/robux.png";
 
 function getTabs(lang: string) {
   const tabs = [
-    { id:"cuenta",   label: lang === "EN" ? "👤 Via Account" : "👤 Vía Cuenta" },
-    { id:"grupo",    label: lang === "EN" ? "👥 Via Group"   : "👥 Vía Grupo"  },
-    { id:"gamepass", label: "🎮 Game Pass" },
+    { id:"cuenta",   label: lang === "EN" ? "👤 Via Account" : "👤 Vía Cuenta", show: true },
+    { id:"plus",     label: "✨ Roblox Plus",                                   show: isVisible("roblox:plus-tab") },
+    { id:"grupo",    label: lang === "EN" ? "👥 Via Group"   : "👥 Vía Grupo",  show: true },
+    { id:"gamepass", label: "🎮 Game Pass",                                     show: isVisible("roblox:gamepass-tab") },
   ];
-  return tabs.filter(t => t.id !== "gamepass" || isVisible("roblox:gamepass-tab"));
+  return tabs.filter(t => t.show).map(({ id, label }) => ({ id, label }));
 }
 
 const badgeStyle: Record<string, string> = {
@@ -129,9 +130,6 @@ function ProductCard({ p }: { p: RobloxProduct }) {
 // ── Tab Cuenta ─────────────────────────────────────────────────
 function TabCuenta() {
   const t = useT();
-  const { lang } = usePreferences();
-  const robuxPacks = VIA_CUENTA.filter(p => p.productType !== "plus");
-  const plusPacks  = VIA_CUENTA.filter(p => p.productType === "plus");
 
   return (
     <div className="space-y-8">
@@ -158,32 +156,11 @@ function TabCuenta() {
         </div>
       </div>
 
-      {/* Robux */}
-      <div>
-        <h3 className="section-title mb-4">Robux</h3>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {robuxPacks.map((p, i) => (
-            <Reveal key={p.id} delay={i * 55}><ProductCard p={p}/></Reveal>
-          ))}
-        </div>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {VIA_CUENTA.map((p, i) => (
+          <Reveal key={p.id} delay={i * 55}><ProductCard p={p}/></Reveal>
+        ))}
       </div>
-
-      {/* Roblox Plus */}
-      {plusPacks.length > 0 && (
-        <div>
-          <h3 className="section-title mb-1">Roblox Plus</h3>
-          <p className="text-xs mb-4" style={{ color:"var(--text-muted)" }}>
-            {lang === "EN"
-              ? "Roblox’s membership: discounts, free private servers and, on the higher plans, a monthly Robux stipend."
-              : "La membresía de Roblox: descuentos, servidores privados gratis y, en los planes superiores, Robux cada mes."}
-          </p>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {plusPacks.map((p, i) => (
-              <Reveal key={p.id} delay={i * 55}><ProductCard p={p}/></Reveal>
-            ))}
-          </div>
-        </div>
-      )}
 
       <div className="rounded-2xl overflow-hidden" style={{ border:"1px solid var(--border)" }}>
         <div
@@ -211,6 +188,60 @@ function TabCuenta() {
           ))}
         </div>
       </div>
+    </div>
+  );
+}
+
+// ── Tab Roblox Plus ────────────────────────────────────────────
+function TabPlus() {
+  const { lang } = usePreferences();
+  const why = lang === "EN" ? PLUS_WHY_JOIN.en : PLUS_WHY_JOIN.es;
+
+  return (
+    <div className="space-y-8">
+      <div className="rounded-2xl p-5 flex gap-4"
+        style={{ background:"linear-gradient(135deg,rgba(239,68,68,0.08),rgba(127,29,29,0.05))", border:"1px solid rgba(239,68,68,0.25)" }}>
+        <div className="w-10 h-10 rounded-xl flex items-center justify-center text-lg flex-shrink-0"
+          style={{ background:"rgba(239,68,68,0.12)", border:"1px solid rgba(239,68,68,0.25)" }}>
+          ✨
+        </div>
+        <div>
+          <p className="text-sm font-bold mb-1" style={{ color:"var(--text)" }}>Roblox Plus</p>
+          <p className="text-xs leading-relaxed" style={{ color:"var(--text-muted)" }}>
+            {lang === "EN"
+              ? "Roblox’s membership. It’s activated on your account: discounts, free private servers and, on the higher plans, a monthly Robux stipend. After payment we coordinate access on WhatsApp."
+              : "La membresía de Roblox. Se activa en tu cuenta: descuentos, servidores privados gratis y, en los planes superiores, Robux cada mes. Tras el pago coordinamos el acceso por WhatsApp."}
+          </p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {ROBLOX_PLUS.map((p, i) => (
+          <Reveal key={p.id} delay={i * 55}><ProductCard p={p}/></Reveal>
+        ))}
+      </div>
+
+      {/* ¿Por qué unirte a Plus? */}
+      <Reveal className="rounded-2xl overflow-hidden block" style={{ border:"1px solid var(--border)" }}>
+        <div className="px-6 py-4 flex items-center gap-3"
+          style={{ background:"linear-gradient(135deg,rgba(239,68,68,0.1),rgba(127,29,29,0.07))", borderBottom:"1px solid var(--border)" }}>
+          <span className="text-lg">✨</span>
+          <p className="text-sm font-bold" style={{ color:"var(--text)" }}>
+            {lang === "EN" ? "Why join Plus?" : "¿Por qué unirte a Plus?"}
+          </p>
+        </div>
+        <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-4" style={{ background:"var(--card)" }}>
+          {why.map(w => (
+            <div key={w.title} className="rounded-xl p-4" style={{ background:"var(--surface)", border:"1px solid var(--border)" }}>
+              <p className="text-xs font-bold flex items-start gap-2" style={{ color:"var(--text)" }}>
+                <Check size={13} className="flex-shrink-0 mt-0.5" style={{ color:BRAND }}/>
+                {w.title}
+              </p>
+              <p className="text-[11px] leading-relaxed mt-1 pl-5" style={{ color:"var(--text-subtle)" }}>{w.desc}</p>
+            </div>
+          ))}
+        </div>
+      </Reveal>
     </div>
   );
 }
@@ -906,9 +937,10 @@ function RobloxPageInner() {
           </div>
         </div>
 
-        {/* ── CONTENT ── (activeTab ya está validado contra getTabs → gamepass no entra si está oculto) */}
+        {/* ── CONTENT ── (activeTab ya está validado contra getTabs → una pestaña oculta no entra) */}
         <div className="max-w-[1400px] mx-auto px-4 lg:px-8 py-10">
           {activeTab === "cuenta"   && <TabCuenta/>}
+          {activeTab === "plus"     && <TabPlus/>}
           {activeTab === "grupo"    && <TabGrupo/>}
           {activeTab === "gamepass" && <TabGamePass/>}
         </div>
