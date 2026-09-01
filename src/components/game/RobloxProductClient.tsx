@@ -11,30 +11,75 @@ import {
 } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import { ALL_ROBLOX_PRODUCTS, GRUPOS } from "@/data/roblox";
+import { ALL_ROBLOX_PRODUCTS, GRUPOS, plusTierBenefits, PLUS_WHY_JOIN } from "@/data/roblox";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
 import { usePreferences } from "@/context/PreferencesContext";
 import { useT, useBadge } from "@/i18n";
+import { isVisible } from "@/config/visibility";
 
 const BRAND      = "#EF4444";
 const BRAND_DARK = "#DC2626";
 
-const TABS = [
-  { id:"cuenta",   label:"👤 Via Account" },
-  { id:"grupo",    label:"👥 Via Group"   },
-  { id:"gamepass", label:"🎮 Game Pass"   },
-];
+function getTabs(lang: string) {
+  const tabs = [
+    { id:"cuenta",   label: lang === "EN" ? "👤 Via Account" : "👤 Vía Cuenta" },
+    { id:"grupo",    label: lang === "EN" ? "👥 Via Group"   : "👥 Vía Grupo"  },
+    { id:"gamepass", label: "🎮 Game Pass" },
+  ];
+  return tabs.filter(t => t.id !== "gamepass" || isVisible("roblox:gamepass-tab"));
+}
 
 const badgeStyle: Record<string, string> = {
   "Popular":"badge-popular", "Sale":"badge-oferta", "Best value":"badge-valor",
+  "Oferta":"badge-oferta", "Mejor valor":"badge-valor", "Nuevo":"badge-nuevo",
 };
 
-function RobloxDescription({ productType, bonusRobux }: {
-  productType: string; bonusRobux?: number;
+function RobloxDescription({ productType, plusTier }: {
+  productType: string; plusTier?: number;
 }) {
   const t = useT();
+  const { lang } = usePreferences();
   const isGrupo = productType === "grupo";
+  const isPlus  = productType === "plus";
+
+  if (isPlus) {
+    const bullets = plusTierBenefits(plusTier ?? 0, lang === "EN" ? "en" : "es");
+    const why     = lang === "EN" ? PLUS_WHY_JOIN.en : PLUS_WHY_JOIN.es;
+    return (
+      <div className="space-y-4">
+        <h4 className="text-sm font-bold" style={{ color:"var(--text)" }}>📋 {t.roblox.deliveryInstructions}</h4>
+        <div className="flex items-start gap-2 text-xs" style={{ color:"var(--text-muted)" }}>
+          <span>🎮</span>
+          <p><strong style={{ color:"var(--text)" }}>KidStore Team</strong> — {lang === "EN" ? "Activated on your Roblox account" : "Se activa en tu cuenta de Roblox"}</p>
+        </div>
+        <div className="rounded-xl p-4 space-y-2" style={{ background:"var(--surface)", border:"1px solid var(--border)" }}>
+          <p className="text-xs font-bold mb-1" style={{ color:"var(--text)" }}>
+            {plusTier ? `Roblox Plus + ${plusTier.toLocaleString()} Robux` : "Roblox Plus"}
+          </p>
+          {bullets.map(b => (
+            <p key={b} className="text-xs flex gap-2" style={{ color:"var(--text-muted)" }}>
+              <span style={{ color:BRAND }}>•</span><span>{b}</span>
+            </p>
+          ))}
+        </div>
+        <div className="rounded-xl p-4 space-y-3" style={{ background:"var(--surface)", border:"1px solid var(--border)" }}>
+          <p className="text-xs font-bold mb-1" style={{ color:"var(--text)" }}>
+            {lang === "EN" ? "Why join Plus?" : "¿Por qué unirte a Plus?"}
+          </p>
+          {why.map(w => (
+            <div key={w.title} className="text-xs">
+              <p className="flex gap-2" style={{ color:"var(--text)" }}>
+                <Check size={12} className="flex-shrink-0 mt-0.5" style={{ color:BRAND }}/>
+                <span className="font-semibold">{w.title}</span>
+              </p>
+              <p className="pl-5 leading-relaxed" style={{ color:"var(--text-subtle)" }}>{w.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   if (isGrupo) {
     return (
@@ -94,19 +139,6 @@ function RobloxDescription({ productType, bonusRobux }: {
           <p key={i} className="text-xs flex gap-2" style={{ color:"var(--text-muted)" }}><span>•</span><span>{txt}</span></p>
         ))}
       </div>
-      {bonusRobux && (
-        <div className="rounded-xl p-4 flex gap-3"
-          style={{ background:"rgba(16,185,129,0.08)", border:"1px solid rgba(16,185,129,0.25)" }}>
-          <span className="text-lg flex-shrink-0">🎁</span>
-          <div className="text-xs">
-            <p className="font-bold mb-0.5" style={{ color:"#4ADE80" }}>{t.roblox.bonusIncluded}</p>
-            <p style={{ color:"var(--text-muted)" }}>
-              {t.roblox.bonusDesc1} <strong style={{ color:"var(--text)" }}>
-              {bonusRobux.toLocaleString()} Robux</strong> {t.roblox.bonusDesc2}
-            </p>
-          </div>
-        </div>
-      )}
       <div className="rounded-xl p-4 space-y-2" style={{ background:"var(--surface)", border:"1px solid var(--border)" }}>
         {[
           { icon:"⚡", text:t.roblox.cuenta_feat1 },
@@ -132,8 +164,9 @@ export default function RobloxProductClient({ slug }: { slug: string }) {
   const t = useT();
   const badge = useBadge();
   const p           = product;
-  const discountPct = Math.round((1 - p.price / p.priceOld) * 100);
+  const discountPct = p.priceOld > p.price ? Math.round((1 - p.price / p.priceOld) * 100) : 0;
   const isGrupo     = p.productType === "grupo";
+  const TABS        = getTabs(lang);
 
   const [whatsapp,  setWhatsapp]  = useState(false);
   const [addedCart, setAddedCart] = useState(false);
@@ -242,13 +275,6 @@ export default function RobloxProductClient({ slug }: { slug: string }) {
               <div className="relative w-full rounded-2xl overflow-hidden"
                 style={{ aspectRatio:"4/3", background:`linear-gradient(135deg,rgba(239,68,68,0.15),rgba(10,5,20,0.85))`, border:"1px solid var(--border)" }}>
                 <Image src={p.img} alt={lang==="EN" ? p.nameEN || p.name : p.name} fill className="object-contain p-8" priority/>
-                {/* Badges */}
-                {p.bonusRobux && (
-                  <div className="absolute top-3 left-3 px-3 py-1 rounded-full text-xs font-black"
-                    style={{ background:"rgba(16,185,129,0.2)", border:"1px solid rgba(16,185,129,0.4)", color:"#4ADE80" }}>
-                    🎁 {t.roblox.youReceive} {p.bonusRobux.toLocaleString()} Robux
-                  </div>
-                )}
                 {p.deliveryTime && (
                   <div className="absolute bottom-3 left-3 flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold"
                     style={{ background:"rgba(0,0,0,0.6)", color:"rgba(255,255,255,0.8)" }}>
@@ -257,7 +283,7 @@ export default function RobloxProductClient({ slug }: { slug: string }) {
                 )}
               </div>
               <div className="rounded-2xl p-6" style={{ background:"var(--card)", border:"1px solid var(--border)" }}>
-                <RobloxDescription productType={p.productType} bonusRobux={p.bonusRobux}/>
+                <RobloxDescription productType={p.productType} plusTier={p.plusTier}/>
               </div>
             </div>
 
@@ -273,11 +299,6 @@ export default function RobloxProductClient({ slug }: { slug: string }) {
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <h1 className="text-2xl font-bold" style={{ color:"var(--text)" }}>{lang==="EN" ? p.nameEN || p.name : p.name}</h1>
-                    {p.bonusRobux && (
-                      <p className="text-sm mt-0.5 font-bold" style={{ color:"#4ADE80" }}>
-                        🎁 {t.roblox.youReceive} {p.bonusRobux.toLocaleString()} Robux
-                      </p>
-                    )}
                   </div>
                   <button onClick={handleWishlist}
                     className="flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center transition-all hover:scale-110 mt-0.5"
@@ -328,11 +349,13 @@ export default function RobloxProductClient({ slug }: { slug: string }) {
                 </div>
               ) : (
                 <div className="rounded-xl p-4 flex gap-3"
-                  style={{ background:"rgba(239,68,68,0.07)", border:"1px solid rgba(239,68,68,0.2)" }}>
-                  <AlertTriangle size={15} className="text-red-400 flex-shrink-0 mt-0.5"/>
+                  style={{ background:"rgba(59,130,246,0.07)", border:"1px solid rgba(59,130,246,0.2)" }}>
+                  <Shield size={15} className="text-blue-400 flex-shrink-0 mt-0.5"/>
                   <div className="text-xs" style={{ color:"var(--text-muted)" }}>
-                    <p className="font-semibold text-red-400 mb-0.5">{t.roblox.importantNotice}</p>
-                    <p>{t.roblox.importantNoticeDesc}</p>
+                    <p className="font-semibold mb-0.5" style={{ color:"#60A5FA" }}>{lang === "EN" ? "How the delivery works" : "Cómo funciona la entrega"}</p>
+                    <p>{lang === "EN"
+                      ? "This product needs access to your account. After payment we contact you on WhatsApp to coordinate access safely — we never ask for your password on this website."
+                      : "Este producto necesita acceso a tu cuenta. Tras el pago te contactamos por WhatsApp para coordinar el acceso de forma segura — nunca pedimos tu contraseña en la web."}</p>
                   </div>
                 </div>
               )}

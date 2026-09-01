@@ -11,11 +11,13 @@
 
 export type VisibilityKey =
   | "rocket-league:bulk-credits" // BulkSelector ("Créditos a granel") en /games/rocket-league
-  | "rocket-league:bundles-tab"; // Pestaña "Paquetes" de Rocket League
+  | "rocket-league:bundles-tab" // Pestaña "Paquetes" de Rocket League
+  | "roblox:gamepass-tab"; // Pestaña "Game Pass" de Roblox
 
 export const DEFAULT_VISIBILITY: Record<VisibilityKey, boolean> = {
   "rocket-league:bulk-credits": false, // oculto desde 2026-08 (no se puede surtir por ahora)
   "rocket-league:bundles-tab":  true,
+  "roblox:gamepass-tab":        false, // oculto desde 2026-08 (código y calculadora intactos)
 };
 
 /** ¿Se debe mostrar esta sección? Por defecto sí, salvo que esté en `false`. */

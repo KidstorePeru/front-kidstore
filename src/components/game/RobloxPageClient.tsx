@@ -5,7 +5,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import {
-  ShoppingCart, ExternalLink, AlertTriangle, Info,
+  ShoppingCart, ExternalLink, AlertTriangle,
   Clock, Check, ChevronUp, ChevronDown, Zap, X,
   Shield, MessageCircle,
 } from "lucide-react";
@@ -13,23 +13,29 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import {
   VIA_CUENTA, VIA_GRUPO, GRUPOS,
-  GAMEPASS_PRICE_PER_1000, GAMEPASS_MIN_ROBUX, GAMEPASS_STEP,
+  GAMEPASS_MIN_ROBUX, GAMEPASS_STEP,
   calcGamePassPrice, calcRobuxAfterTax,
+  plusTierBenefits,
   RobloxProduct,
 } from "@/data/roblox";
 import { useCart } from "@/context/CartContext";
 import { usePreferences } from "@/context/PreferencesContext";
 import { useT, useBadge } from "@/i18n";
+import { isVisible } from "@/config/visibility";
+import Reveal from "@/components/ui/Reveal";
 
 const BRAND      = "#EF4444";
 const BRAND_DARK = "#DC2626";
 const IMG        = "/roblox/robux.png";
 
-const TABS = [
-  { id:"cuenta",   label:"👤 Via Account" },
-  { id:"grupo",    label:"👥 Via Group"   },
-  { id:"gamepass", label:"🎮 Game Pass"   },
-];
+function getTabs(lang: string) {
+  const tabs = [
+    { id:"cuenta",   label: lang === "EN" ? "👤 Via Account" : "👤 Vía Cuenta" },
+    { id:"grupo",    label: lang === "EN" ? "👥 Via Group"   : "👥 Vía Grupo"  },
+    { id:"gamepass", label: "🎮 Game Pass" },
+  ];
+  return tabs.filter(t => t.id !== "gamepass" || isVisible("roblox:gamepass-tab"));
+}
 
 const badgeStyle: Record<string, string> = {
   "Popular":     "badge-popular",
@@ -44,81 +50,91 @@ function ProductCard({ p }: { p: RobloxProduct }) {
   const t = useT();
   const badge = useBadge();
   const { formatPrice, lang } = usePreferences();
-  const disc = Math.round((1 - p.price / p.priceOld) * 100);
+  const disc = p.priceOld > p.price ? Math.round((1 - p.price / p.priceOld) * 100) : 0;
+  const isPlus   = p.productType === "plus";
+  const featured = p.badge === "Mejor valor" || p.badge === "Popular";
+  const name     = lang === "EN" ? p.nameEN || p.name : p.name;
+  const bullets  = isPlus ? plusTierBenefits(p.plusTier ?? 0, lang === "EN" ? "en" : "es") : null;
 
   return (
-    <div
-      className="rounded-2xl overflow-hidden flex flex-col transition-all duration-200 hover:-translate-y-1 group"
-      style={{ background:"var(--card)", border:"1px solid var(--border)" }}
+    <Link
+      href={`/games/roblox/${p.slug}`}
+      className="group lift flex flex-col rounded-2xl overflow-hidden h-full"
+      style={{
+        background: "var(--card)",
+        border: `1px solid ${featured ? `${BRAND}55` : "var(--border)"}`,
+        boxShadow: featured ? `0 0 0 1px ${BRAND}22, 0 12px 30px rgba(239,68,68,0.12)` : undefined,
+      }}
     >
-      <div
-        className="relative w-full overflow-hidden"
-        style={{ aspectRatio:"4/3", background:"linear-gradient(135deg,rgba(239,68,68,0.12),rgba(10,5,20,0.85))" }}
-      >
-        <Image
-          src={p.img} alt={lang==="EN" ? p.nameEN || p.name : p.name} fill
-          className="object-contain p-5 transition-transform duration-300 group-hover:scale-105"
-        />
+      <div className="relative w-full overflow-hidden"
+        style={{ aspectRatio:"4/3", background:"linear-gradient(135deg,rgba(239,68,68,0.14),rgba(10,5,20,0.85))" }}>
+        <Image src={p.img} alt={name} fill
+          className="object-contain p-5 transition-transform duration-500 group-hover:scale-110" />
         {p.badge && (
-          <span className={`absolute top-2 right-2 px-2 py-0.5 rounded-full text-[10px] font-bold ${badgeStyle[p.badge] ?? "badge-popular"}`}>
+          <span className={`absolute top-2.5 right-2.5 px-2 py-0.5 rounded-full text-[10px] font-bold ${badgeStyle[p.badge] ?? "badge-popular"}`}>
             {badge(p.badge)}
           </span>
         )}
         {disc > 0 && (
-          <span
-            className="absolute top-2 left-2 px-2 py-0.5 rounded-full text-[10px] font-bold"
-            style={{ background:"rgba(16,185,129,0.15)", border:"1px solid rgba(16,185,129,0.3)", color:"#4ADE80" }}
-          >
+          <span className="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-full text-[10px] font-black text-white"
+            style={{ background:`linear-gradient(135deg,${BRAND},${BRAND_DARK})` }}>
             -{disc}%
           </span>
         )}
       </div>
 
       <div className="p-4 flex flex-col flex-1">
-        <p className="text-sm font-bold leading-tight mb-0.5" style={{ color:"var(--text)" }}>
-          {p.bonusRobux ? `${p.robux.toLocaleString()} Robux` : (lang==="EN" ? p.nameEN || p.name : p.name)}
-        </p>
-        {p.bonusRobux && (
-          <p className="text-[11px] font-bold mb-1" style={{ color:"#4ADE80" }}>
-            🎁 {t.roblox.youReceive} {p.bonusRobux.toLocaleString()} Robux
-          </p>
+        <p className="text-sm font-bold leading-tight mb-1" style={{ color:"var(--text)" }}>{name}</p>
+
+        {isPlus ? (
+          <ul className="space-y-1 mb-3 flex-1">
+            {bullets!.map(b => (
+              <li key={b} className="text-[11px] flex items-start gap-1.5" style={{ color:"var(--text-muted)" }}>
+                <Check size={11} className="flex-shrink-0 mt-0.5" style={{ color:BRAND }}/> {b}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <>
+            {p.deliveryTime && (
+              <p className="text-[10px] flex items-center gap-1 mb-1.5" style={{ color:"var(--text-subtle)" }}>
+                <Clock size={10}/> {lang === "EN" ? p.deliveryTimeEN || p.deliveryTime : p.deliveryTime}
+              </p>
+            )}
+            <p className="text-xs leading-relaxed mb-3 flex-1" style={{ color:"var(--text-muted)" }}>
+              {lang === "EN" ? p.descriptionEN || p.description : p.description}
+            </p>
+          </>
         )}
-        {p.deliveryTime && (
-          <p className="text-[10px] flex items-center gap-1 mb-1.5" style={{ color:"var(--text-subtle)" }}>
-            <Clock size={10}/> {lang==="EN" ? p.deliveryTimeEN || p.deliveryTime : p.deliveryTime}
-          </p>
-        )}
-        <p className="text-xs leading-relaxed mb-3 flex-1" style={{ color:"var(--text-muted)" }}>
-          {lang==="EN" ? p.descriptionEN || p.description : p.description}
-        </p>
+
         <div className="flex items-end justify-between gap-2 mt-auto">
           <div>
-            <p className="text-[11px] line-through" style={{ color:"var(--text-subtle)" }}>
-              {formatPrice(p.priceOld)}
-            </p>
-            <p className="text-xl font-bold" style={{ color:BRAND }}>
-              {formatPrice(p.price)}
-            </p>
+            {p.priceOld > p.price && (
+              <p className="text-[11px] line-through" style={{ color:"var(--text-subtle)" }}>{formatPrice(p.priceOld)}</p>
+            )}
+            <p className="text-xl font-bold" style={{ color:BRAND }}>{formatPrice(p.price)}</p>
           </div>
-          <Link
-            href={`/games/roblox/${p.slug}`}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white transition-all hover:scale-105 whitespace-nowrap"
-            style={{ background:`linear-gradient(135deg,${BRAND_DARK},#7F1D1D)`, boxShadow:`0 2px 12px ${BRAND}50` }}
+          <span
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-white whitespace-nowrap transition-transform group-hover:scale-105"
+            style={{ background:`linear-gradient(135deg,${BRAND_DARK},#7F1D1D)`, boxShadow:`0 2px 12px ${BRAND}44` }}
           >
             <ShoppingCart size={13}/> {t.product.buy}
-          </Link>
+          </span>
         </div>
       </div>
-    </div>
+    </Link>
   );
 }
 
 // ── Tab Cuenta ─────────────────────────────────────────────────
 function TabCuenta() {
   const t = useT();
+  const { lang } = usePreferences();
+  const robuxPacks = VIA_CUENTA.filter(p => p.productType !== "plus");
+  const plusPacks  = VIA_CUENTA.filter(p => p.productType === "plus");
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div
           className="flex items-start gap-3 px-4 py-3.5 rounded-xl"
@@ -142,9 +158,32 @@ function TabCuenta() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {VIA_CUENTA.map(p => <ProductCard key={p.id} p={p}/>)}
+      {/* Robux */}
+      <div>
+        <h3 className="section-title mb-4">Robux</h3>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {robuxPacks.map((p, i) => (
+            <Reveal key={p.id} delay={i * 55}><ProductCard p={p}/></Reveal>
+          ))}
+        </div>
       </div>
+
+      {/* Roblox Plus */}
+      {plusPacks.length > 0 && (
+        <div>
+          <h3 className="section-title mb-1">Roblox Plus</h3>
+          <p className="text-xs mb-4" style={{ color:"var(--text-muted)" }}>
+            {lang === "EN"
+              ? "Roblox’s membership: discounts, free private servers and, on the higher plans, a monthly Robux stipend."
+              : "La membresía de Roblox: descuentos, servidores privados gratis y, en los planes superiores, Robux cada mes."}
+          </p>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {plusPacks.map((p, i) => (
+              <Reveal key={p.id} delay={i * 55}><ProductCard p={p}/></Reveal>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="rounded-2xl overflow-hidden" style={{ border:"1px solid var(--border)" }}>
         <div
@@ -200,7 +239,7 @@ function TabGrupo() {
             {t.roblox.groupReqDesc}
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {Object.entries(GRUPOS).map(([key, g]) => (
+            {Object.entries(GRUPOS).map(([key, g], i) => (
               <a
                 key={key} href={g.url} target="_blank" rel="noopener noreferrer"
                 className="flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all hover:scale-[1.02]"
@@ -210,11 +249,11 @@ function TabGrupo() {
                   className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-black text-white flex-shrink-0"
                   style={{ background:`linear-gradient(135deg,${BRAND_DARK},#7F1D1D)` }}
                 >
-                  {key === "grupo1" ? "1" : "2"}
+                  {i + 1}
                 </div>
                 <div className="flex-1">
                   <p className="text-xs font-bold" style={{ color:"var(--text)" }}>
-                    {t.roblox.group} {key === "grupo1" ? "1" : "2"}
+                    {t.roblox.group} {i + 1}
                   </p>
                   <p className="text-[11px]" style={{ color:BRAND }}>{g.name}</p>
                 </div>
@@ -748,13 +787,15 @@ function TabGamePass() {
 // ── MAIN ──────────────────────────────────────────────────────
 function RobloxPageInner() {
   const t = useT();
-  const { formatPrice } = usePreferences();
+  const { formatPrice, lang } = usePreferences();
+  const TABS = getTabs(lang);
   const searchParams = useSearchParams();
   const router       = useRouter();
   const tabParam     = searchParams.get("tab");
-  const [activeTab, setActiveTab] = useState(tabParam ?? "cuenta");
+  const validTab = (id: string | null) => (TABS.some(tb => tb.id === id) ? id! : "cuenta");
+  const [activeTab, setActiveTab] = useState(() => validTab(tabParam));
 
-  useEffect(() => { if (tabParam) setActiveTab(tabParam); }, [tabParam]);
+  useEffect(() => { if (tabParam) setActiveTab(validTab(tabParam)); }, [tabParam]);
 
   function handleTab(id: string) {
     setActiveTab(id);
@@ -865,7 +906,7 @@ function RobloxPageInner() {
           </div>
         </div>
 
-        {/* ── CONTENT ── */}
+        {/* ── CONTENT ── (activeTab ya está validado contra getTabs → gamepass no entra si está oculto) */}
         <div className="max-w-[1400px] mx-auto px-4 lg:px-8 py-10">
           {activeTab === "cuenta"   && <TabCuenta/>}
           {activeTab === "grupo"    && <TabGrupo/>}
