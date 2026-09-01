@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound, useRouter } from "next/navigation";
@@ -13,7 +13,10 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { ALL_DISCORD_PRODUCTS } from "@/data/discord";
 import { usePreferences } from "@/context/PreferencesContext";
+import { useGameVisibility } from "@/hooks/useGameVisibility";
 import { useT, useBadge } from "@/i18n";
+
+const SLUG = "discord";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
 
@@ -195,6 +198,10 @@ export default function DiscordProductClient({ slug }: { slug: string }) {
   const badge = useBadge();
   const discountPct = Math.round((1 - p.price / p.priceOld) * 100);
   const isMejoras   = p.productType === "mejoras";
+
+  const vis    = useGameVisibility(SLUG);
+  const hidden = !vis.productVisible(p.slug) || !vis.tabVisible(p.tab);
+  useEffect(() => { if (hidden) router.replace(`/games/${SLUG}`); }, [hidden, router]);
   const isKey       = p.deliveryMethod === "key";
 
   const [whatsapp,     setWhatsapp]     = useState(false);
@@ -278,7 +285,7 @@ export default function DiscordProductClient({ slug }: { slug: string }) {
           <div className="max-w-[1400px] mx-auto px-4 lg:px-8">
             <div className="flex justify-center overflow-x-auto" style={{ scrollbarWidth: "none" }}>
               <div className="flex">
-                {(lang === "ES" ? TABS_ES : TABS_EN).map(tab => (
+                {(lang === "ES" ? TABS_ES : TABS_EN).filter(tab => vis.tabVisible(tab.id)).map(tab => (
                   <Link key={tab.id} href={`/games/discord?tab=${tab.id}`}
                     className="flex-shrink-0 px-6 py-4 text-sm font-semibold transition-all relative whitespace-nowrap"
                     style={{ color: p.tab === tab.id ? ACCENT_LIGHT : "var(--text-muted)" }}>

@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, useRouter } from "next/navigation";
 import {
   ChevronRight, ShoppingCart, AlertTriangle,
   Shield, Zap, Info, MessageCircle,
@@ -15,7 +15,10 @@ import { ALL_MARVEL_RIVALS_PRODUCTS } from "@/data/marvelrivals";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
 import { usePreferences } from "@/context/PreferencesContext";
+import { useGameVisibility } from "@/hooks/useGameVisibility";
 import { useT, useBadge } from "@/i18n";
+
+const SLUG = "marvel-rivals";
 
 // ── Description ────────────────────────────────────────────────
 function MRDescription() {
@@ -114,8 +117,13 @@ export default function MarvelRivalsProductClient({ slug }: { slug: string }) {
   const { formatPrice, lang } = usePreferences();
   const t = useT();
   const badge = useBadge();
+  const router = useRouter();
   const p           = product;
   const discountPct = Math.round((1 - p.price / p.priceOld) * 100);
+
+  const vis    = useGameVisibility(SLUG);
+  const hidden = !vis.productVisible(p.slug);
+  useEffect(() => { if (hidden) router.replace(`/games/${SLUG}`); }, [hidden, router]);
 
   const [whatsapp,   setWhatsapp]   = useState(false);
   const [addedCart,  setAddedCart]  = useState(false);

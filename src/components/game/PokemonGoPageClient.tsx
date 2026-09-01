@@ -9,7 +9,10 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { POKECOINS, PASES, PokemonGoProduct } from "@/data/pokemongo";
 import { usePreferences } from "@/context/PreferencesContext";
+import { useGameVisibility } from "@/hooks/useGameVisibility";
 import { useT, useBadge } from "@/i18n";
+
+const SLUG = "pokemon-go";
 
 const TABS_ES = [
   { id:"coins", label:"🪙 PokéCoins" },
@@ -164,12 +167,16 @@ function PokemonGoPageInner() {
 
   useEffect(() => { if (tabParam) setActiveTab(tabParam); }, [tabParam]);
 
+  const vis     = useGameVisibility(SLUG);
+  const tabDefs = (lang === "EN" ? TABS_EN : TABS_ES).filter(tb => vis.tabVisible(tb.id));
+  const shownTab = tabDefs.some(tb => tb.id === activeTab) ? activeTab : (tabDefs[0]?.id ?? activeTab);
+
   function handleTab(id: string) {
     setActiveTab(id);
     router.push(`/games/pokemon-go?tab=${id}`, { scroll: false });
   }
 
-  const products = activeTab === "pases" ? PASES : POKECOINS;
+  const products = vis.filterProducts(shownTab === "pases" ? PASES : POKECOINS);
 
   return (
     <>
@@ -218,17 +225,18 @@ function PokemonGoPageInner() {
         </section>
 
         {/* Tabs */}
+        {tabDefs.length > 1 && (
         <div className="sticky top-[66px] md:top-[107px] z-40 w-full"
           style={{ background:"var(--navbar-bg)", backdropFilter:"blur(16px)", WebkitBackdropFilter:"blur(16px)", borderBottom:"1px solid var(--border)" }}>
           <div className="max-w-[1400px] mx-auto px-4 lg:px-8">
             <div className="flex justify-center overflow-x-auto" style={{ scrollbarWidth:"none" }}>
               <div className="flex">
-                {(lang==="EN"?TABS_EN:TABS_ES).map(tab => (
+                {tabDefs.map(tab => (
                   <button key={tab.id} onClick={() => handleTab(tab.id)}
                     className="flex-shrink-0 px-6 py-4 text-sm font-semibold transition-all relative whitespace-nowrap"
-                    style={{ color: activeTab === tab.id ? BRAND : "var(--text-muted)" }}>
+                    style={{ color: shownTab === tab.id ? BRAND : "var(--text-muted)" }}>
                     {tab.label}
-                    {activeTab === tab.id && (
+                    {shownTab === tab.id && (
                       <div className="absolute bottom-0 left-3 right-3 h-[2px] rounded-full"
                         style={{ background:`linear-gradient(90deg,${BRAND_DARK},${BRAND})` }}/>
                     )}
@@ -238,6 +246,7 @@ function PokemonGoPageInner() {
             </div>
           </div>
         </div>
+        )}
 
         <div className="max-w-[1400px] mx-auto px-4 lg:px-8 py-10">
 

@@ -15,7 +15,10 @@ import { CREDITOS, BULK_PRICES, type BulkPrice } from "@/data/rocketleague";
 import { usePreferences } from "@/context/PreferencesContext";
 import { useT, useBadge } from "@/i18n";
 import { useCart } from "@/context/CartContext";
-import { isVisible } from "@/config/visibility";
+import { useVisibility } from "@/context/VisibilityContext";
+import { useGameVisibility } from "@/hooks/useGameVisibility";
+
+const SLUG = "rocket-league";
 
 // ─── BRAND COLOR ──────────────────────────────────────────
 const BRAND = "#EA580C";
@@ -26,12 +29,12 @@ const badgeStyle: Record<string, string> = {
 };
 
 // ─── TABS ─────────────────────────────────────────────────
-function getTabs(lang: string) {
+function getTabs(lang: string, tabVisible: (id: string) => boolean) {
   const tabs = [
     { id: "creditos",  label: lang === "EN" ? "Credits" : "Créditos" },
     { id: "paquetes",  label: lang === "EN" ? "Bundles" : "Paquetes" },
   ];
-  return tabs.filter(t => t.id !== "paquetes" || isVisible("rocket-league:bundles-tab"));
+  return tabs.filter(t => tabVisible(t.id));
 }
 
 // ─── TURKEY WARNING ───────────────────────────────────────
@@ -289,13 +292,15 @@ function BulkSelector() {
 // ─── TAB CREDITOS ─────────────────────────────────────────
 function TabCreditos() {
   const { lang } = usePreferences();
+  const { isVisible } = useVisibility();
+  const products = useGameVisibility(SLUG).filterProducts(CREDITOS);
   return (
     <div>
       <TurkeyWarning />
 
       {/* Fixed products grid */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
-        {CREDITOS.map((p, i) => (
+        {products.map((p, i) => (
           <Reveal key={p.id} delay={i * 55}>
             <ProductCard
               name={lang === "EN" ? p.nameEN || p.name : p.name}
@@ -448,7 +453,8 @@ function TabPaquetes() {
 function RocketLeaguePageInner() {
   const { lang } = usePreferences();
   const t = useT();
-  const TABS = getTabs(lang);
+  const vis  = useGameVisibility(SLUG);
+  const TABS = getTabs(lang, vis.tabVisible);
   const searchParams = useSearchParams();
   const router       = useRouter();
   const tabParam     = searchParams.get("tab");
@@ -457,6 +463,10 @@ function RocketLeaguePageInner() {
   useEffect(() => {
     if (tabParam) setActiveTab(tabParam);
   }, [tabParam]);
+
+  useEffect(() => {
+    if (TABS.length && !TABS.some(tb => tb.id === activeTab)) setActiveTab(TABS[0].id);
+  }, [TABS.length, activeTab]);
 
   function handleTabClick(id: string) {
     setActiveTab(id);
@@ -544,7 +554,7 @@ function RocketLeaguePageInner() {
 
         {/* CONTENT */}
         <div className="max-w-[1400px] mx-auto px-4 lg:px-8 py-8">
-          {activeTab === "paquetes" && isVisible("rocket-league:bundles-tab")
+          {activeTab === "paquetes" && vis.tabVisible("paquetes")
             ? <TabPaquetes />
             : <TabCreditos />}
         </div>

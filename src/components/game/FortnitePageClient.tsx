@@ -14,7 +14,10 @@ import Footer from "@/components/layout/Footer";
 import { PAVOS, PAQUETES, CLUB, BATTLE_PASSES } from "@/data/fortnite";
 import FortniteShopTab from "@/components/game/FortniteShopTab";
 import { usePreferences } from "@/context/PreferencesContext";
+import { useGameVisibility } from "@/hooks/useGameVisibility";
 import { useT, useBadge } from "@/i18n";
+
+const SLUG = "fortnite";
 
 // ─── BOTS ─────────────────────────────────────────────────
 const BOTS = Array.from({ length: 20 }, (_, i) => `KIDSTORE${String(i + 1).padStart(4, "0")}`);
@@ -33,14 +36,14 @@ const badgeStyle: Record<string, string> = {
 };
 
 // ─── TABS — sin duplicado ──────────────────────────────────
-function getTabs(lang: string) {
+function getTabs(lang: string, tabVisible: (id: string) => boolean) {
   return [
     { id:"tienda",   label: lang === "EN" ? "🛒 Shop"           : "🛒 Tienda"          },
     { id:"bots",     label: lang === "EN" ? "🤖 Add Bots"       : "🤖 Agregar Bots"    },
     { id:"pavos",    label: lang === "EN" ? "⬡ V-Bucks Top-Up"  : "⬡ Recarga de Pavos" },
     { id:"paquetes", label: lang === "EN" ? "📦 Bundles"         : "📦 Paquetes"         },
     { id:"pases",    label: lang === "EN" ? "🎫 Passes"          : "🎫 Pases"            },
-  ];
+  ].filter(t => tabVisible(t.id));
 }
 
 // ─── PRODUCT CARD ─────────────────────────────────────────
@@ -168,10 +171,11 @@ function TabBots() {
 // ─── PAVOS ────────────────────────────────────────────────
 function TabPavos() {
   const { lang } = usePreferences();
+  const products = useGameVisibility(SLUG).filterProducts(PAVOS);
   return (
     <div>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
-        {PAVOS.map((p) => (
+        {products.map((p) => (
           <ProductCard key={p.id} amount={lang==="EN"?p.amountEN||p.amount:p.amount} description={lang==="EN"?p.descriptionEN:p.description}
             price={p.price} priceOld={p.priceOld} badge={p.badge} img={p.img} slug={p.slug}/>
         ))}
@@ -267,10 +271,11 @@ function TabPavos() {
 // ─── PAQUETES ─────────────────────────────────────────────
 function TabPaquetes() {
   const { lang } = usePreferences();
+  const products = useGameVisibility(SLUG).filterProducts(PAQUETES);
   return (
     <div>
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-10">
-        {PAQUETES.map((p) => (
+        {products.map((p) => (
           <ProductCard key={p.id} name={lang==="EN"?p.nameEN||p.name:p.name} amount={lang==="EN"?p.amountEN||p.amount:p.amount} description={lang==="EN"?p.descriptionEN:p.description}
             price={p.price} priceOld={p.priceOld} badge={p.badge} img={p.img} slug={p.slug}/>
         ))}
@@ -319,23 +324,34 @@ function TabPaquetes() {
 // ─── PASES ────────────────────────────────────────────────
 function TabPases() {
   const { lang } = usePreferences();
+  const vis  = useGameVisibility(SLUG);
+  const club = vis.filterProducts(CLUB);
+  const bp   = vis.filterProducts(BATTLE_PASSES);
   return (
     <div>
+      {club.length > 0 && (
+        <>
       <h3 className="text-sm font-bold mb-4" style={{ color:"var(--text)" }}>🎮 {lang === "EN" ? "Fortnite Crew" : "Club de Fortnite"}</h3>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        {CLUB.map((p) => (
+        {club.map((p) => (
           <ProductCard key={p.id} name={lang==="EN"?p.nameEN||p.name:p.name} subtitle={lang==="EN"?p.subtitleEN||p.subtitle:p.subtitle} description={lang==="EN"?p.descriptionEN:p.description}
             price={p.price} priceOld={p.priceOld} badge={p.badge} img={p.img} slug={p.slug}
             fromPrice={p.productType === "club-xbox"}/>
         ))}
       </div>
+        </>
+      )}
+      {bp.length > 0 && (
+        <>
       <h3 className="text-sm font-bold mb-4" style={{ color:"var(--text)" }}>⭐ {lang === "EN" ? "Battle Passes" : "Pases de Batalla"}</h3>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
-        {BATTLE_PASSES.map((p) => (
+        {bp.map((p) => (
           <ProductCard key={p.id} name={lang==="EN"?p.nameEN||p.name:p.name} subtitle={lang==="EN"?p.subtitleEN||p.subtitle:p.subtitle} description={lang==="EN"?p.descriptionEN:p.description}
             price={p.price} priceOld={p.priceOld} badge={p.badge} img={p.img} slug={p.slug}/>
         ))}
       </div>
+        </>
+      )}
       <div className="rounded-2xl overflow-hidden" style={{ border:"1px solid var(--border)" }}>
         <div className="px-6 py-4 flex items-center gap-3"
           style={{ background:"linear-gradient(135deg,rgba(245,158,11,0.12),rgba(124,58,237,0.08))", borderBottom:"1px solid var(--border)" }}>
@@ -427,7 +443,8 @@ function TabPases() {
 function FortnitePageInner() {
   const { lang } = usePreferences();
   const t = useT();
-  const TABS = getTabs(lang);
+  const vis  = useGameVisibility(SLUG);
+  const TABS = getTabs(lang, vis.tabVisible);
   const searchParams = useSearchParams();
   const router       = useRouter();
   const tabParam     = searchParams.get("tab");
@@ -436,6 +453,8 @@ function FortnitePageInner() {
   useEffect(() => {
     if (tabParam) setActiveTab(tabParam);
   }, [tabParam]);
+
+  const shownTab = TABS.some(tb => tb.id === activeTab) ? activeTab : (TABS[0]?.id ?? activeTab);
 
   function handleTabClick(id: string) {
     setActiveTab(id);
@@ -493,6 +512,7 @@ function FortnitePageInner() {
         </section>
 
         {/* TABS — offset = alto del Navbar (66px móvil / 107px con fila de categorías en desktop) */}
+        {TABS.length > 1 && (
         <div className="sticky top-[66px] md:top-[107px] z-40 w-full"
           style={{ background:"var(--navbar-bg)", backdropFilter:"blur(16px)", WebkitBackdropFilter:"blur(16px)", borderBottom:"1px solid var(--border)" }}>
           <div className="max-w-[1400px] mx-auto px-4 lg:px-8">
@@ -501,9 +521,9 @@ function FortnitePageInner() {
                 {TABS.map(tab => (
                   <button key={tab.id} onClick={() => handleTabClick(tab.id)}
                     className="flex-shrink-0 px-5 py-4 text-sm font-semibold transition-all relative whitespace-nowrap"
-                    style={{ color: activeTab === tab.id ? "var(--brand-light)" : "var(--text-muted)" }}>
+                    style={{ color: shownTab === tab.id ? "var(--brand-light)" : "var(--text-muted)" }}>
                     {tab.label}
-                    {activeTab === tab.id && (
+                    {shownTab === tab.id && (
                       <div className="absolute bottom-0 left-3 right-3 h-[2px] rounded-full"
                         style={{ background:"linear-gradient(90deg,#7C3AED,#A78BFA)" }}/>
                     )}
@@ -513,14 +533,15 @@ function FortnitePageInner() {
             </div>
           </div>
         </div>
+        )}
 
         {/* CONTENT */}
         <div className="max-w-[1400px] mx-auto px-4 lg:px-8 py-8">
-          {activeTab === "tienda"   && <FortniteShopTab />}
-          {activeTab === "bots"     && <TabBots />}
-          {activeTab === "pavos"    && <TabPavos />}
-          {activeTab === "paquetes" && <TabPaquetes />}
-          {activeTab === "pases"    && <TabPases />}
+          {shownTab === "tienda"   && <FortniteShopTab />}
+          {shownTab === "bots"     && <TabBots />}
+          {shownTab === "pavos"    && <TabPavos />}
+          {shownTab === "paquetes" && <TabPaquetes />}
+          {shownTab === "pases"    && <TabPases />}
         </div>
       </main>
       <Footer />

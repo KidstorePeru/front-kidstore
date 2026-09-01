@@ -13,9 +13,9 @@
  *
  * Convención de claves:
  *  - `game:<slug>`                  → oculta el juego entero
- *  - `<slug>:tab:<tabId>`           → oculta una pestaña de ese juego  (Fase 2)
- *  - `<slug>:product:<productSlug>` → oculta un producto              (Fase 2)
- *  - claves sueltas heredadas: `rocket-league:bulk-credits`, etc.
+ *  - `<slug>:tab:<tabId>`           → oculta una pestaña de ese juego
+ *  - `<slug>:product:<productSlug>` → oculta un producto de ese juego
+ *  - `rocket-league:bulk-credits`   → sub-sección "Créditos a granel" (RL)
  */
 
 export type VisibilityKey = string;
@@ -24,10 +24,10 @@ export type VisibilityKey = string;
 export type VisibilityOverrides = Record<string, boolean>;
 
 export const DEFAULT_VISIBILITY: Record<string, boolean> = {
-  "rocket-league:bulk-credits": false, // oculto desde 2026-08 (no se puede surtir por ahora)
-  "rocket-league:bundles-tab":  true,
-  "roblox:gamepass-tab":        false, // oculto desde 2026-08 (código y calculadora intactos)
-  "roblox:plus-tab":            true,
+  "rocket-league:bulk-credits":  false, // oculto desde 2026-08 (no se puede surtir por ahora)
+  "rocket-league:tab:paquetes":  true,
+  "roblox:tab:gamepass":         false, // oculto desde 2026-08 (código y calculadora intactos)
+  "roblox:tab:plus":             true,
 };
 
 /**
@@ -43,3 +43,9 @@ export function isVisible(key: string, overrides: VisibilityOverrides = {}): boo
 
 /** Clave para ocultar un juego entero. */
 export const gameKey = (slug: string) => `game:${slug}`;
+
+/** Clave para ocultar una pestaña dentro de un juego. */
+export const tabKey = (gameSlug: string, tabId: string) => `${gameSlug}:tab:${tabId}`;
+
+/** Clave para ocultar un producto dentro de un juego (los slugs no son únicos entre juegos). */
+export const productKey = (gameSlug: string, productSlug: string) => `${gameSlug}:product:${productSlug}`;

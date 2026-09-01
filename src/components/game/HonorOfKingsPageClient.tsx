@@ -7,6 +7,7 @@ import { ShoppingCart, Check, Fingerprint } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { TOKENS, HOKProduct } from "@/data/honorofkings";
+import { useGameVisibility } from "@/hooks/useGameVisibility";
 import { usePreferences } from "@/context/PreferencesContext";
 import { useT, useBadge } from "@/i18n";
 
@@ -199,6 +200,7 @@ function InfoSection() {
 function HOKPageInner() {
   const { formatPrice, lang } = usePreferences();
   const t = useT();
+  const tokens = useGameVisibility("honor-of-kings").filterProducts(TOKENS);
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: HOK_STYLE }}/>
@@ -254,7 +256,7 @@ function HOKPageInner() {
               <span className="text-lg">🪙</span>
               <p className="text-sm font-bold" style={{ color:"var(--text)" }}>Tokens</p>
               <span className="text-xs px-2 py-0.5 rounded-full" style={{ background:"var(--hok-bg)", color:"var(--hok-text)", border:"1px solid var(--hok-border)" }}>
-                {TOKENS.length} {lang === "ES" ? "paquetes" : "packs"}
+                {tokens.length} {lang === "ES" ? "paquetes" : "packs"}
               </span>
             </div>
             <div className="flex items-center gap-1.5 text-xs" style={{ color:"var(--text-subtle)" }}>
@@ -278,7 +280,7 @@ function HOKPageInner() {
 
           {/* Grid — 3 columnas en md, más en xl */}
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 xl:grid-cols-5 gap-4">
-            {TOKENS.map(p => <ProductCard key={p.id} p={p}/>)}
+            {tokens.map(p => <ProductCard key={p.id} p={p}/>)}
           </div>
 
           <InfoSection/>

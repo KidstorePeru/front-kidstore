@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, useRouter } from "next/navigation";
 import {
   ChevronRight, ShoppingCart, Info,
   Shield, Zap, MessageCircle,
@@ -15,7 +15,10 @@ import { ALL_HOK_PRODUCTS } from "@/data/honorofkings";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
 import { usePreferences } from "@/context/PreferencesContext";
+import { useGameVisibility } from "@/hooks/useGameVisibility";
 import { useT, useBadge } from "@/i18n";
+
+const SLUG = "honor-of-kings";
 
 const HOK_STYLE = `
   :root, [data-theme="light"] {
@@ -202,6 +205,11 @@ export default function HonorOfKingsProductClient({ slug }: { slug: string }) {
   const { formatPrice, lang } = usePreferences();
   const t = useT();
   const badge = useBadge();
+  const router = useRouter();
+
+  const vis    = useGameVisibility(SLUG);
+  const hidden = !vis.productVisible(p.slug);
+  useEffect(() => { if (hidden) router.replace(`/games/${SLUG}`); }, [hidden, router]);
 
   const total       = p.bonus ? p.tokens + p.bonus : p.tokens;
   const discountPct = Math.round((1 - p.price / p.priceOld) * 100);
@@ -263,7 +271,7 @@ export default function HonorOfKingsProductClient({ slug }: { slug: string }) {
           style={{ background:"var(--navbar-bg)", backdropFilter:"blur(16px)", WebkitBackdropFilter:"blur(16px)", borderBottom:"1px solid var(--border)" }}>
           <div className="max-w-[1400px] mx-auto px-4 lg:px-8">
             <div className="flex justify-center">
-              {TABS.map(tab => (
+              {TABS.filter(tab => vis.tabVisible(tab.id)).map(tab => (
                 <Link key={tab.id} href="/games/honor-of-kings"
                   className="px-6 py-4 text-sm font-semibold relative"
                   style={{ color:"var(--hok-text)" }}>

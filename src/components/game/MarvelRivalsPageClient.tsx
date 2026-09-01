@@ -6,6 +6,7 @@ import { ShoppingCart, Check, ExternalLink } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { LATTICES, MarvelRivalsProduct } from "@/data/marvelrivals";
+import { useGameVisibility } from "@/hooks/useGameVisibility";
 import { usePreferences } from "@/context/PreferencesContext";
 import { useT, useBadge } from "@/i18n";
 
@@ -161,6 +162,7 @@ function AboutSection() {
 export default function MarvelRivalsPageClient() {
   const { formatPrice, lang } = usePreferences();
   const t = useT();
+  const lattices = useGameVisibility("marvel-rivals").filterProducts(LATTICES);
   return (
     <>
       <Navbar/>
@@ -223,7 +225,7 @@ export default function MarvelRivalsPageClient() {
               </span>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-6 gap-4">
-              {LATTICES.map(p => <ProductCard key={p.id} p={p}/>)}
+              {lattices.map(p => <ProductCard key={p.id} p={p}/>)}
             </div>
           </div>
 

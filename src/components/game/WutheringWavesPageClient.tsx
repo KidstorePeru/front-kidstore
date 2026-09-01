@@ -9,7 +9,10 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { LUNITA, PASES, WWProduct } from "@/data/wutheringwaves";
 import { usePreferences } from "@/context/PreferencesContext";
+import { useGameVisibility } from "@/hooks/useGameVisibility";
 import { useT, useBadge } from "@/i18n";
+
+const SLUG = "wuthering-waves";
 
 const WW_STYLE = `
   :root, [data-theme="light"] {
@@ -343,12 +346,16 @@ function WWPageInner() {
 
   useEffect(() => { if (tabParam) setActiveTab(tabParam); }, [tabParam]);
 
+  const vis  = useGameVisibility(SLUG);
+  const tabs = vis.filterTabs(TABS);
+  const shownTab = tabs.some(tb => tb.id === activeTab) ? activeTab : (tabs[0]?.id ?? activeTab);
+
   function handleTab(id: string) {
     setActiveTab(id);
     router.push(`/games/wuthering-waves?tab=${id}`, { scroll:false });
   }
 
-  const products = activeTab === "pases" ? PASES : LUNITA;
+  const products = vis.filterProducts(shownTab === "pases" ? PASES : LUNITA);
 
   return (
     <>
@@ -434,6 +441,7 @@ function WWPageInner() {
         </section>
 
         {/* ── TABS ── */}
+        {tabs.length > 1 && (
         <div
           className="sticky top-[66px] md:top-[107px] z-40 w-full"
           style={{ background:"var(--navbar-bg)", backdropFilter:"blur(16px)", WebkitBackdropFilter:"blur(16px)", borderBottom:"1px solid var(--border)" }}
@@ -441,15 +449,15 @@ function WWPageInner() {
           <div className="max-w-[1400px] mx-auto px-4 lg:px-8">
             <div className="flex justify-center overflow-x-auto" style={{ scrollbarWidth:"none" }}>
               <div className="flex">
-                {TABS.map(tab => (
+                {tabs.map(tab => (
                   <button
                     key={tab.id}
                     onClick={() => handleTab(tab.id)}
                     className="flex-shrink-0 px-6 py-4 text-sm font-semibold transition-all relative whitespace-nowrap"
-                    style={{ color: activeTab === tab.id ? "var(--ww-teal)" : "var(--text-muted)" }}
+                    style={{ color: shownTab === tab.id ? "var(--ww-teal)" : "var(--text-muted)" }}
                   >
                     {tab.label}
-                    {activeTab === tab.id && (
+                    {shownTab === tab.id && (
                       <div
                         className="absolute bottom-0 left-3 right-3 h-[2px] rounded-full"
                         style={{ background:"var(--ww-teal)" }}
@@ -461,6 +469,7 @@ function WWPageInner() {
             </div>
           </div>
         </div>
+        )}
 
         {/* ── CONTENT ── */}
         <div className="max-w-[1400px] mx-auto px-4 lg:px-8 py-10">
@@ -501,8 +510,8 @@ function WWPageInner() {
             {products.map(p => <ProductCard key={p.id} p={p}/>)}
           </div>
 
-          {activeTab === "lunita" && <InfoLunita/>}
-          {activeTab === "pases"  && <InfoPase/>}
+          {shownTab === "lunita" && <InfoLunita/>}
+          {shownTab === "pases"  && <InfoPase/>}
         </div>
       </main>
       <Footer/>

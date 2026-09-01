@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, useRouter } from "next/navigation";
 import {
   ChevronRight, ShoppingCart,
   Shield, Zap, MessageCircle,
@@ -15,7 +15,10 @@ import { ALL_GENSHIN_PRODUCTS } from "@/data/genshinimpact";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
 import { usePreferences } from "@/context/PreferencesContext";
+import { useGameVisibility } from "@/hooks/useGameVisibility";
 import { useT, useBadge } from "@/i18n";
+
+const SLUG = "genshin-impact";
 
 const BRAND       = "#D4AF37";
 const BRAND_LIGHT = "#F5CC45";
@@ -153,8 +156,13 @@ export default function GenshinImpactProductClient({ slug }: { slug: string }) {
   const { formatPrice, lang } = usePreferences();
   const t = useT();
   const badge = useBadge();
+  const router = useRouter();
   const p           = product;
   const discountPct = p.priceOld > p.price ? Math.round((1 - p.price / p.priceOld) * 100) : 0;
+
+  const vis    = useGameVisibility(SLUG);
+  const hidden = !vis.productVisible(p.slug) || !vis.tabVisible(p.tab);
+  useEffect(() => { if (hidden) router.replace(`/games/${SLUG}`); }, [hidden, router]);
 
   const [whatsapp,   setWhatsapp]   = useState(false);
   const [addedCart,  setAddedCart]  = useState(false);
@@ -238,7 +246,7 @@ export default function GenshinImpactProductClient({ slug }: { slug: string }) {
           <div className="max-w-[1400px] mx-auto px-4 lg:px-8">
             <div className="flex justify-center overflow-x-auto" style={{ scrollbarWidth:"none" }}>
               <div className="flex">
-                {(lang === "ES" ? TABS_ES : TABS_EN).map(tab => (
+                {(lang === "ES" ? TABS_ES : TABS_EN).filter(tab => vis.tabVisible(tab.id)).map(tab => (
                   <Link key={tab.id} href={`/games/genshin-impact?tab=${tab.id}`}
                     className="flex-shrink-0 px-6 py-4 text-sm font-semibold transition-all relative whitespace-nowrap"
                     style={{ color: p.tab === tab.id ? BRAND_LIGHT : "var(--text-muted)" }}>

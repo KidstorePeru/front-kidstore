@@ -9,7 +9,10 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { FOTOGRAMAS, PASES, ZZZProduct } from "@/data/zenlesszonezero";
 import { usePreferences } from "@/context/PreferencesContext";
+import { useGameVisibility } from "@/hooks/useGameVisibility";
 import { useT, useBadge } from "@/i18n";
+
+const SLUG = "zenless-zone-zero";
 
 const ZZZ_STYLE = `
   :root, [data-theme="light"] {
@@ -241,7 +244,8 @@ function InfoPases() {
 }
 
 // ── Tab Bar ────────────────────────────────────────────────────
-function TabBar({ activeTab, onTab }: { activeTab: string; onTab: (id: string) => void }) {
+function TabBar({ activeTab, onTab, tabs }: { activeTab: string; onTab: (id: string) => void; tabs: typeof TABS }) {
+  if (tabs.length <= 1) return null;
   return (
     <div
       className="sticky top-[66px] md:top-[107px] z-40 w-full"
@@ -250,7 +254,7 @@ function TabBar({ activeTab, onTab }: { activeTab: string; onTab: (id: string) =
       <div className="max-w-[1400px] mx-auto px-4 lg:px-8">
         <div className="flex justify-center overflow-x-auto" style={{ scrollbarWidth:"none" }}>
           <div className="flex">
-            {TABS.map(tab => (
+            {tabs.map(tab => (
               <button
                 key={tab.id}
                 onClick={() => onTab(tab.id)}
@@ -284,12 +288,17 @@ function ZZZPageInner() {
 
   useEffect(() => { if (tabParam) setActiveTab(tabParam); }, [tabParam]);
 
+  const vis   = useGameVisibility(SLUG);
+  const tabs  = vis.filterTabs(TABS);
+  // Pestaña efectiva: si la activa está oculta, cae a la primera visible (sin efecto → sin parpadeo).
+  const shownTab = tabs.some(tb => tb.id === activeTab) ? activeTab : (tabs[0]?.id ?? activeTab);
+
   function handleTab(id: string) {
     setActiveTab(id);
     router.push(`/games/zenless-zone-zero?tab=${id}`, { scroll: false });
   }
 
-  const products = activeTab === "pases" ? PASES : FOTOGRAMAS;
+  const products = vis.filterProducts(shownTab === "pases" ? PASES : FOTOGRAMAS);
 
   return (
     <>
@@ -362,7 +371,7 @@ function ZZZPageInner() {
         </section>
 
         {/* ── TABS ── */}
-        <TabBar activeTab={activeTab} onTab={handleTab}/>
+        <TabBar activeTab={shownTab} onTab={handleTab} tabs={tabs}/>
 
         {/* ── CONTENT ── */}
         <div className="max-w-[1400px] mx-auto px-4 lg:px-8 py-10">
@@ -384,8 +393,8 @@ function ZZZPageInner() {
             {products.map(p => <ProductCard key={p.id} p={p}/>)}
           </div>
 
-          {activeTab === "fotogramas" && <InfoFotogramas/>}
-          {activeTab === "pases"      && <InfoPases/>}
+          {shownTab === "fotogramas" && <InfoFotogramas/>}
+          {shownTab === "pases"      && <InfoPases/>}
         </div>
       </main>
       <Footer/>

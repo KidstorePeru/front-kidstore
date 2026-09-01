@@ -8,6 +8,7 @@ import { ShoppingCart, Check, Globe, Shield, Zap } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { TFT_COINS, TFTProduct } from "@/data/tft";
+import { useGameVisibility } from "@/hooks/useGameVisibility";
 import { usePreferences } from "@/context/PreferencesContext";
 import { useT, useBadge } from "@/i18n";
 
@@ -188,6 +189,7 @@ function InfoCoins() {
 function TFTPageInner() {
   const t = useT();
   const { formatPrice } = usePreferences();
+  const coins = useGameVisibility("team-fight-tactics").filterProducts(TFT_COINS);
   const searchParams = useSearchParams();
   const router       = useRouter();
   const tabParam     = searchParams.get("tab");
@@ -315,7 +317,7 @@ function TFTPageInner() {
 
           {/* Products */}
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 xl:grid-cols-3 gap-4">
-            {TFT_COINS.map(p => <ProductCard key={p.id} p={p} />)}
+            {coins.map(p => <ProductCard key={p.id} p={p} />)}
           </div>
 
           <InfoCoins />

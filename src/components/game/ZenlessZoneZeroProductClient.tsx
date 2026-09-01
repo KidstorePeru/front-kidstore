@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, useRouter } from "next/navigation";
 import {
   ChevronRight, ShoppingCart, Info,
   Shield, Zap, MessageCircle,
@@ -15,7 +15,10 @@ import { ALL_ZZZ_PRODUCTS } from "@/data/zenlesszonezero";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
 import { usePreferences } from "@/context/PreferencesContext";
+import { useGameVisibility } from "@/hooks/useGameVisibility";
 import { useT, useBadge } from "@/i18n";
+
+const SLUG = "zenless-zone-zero";
 
 const ZZZ_STYLE = `
   :root, [data-theme="light"] {
@@ -161,8 +164,13 @@ export default function ZenlessZoneZeroProductClient({ slug }: { slug: string })
   const { formatPrice, lang } = usePreferences();
   const t = useT();
   const badge = useBadge();
+  const router = useRouter();
   const p           = product;
   const discountPct = Math.round((1 - p.price / p.priceOld) * 100);
+
+  const vis    = useGameVisibility(SLUG);
+  const hidden = !vis.productVisible(p.slug) || !vis.tabVisible(p.tab);
+  useEffect(() => { if (hidden) router.replace(`/games/${SLUG}`); }, [hidden, router]);
 
   const [fieldUser,    setFieldUser]    = useState("");
   const [fieldGame,   setFieldGame]   = useState("");
@@ -244,7 +252,7 @@ export default function ZenlessZoneZeroProductClient({ slug }: { slug: string })
           <div className="max-w-[1400px] mx-auto px-4 lg:px-8">
             <div className="flex justify-center overflow-x-auto" style={{ scrollbarWidth:"none" }}>
               <div className="flex">
-                {TABS.map(tab => (
+                {TABS.filter(tab => vis.tabVisible(tab.id)).map(tab => (
                   <Link key={tab.id} href={`/games/zenless-zone-zero?tab=${tab.id}`}
                     className="flex-shrink-0 px-6 py-4 text-sm font-semibold transition-all relative whitespace-nowrap"
                     style={{ color: p.tab === tab.id ? "var(--zzz-text)" : "var(--text-muted)" }}>

@@ -21,21 +21,22 @@ import {
 import { useCart } from "@/context/CartContext";
 import { usePreferences } from "@/context/PreferencesContext";
 import { useT, useBadge } from "@/i18n";
-import { isVisible } from "@/config/visibility";
+import { useGameVisibility } from "@/hooks/useGameVisibility";
 import Reveal from "@/components/ui/Reveal";
 
+const SLUG       = "roblox";
 const BRAND      = "#EF4444";
 const BRAND_DARK = "#DC2626";
 const IMG        = "/roblox/robux.png";
 
-function getTabs(lang: string) {
+function getTabs(lang: string, tabVisible: (id: string) => boolean) {
   const tabs = [
-    { id:"cuenta",   label: lang === "EN" ? "👤 Via Account" : "👤 Vía Cuenta", show: true },
-    { id:"plus",     label: "✨ Roblox Plus",                                   show: isVisible("roblox:plus-tab") },
-    { id:"grupo",    label: lang === "EN" ? "👥 Via Group"   : "👥 Vía Grupo",  show: true },
-    { id:"gamepass", label: "🎮 Game Pass",                                     show: isVisible("roblox:gamepass-tab") },
+    { id:"cuenta",   label: lang === "EN" ? "👤 Via Account" : "👤 Vía Cuenta" },
+    { id:"plus",     label: "✨ Roblox Plus"                                   },
+    { id:"grupo",    label: lang === "EN" ? "👥 Via Group"   : "👥 Vía Grupo"  },
+    { id:"gamepass", label: "🎮 Game Pass"                                     },
   ];
-  return tabs.filter(t => t.show).map(({ id, label }) => ({ id, label }));
+  return tabs.filter(t => tabVisible(t.id));
 }
 
 const badgeStyle: Record<string, string> = {
@@ -130,6 +131,7 @@ function ProductCard({ p }: { p: RobloxProduct }) {
 // ── Tab Cuenta ─────────────────────────────────────────────────
 function TabCuenta() {
   const t = useT();
+  const products = useGameVisibility(SLUG).filterProducts(VIA_CUENTA);
 
   return (
     <div className="space-y-8">
@@ -157,7 +159,7 @@ function TabCuenta() {
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {VIA_CUENTA.map((p, i) => (
+        {products.map((p, i) => (
           <Reveal key={p.id} delay={i * 55}><ProductCard p={p}/></Reveal>
         ))}
       </div>
@@ -196,6 +198,7 @@ function TabCuenta() {
 function TabPlus() {
   const { lang } = usePreferences();
   const why = lang === "EN" ? PLUS_WHY_JOIN.en : PLUS_WHY_JOIN.es;
+  const products = useGameVisibility(SLUG).filterProducts(ROBLOX_PLUS);
 
   return (
     <div className="space-y-8">
@@ -216,7 +219,7 @@ function TabPlus() {
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {ROBLOX_PLUS.map((p, i) => (
+        {products.map((p, i) => (
           <Reveal key={p.id} delay={i * 55}><ProductCard p={p}/></Reveal>
         ))}
       </div>
@@ -249,6 +252,7 @@ function TabPlus() {
 // ── Tab Grupo ──────────────────────────────────────────────────
 function TabGrupo() {
   const t = useT();
+  const products = useGameVisibility(SLUG).filterProducts(VIA_GRUPO);
 
   return (
     <div className="space-y-6">
@@ -312,7 +316,7 @@ function TabGrupo() {
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {VIA_GRUPO.map(p => <ProductCard key={p.id} p={p}/>)}
+        {products.map(p => <ProductCard key={p.id} p={p}/>)}
       </div>
     </div>
   );
@@ -819,14 +823,16 @@ function TabGamePass() {
 function RobloxPageInner() {
   const t = useT();
   const { formatPrice, lang } = usePreferences();
-  const TABS = getTabs(lang);
+  const vis  = useGameVisibility(SLUG);
+  const TABS = getTabs(lang, vis.tabVisible);
   const searchParams = useSearchParams();
   const router       = useRouter();
   const tabParam     = searchParams.get("tab");
-  const validTab = (id: string | null) => (TABS.some(tb => tb.id === id) ? id! : "cuenta");
-  const [activeTab, setActiveTab] = useState(() => validTab(tabParam));
+  const [activeTab, setActiveTab] = useState(tabParam ?? "cuenta");
 
-  useEffect(() => { if (tabParam) setActiveTab(validTab(tabParam)); }, [tabParam]);
+  useEffect(() => { if (tabParam) setActiveTab(tabParam); }, [tabParam]);
+
+  const shownTab = TABS.some(tb => tb.id === activeTab) ? activeTab : (TABS[0]?.id ?? "cuenta");
 
   function handleTab(id: string) {
     setActiveTab(id);
@@ -910,6 +916,7 @@ function RobloxPageInner() {
         </section>
 
         {/* ── TABS ── */}
+        {TABS.length > 1 && (
         <div
           className="sticky top-[66px] md:top-[107px] z-40 w-full"
           style={{ background:"var(--navbar-bg)", backdropFilter:"blur(16px)", WebkitBackdropFilter:"blur(16px)", borderBottom:"1px solid var(--border)" }}
@@ -921,10 +928,10 @@ function RobloxPageInner() {
                   <button
                     key={tab.id} onClick={() => handleTab(tab.id)}
                     className="flex-shrink-0 px-6 py-4 text-sm font-semibold transition-all relative whitespace-nowrap"
-                    style={{ color: activeTab === tab.id ? BRAND : "var(--text-muted)" }}
+                    style={{ color: shownTab === tab.id ? BRAND : "var(--text-muted)" }}
                   >
                     {tab.label}
-                    {activeTab === tab.id && (
+                    {shownTab === tab.id && (
                       <div
                         className="absolute bottom-0 left-3 right-3 h-[2px] rounded-full"
                         style={{ background:`linear-gradient(90deg,${BRAND_DARK},${BRAND})` }}
@@ -936,13 +943,14 @@ function RobloxPageInner() {
             </div>
           </div>
         </div>
+        )}
 
         {/* ── CONTENT ── (activeTab ya está validado contra getTabs → una pestaña oculta no entra) */}
         <div className="max-w-[1400px] mx-auto px-4 lg:px-8 py-10">
-          {activeTab === "cuenta"   && <TabCuenta/>}
-          {activeTab === "plus"     && <TabPlus/>}
-          {activeTab === "grupo"    && <TabGrupo/>}
-          {activeTab === "gamepass" && <TabGamePass/>}
+          {shownTab === "cuenta"   && <TabCuenta/>}
+          {shownTab === "plus"     && <TabPlus/>}
+          {shownTab === "grupo"    && <TabGrupo/>}
+          {shownTab === "gamepass" && <TabGamePass/>}
         </div>
       </main>
       <Footer/>

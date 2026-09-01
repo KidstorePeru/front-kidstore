@@ -14,7 +14,8 @@ import {
 } from "lucide-react";
 import { useAdminAuth } from "@/context/AdminAuthContext";
 import { useVisibility } from "@/context/VisibilityContext";
-import { gameKey } from "@/config/visibility";
+import { gameKey, tabKey, productKey } from "@/config/visibility";
+import { CATALOG } from "@/config/catalog";
 import { games } from "@/data";
 import Link from "next/link";
 
@@ -1471,43 +1472,60 @@ function TabTransacciones({ orders, transactions, users }: { orders: Order[]; tr
 // ══════════════════════════════════════════════════════════════
 // VISIBILIDAD — ocultar / mostrar juegos sin borrar nada
 // ══════════════════════════════════════════════════════════════
+function VisSwitch({ on, busy, onClick, label }: { on: boolean; busy: boolean; onClick: () => void; label: string }) {
+  return (
+    <button
+      onClick={onClick}
+      disabled={busy}
+      role="switch"
+      aria-checked={on}
+      aria-label={label}
+      className="relative flex-shrink-0 w-10 h-[22px] rounded-full transition-colors"
+      style={{
+        background: on ? "#22C55E" : "rgba(255,255,255,0.12)",
+        opacity: busy ? 0.4 : 1,
+        cursor: busy ? "wait" : "pointer",
+      }}>
+      <span className="absolute top-0.5 w-[18px] h-[18px] rounded-full bg-white transition-all"
+        style={{ left: on ? 20 : 2 }}/>
+    </button>
+  );
+}
+
 function TabVisibilidad() {
   const { overrides, setOverride, refresh } = useVisibility();
   const [config, setConfig]   = useState<Record<string, boolean>>(overrides);
   const [saving, setSaving]   = useState<string | null>(null);
   const [msg,    setMsg]      = useState<{ text: string; ok: boolean } | null>(null);
   const [loading, setLoading] = useState(true);
+  const [openGame, setOpenGame] = useState<string | null>(null);
+  const [openTab,  setOpenTab]  = useState<string | null>(null); // `${slug}:${tabId}`
 
   useEffect(() => {
     (async () => {
       try {
         const res  = await fetch("/api/site-config", { cache: "no-store" });
         const json = await res.json();
-        // Solo pisar el estado si el backend respondió de verdad; si está caído
-        // conservamos lo que ya haya en el contexto (cache local).
         if (json?.success && json.config && typeof json.config === "object") {
           setConfig(json.config);
         }
-      } catch { /* se queda con lo que haya */ }
+      } catch { /* se queda con lo que haya (cache) */ }
       finally { setLoading(false); }
     })();
   }, []);
 
-  const isGameVisible = (slug: string) => config[gameKey(slug)] !== false;
-  const hiddenCount   = games.filter(g => !isGameVisible(g.slug)).length;
+  const visible = (key: string) => config[key] !== false;
 
-  async function toggleGame(slug: string, nextVisible: boolean) {
-    const key = gameKey(slug);
-    setSaving(slug);
+  async function toggle(key: string, next: boolean, okText: string) {
+    setSaving(key);
     setMsg(null);
-    // Optimista (panel + contexto global + cache)
-    setConfig(prev => ({ ...prev, [key]: nextVisible }));
-    setOverride(key, nextVisible);
+    setConfig(prev => ({ ...prev, [key]: next }));
+    setOverride(key, next);
     try {
       const res  = await fetch("/api/admin-site-config", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ key, value: nextVisible }),
+        body: JSON.stringify({ key, value: next }),
       });
       const json = await res.json().catch(() => ({}));
       if (!res.ok || !json?.success) {
@@ -1520,16 +1538,18 @@ function TabVisibilidad() {
       }
       if (json.config && typeof json.config === "object") setConfig(json.config);
       await refresh();
-      setMsg({ text: nextVisible ? "Juego visible de nuevo." : "Juego oculto de la tienda.", ok: true });
+      setMsg({ text: okText, ok: true });
     } catch (err) {
-      setConfig(prev => ({ ...prev, [key]: !nextVisible }));
-      setOverride(key, !nextVisible);
+      setConfig(prev => ({ ...prev, [key]: !next }));
+      setOverride(key, !next);
       setMsg({ text: err instanceof Error ? err.message : "No se pudo guardar.", ok: false });
     } finally {
       setSaving(null);
       setTimeout(() => setMsg(null), 4000);
     }
   }
+
+  const hiddenGames = games.filter(g => !visible(gameKey(g.slug))).length;
 
   return (
     <div className="space-y-4">
@@ -1542,7 +1562,7 @@ function TabVisibilidad() {
           </div>
           <div>
             <p className="text-[10px] font-bold uppercase tracking-[0.1em]" style={{ color:"rgba(255,255,255,0.35)" }}>Juegos visibles</p>
-            <p className="text-xl font-black" style={{ color:"#22C55E" }}>{games.length - hiddenCount}</p>
+            <p className="text-xl font-black" style={{ color:"#22C55E" }}>{games.length - hiddenGames}</p>
           </div>
         </div>
         <div className="px-4 py-4 rounded-2xl flex items-center gap-3" style={card}>
@@ -1551,8 +1571,8 @@ function TabVisibilidad() {
             <EyeOff size={16}/>
           </div>
           <div>
-            <p className="text-[10px] font-bold uppercase tracking-[0.1em]" style={{ color:"rgba(255,255,255,0.35)" }}>Ocultos</p>
-            <p className="text-xl font-black" style={{ color:"#EA580C" }}>{hiddenCount}</p>
+            <p className="text-[10px] font-bold uppercase tracking-[0.1em]" style={{ color:"rgba(255,255,255,0.35)" }}>Juegos ocultos</p>
+            <p className="text-xl font-black" style={{ color:"#EA580C" }}>{hiddenGames}</p>
           </div>
         </div>
       </div>
@@ -1560,9 +1580,9 @@ function TabVisibilidad() {
       <div className="rounded-2xl px-4 py-3 flex items-start gap-2.5" style={cardInner}>
         <AlertCircle size={14} className="flex-shrink-0 mt-0.5" style={{ color:"rgba(255,255,255,0.35)" }}/>
         <p className="text-[12px] leading-relaxed" style={{ color:"rgba(255,255,255,0.5)" }}>
-          Ocultar un juego lo quita de la tienda al instante (inicio, listados, buscador y su enlace directo)
-          <strong className="text-white/70"> sin borrar nada</strong>: sus datos y su código quedan intactos y
-          vuelve con un clic. Ocultar pestañas y productos individuales llegará pronto.
+          Apagar un juego, una pestaña o un producto lo quita de la tienda al instante
+          <strong className="text-white/70"> sin borrar nada</strong>: los datos y el código quedan intactos y
+          vuelve con un clic. La URL directa de algo oculto redirige a la lista de juegos.
         </p>
       </div>
 
@@ -1577,43 +1597,84 @@ function TabVisibilidad() {
         </div>
       )}
 
-      {/* Lista de juegos */}
+      {/* Árbol juego → pestañas → productos */}
       <div className="space-y-2">
-        {games.map(g => {
-          const visible = isGameVisible(g.slug);
-          const busy    = saving === g.slug;
+        {CATALOG.map(g => {
+          const gk       = gameKey(g.slug);
+          const gVisible = visible(gk);
+          const gImg     = games.find(x => x.slug === g.slug)?.image ?? "";
+          const isOpen   = openGame === g.slug;
           return (
-            <div key={g.id} className="rounded-2xl px-3 py-2.5 flex items-center gap-3"
-              style={{ ...card, opacity: visible ? 1 : 0.55 }}>
-              <div className="relative w-11 h-11 rounded-xl overflow-hidden flex-shrink-0"
-                style={{ border:"1px solid rgba(255,255,255,0.06)" }}>
-                <Image src={g.image} alt={g.name} fill className="object-cover"/>
+            <div key={g.slug} className="rounded-2xl overflow-hidden" style={{ ...card, opacity: gVisible ? 1 : 0.5 }}>
+              {/* fila juego */}
+              <div className="px-3 py-2.5 flex items-center gap-3">
+                <button onClick={() => { setOpenGame(isOpen ? null : g.slug); setOpenTab(null); }}
+                  className="flex items-center gap-3 flex-1 min-w-0 text-left">
+                  {gImg && (
+                    <div className="relative w-10 h-10 rounded-xl overflow-hidden flex-shrink-0" style={{ border:"1px solid rgba(255,255,255,0.06)" }}>
+                      <Image src={gImg} alt={g.name} fill className="object-cover"/>
+                    </div>
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[13px] font-bold text-white truncate">{g.name}</p>
+                    <p className="text-[10px]" style={{ color:"rgba(255,255,255,0.3)" }}>
+                      {g.tabs.length} pestaña{g.tabs.length === 1 ? "" : "s"} &middot; {g.products.length} producto{g.products.length === 1 ? "" : "s"}
+                    </p>
+                  </div>
+                  <ChevronDown size={15} style={{ color:"rgba(255,255,255,0.3)", transform: isOpen ? "rotate(180deg)" : "none", transition:"transform .15s" }}/>
+                </button>
+                <VisSwitch on={gVisible} busy={saving === gk}
+                  onClick={() => toggle(gk, !gVisible, gVisible ? `"${g.name}" oculto.` : `"${g.name}" visible de nuevo.`)}
+                  label={`${gVisible ? "Ocultar" : "Mostrar"} ${g.name}`}/>
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-[13px] font-bold text-white truncate">{g.name}</p>
-                <p className="text-[10px]" style={{ color:"rgba(255,255,255,0.3)" }}>
-                  {g.products.length} {g.products.length === 1 ? "producto" : "productos"} &middot; /{g.slug}
-                </p>
-              </div>
-              <span className="text-[10px] font-bold uppercase tracking-[0.08em] hidden sm:inline"
-                style={{ color: visible ? "rgba(34,197,94,0.7)" : "rgba(234,88,12,0.8)" }}>
-                {visible ? "Visible" : "Oculto"}
-              </span>
-              <button
-                onClick={() => toggleGame(g.slug, !visible)}
-                disabled={busy}
-                role="switch"
-                aria-checked={visible}
-                aria-label={`${visible ? "Ocultar" : "Mostrar"} ${g.name}`}
-                className="relative flex-shrink-0 w-11 h-6 rounded-full transition-colors"
-                style={{
-                  background: visible ? "#22C55E" : "rgba(255,255,255,0.12)",
-                  opacity: busy ? 0.5 : 1,
-                  cursor: busy ? "wait" : "pointer",
-                }}>
-                <span className="absolute top-0.5 w-5 h-5 rounded-full bg-white transition-all"
-                  style={{ left: visible ? 22 : 2 }}/>
-              </button>
+
+              {/* pestañas + productos */}
+              {isOpen && (
+                <div className="px-3 pb-3 space-y-1.5" style={{ borderTop:"1px solid rgba(255,255,255,0.05)" }}>
+                  {g.tabs.map(tb => {
+                    const tk        = tabKey(g.slug, tb.id);
+                    const tVisible  = visible(tk);
+                    const tabProds  = g.products.filter(p => p.tab === tb.id);
+                    const tabOpenId = `${g.slug}:${tb.id}`;
+                    const tOpen     = openTab === tabOpenId;
+                    return (
+                      <div key={tb.id} className="rounded-xl mt-1.5" style={{ background:"rgba(255,255,255,0.02)", opacity: tVisible ? 1 : 0.55 }}>
+                        <div className="px-3 py-2 flex items-center gap-2">
+                          <button onClick={() => setOpenTab(tOpen ? null : tabOpenId)}
+                            className="flex items-center gap-2 flex-1 min-w-0 text-left" disabled={tabProds.length === 0}>
+                            <span className="text-[12px] font-semibold text-white/80 truncate">{tb.label}</span>
+                            <span className="text-[10px]" style={{ color:"rgba(255,255,255,0.25)" }}>
+                              {tabProds.length > 0 ? `${tabProds.length} prod.` : "—"}
+                            </span>
+                            {tabProds.length > 0 && (
+                              <ChevronDown size={13} style={{ color:"rgba(255,255,255,0.25)", transform: tOpen ? "rotate(180deg)" : "none", transition:"transform .15s" }}/>
+                            )}
+                          </button>
+                          <VisSwitch on={tVisible} busy={saving === tk}
+                            onClick={() => toggle(tk, !tVisible, tVisible ? `Pestaña "${tb.label}" oculta.` : `Pestaña "${tb.label}" visible.`)}
+                            label={`${tVisible ? "Ocultar" : "Mostrar"} pestaña ${tb.label}`}/>
+                        </div>
+                        {tOpen && tabProds.length > 0 && (
+                          <div className="px-3 pb-2 space-y-1">
+                            {tabProds.map(p => {
+                              const pk = productKey(g.slug, p.slug);
+                              const pv = visible(pk);
+                              return (
+                                <div key={p.slug} className="flex items-center gap-2 pl-3 py-1" style={{ opacity: pv ? 1 : 0.5 }}>
+                                  <span className="text-[11px] text-white/60 flex-1 min-w-0 truncate">{p.name}</span>
+                                  <VisSwitch on={pv} busy={saving === pk}
+                                    onClick={() => toggle(pk, !pv, pv ? `"${p.name}" oculto.` : `"${p.name}" visible.`)}
+                                    label={`${pv ? "Ocultar" : "Mostrar"} ${p.name}`}/>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           );
         })}

@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, useRouter } from "next/navigation";
 import {
   ChevronRight, ShoppingCart,
   Shield, Zap, Info, X, MessageCircle,
@@ -15,14 +15,17 @@ import { ALL_ROCKET_LEAGUE_PRODUCTS } from "@/data/rocketleague";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
 import { usePreferences } from "@/context/PreferencesContext";
+import { useGameVisibility } from "@/hooks/useGameVisibility";
 import { useT, useBadge } from "@/i18n";
 
+const SLUG = "rocket-league";
+
 // ── Tabs ────────────────────────────────────────────────────────
-function getTabs(lang: string) {
+function getTabs(lang: string, tabVisible: (id: string) => boolean) {
   return [
     { id:"creditos",  label: lang === "EN" ? "Credits"  : "Créditos" },
     { id:"paquetes",  label: lang === "EN" ? "Bundles"  : "Paquetes" },
-  ];
+  ].filter(t => tabVisible(t.id));
 }
 
 // ── Badge classes ────────────────────────────────────────────────
@@ -256,7 +259,12 @@ export default function RocketLeagueProductClient({ slug }: { slug: string }) {
   const { formatPrice, lang } = usePreferences();
   const t = useT();
   const badge = useBadge();
-  const TABS = getTabs(lang);
+  const router = useRouter();
+
+  const vis    = useGameVisibility(SLUG);
+  const TABS   = getTabs(lang, vis.tabVisible);
+  const hidden = !vis.productVisible(p.slug) || !vis.tabVisible(p.tab ?? "creditos");
+  useEffect(() => { if (hidden) router.replace(`/games/${SLUG}`); }, [hidden, router]);
 
   const displayName = lang==="EN" ? (p.nameEN || p.name) ?? (p.amountEN || p.amount) ?? "" : p.name ?? p.amount ?? "";
 

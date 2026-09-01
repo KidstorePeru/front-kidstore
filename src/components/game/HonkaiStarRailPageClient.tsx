@@ -9,7 +9,10 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { ESQUIRLAS, PASES, HSRProduct } from "@/data/honkaistarrail";
 import { usePreferences } from "@/context/PreferencesContext";
+import { useGameVisibility } from "@/hooks/useGameVisibility";
 import { useT, useBadge } from "@/i18n";
+
+const SLUG = "honkai-star-rail";
 
 /*
   HSR brand: deep violet / star purple
@@ -212,12 +215,16 @@ function HSRPageInner() {
 
   useEffect(() => { if (tabParam) setActiveTab(tabParam); }, [tabParam]);
 
+  const vis      = useGameVisibility(SLUG);
+  const tabDefs  = (lang === "ES" ? TABS_ES : TABS_EN).filter(tb => vis.tabVisible(tb.id));
+  const shownTab = tabDefs.some(tb => tb.id === activeTab) ? activeTab : (tabDefs[0]?.id ?? activeTab);
+
   function handleTab(id: string) {
     setActiveTab(id);
     router.push(`/games/honkai-star-rail?tab=${id}`, { scroll: false });
   }
 
-  const products = activeTab === "pases" ? PASES : ESQUIRLAS;
+  const products = vis.filterProducts(shownTab === "pases" ? PASES : ESQUIRLAS);
 
   return (
     <>
@@ -267,17 +274,18 @@ function HSRPageInner() {
         </section>
 
         {/* Tabs */}
+        {tabDefs.length > 1 && (
         <div className="sticky top-[66px] md:top-[107px] z-40 w-full"
           style={{ background:"var(--navbar-bg)", backdropFilter:"blur(16px)", WebkitBackdropFilter:"blur(16px)", borderBottom:"1px solid var(--border)" }}>
           <div className="max-w-[1400px] mx-auto px-4 lg:px-8">
             <div className="flex justify-center overflow-x-auto" style={{ scrollbarWidth:"none" }}>
               <div className="flex">
-                {(lang === "ES" ? TABS_ES : TABS_EN).map(tab => (
+                {tabDefs.map(tab => (
                   <button key={tab.id} onClick={() => handleTab(tab.id)}
                     className="flex-shrink-0 px-6 py-4 text-sm font-semibold transition-all relative whitespace-nowrap"
-                    style={{ color: activeTab === tab.id ? "var(--hsr-text)" : "var(--text-muted)" }}>
+                    style={{ color: shownTab === tab.id ? "var(--hsr-text)" : "var(--text-muted)" }}>
                     {tab.label}
-                    {activeTab === tab.id && (
+                    {shownTab === tab.id && (
                       <div className="absolute bottom-0 left-3 right-3 h-[2px] rounded-full"
                         style={{ background:"var(--hsr-text)" }}/>
                     )}
@@ -287,6 +295,7 @@ function HSRPageInner() {
             </div>
           </div>
         </div>
+        )}
 
         <div className="max-w-[1400px] mx-auto px-4 lg:px-8 py-10">
 
@@ -305,8 +314,8 @@ function HSRPageInner() {
             {products.map(p => <ProductCard key={p.id} p={p}/>)}
           </div>
 
-          {activeTab === "esquirla" && <InfoEsquirla/>}
-          {activeTab === "pases"    && <InfoPases/>}
+          {shownTab === "esquirla" && <InfoEsquirla/>}
+          {shownTab === "pases"    && <InfoPases/>}
         </div>
       </main>
       <Footer/>

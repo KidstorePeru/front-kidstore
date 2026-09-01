@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, useRouter } from "next/navigation";
 import {
   ChevronRight, ShoppingCart, AlertTriangle, Clock,
   Shield, Zap, MessageCircle,
@@ -16,19 +16,20 @@ import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
 import { usePreferences } from "@/context/PreferencesContext";
 import { useT, useBadge } from "@/i18n";
-import { isVisible } from "@/config/visibility";
+import { useGameVisibility } from "@/hooks/useGameVisibility";
 
+const SLUG       = "roblox";
 const BRAND      = "#EF4444";
 const BRAND_DARK = "#DC2626";
 
-function getTabs(lang: string) {
+function getTabs(lang: string, tabVisible: (id: string) => boolean) {
   const tabs = [
-    { id:"cuenta",   label: lang === "EN" ? "👤 Via Account" : "👤 Vía Cuenta", show: true },
-    { id:"plus",     label: "✨ Roblox Plus",                                   show: isVisible("roblox:plus-tab") },
-    { id:"grupo",    label: lang === "EN" ? "👥 Via Group"   : "👥 Vía Grupo",  show: true },
-    { id:"gamepass", label: "🎮 Game Pass",                                     show: isVisible("roblox:gamepass-tab") },
+    { id:"cuenta",   label: lang === "EN" ? "👤 Via Account" : "👤 Vía Cuenta" },
+    { id:"plus",     label: "✨ Roblox Plus"                                   },
+    { id:"grupo",    label: lang === "EN" ? "👥 Via Group"   : "👥 Vía Grupo"  },
+    { id:"gamepass", label: "🎮 Game Pass"                                     },
   ];
-  return tabs.filter(t => t.show).map(({ id, label }) => ({ id, label }));
+  return tabs.filter(t => tabVisible(t.id));
 }
 
 const badgeStyle: Record<string, string> = {
@@ -164,10 +165,15 @@ export default function RobloxProductClient({ slug }: { slug: string }) {
   const { formatPrice, lang } = usePreferences();
   const t = useT();
   const badge = useBadge();
+  const router = useRouter();
   const p           = product;
   const discountPct = p.priceOld > p.price ? Math.round((1 - p.price / p.priceOld) * 100) : 0;
   const isGrupo     = p.productType === "grupo";
-  const TABS        = getTabs(lang);
+
+  const vis    = useGameVisibility(SLUG);
+  const TABS   = getTabs(lang, vis.tabVisible);
+  const hidden = !vis.productVisible(p.slug) || !vis.tabVisible(p.tab);
+  useEffect(() => { if (hidden) router.replace(`/games/${SLUG}`); }, [hidden, router]);
 
   const [whatsapp,  setWhatsapp]  = useState(false);
   const [addedCart, setAddedCart] = useState(false);
