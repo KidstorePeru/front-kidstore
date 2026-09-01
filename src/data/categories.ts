@@ -6,5 +6,6 @@ export const categories: Category[] = [
   { id: "3", name: "RPG",           nameEN: "RPG",            slug: "rpg",           icon: "🧙",  color: "#F59E0B" },
   { id: "4", name: "Battle Royale", nameEN: "Battle Royale",  slug: "battle-royale", icon: "🪖",  color: "#10B981" },
   { id: "5", name: "Suscripciones", nameEN: "Subscriptions",  slug: "suscripciones", icon: "⭐",  color: "#EC4899" },
-  { id: "6", name: "Otros",         nameEN: "Others",         slug: "otros",         icon: "🎮",  color: "#3B82F6" },
+  { id: "6", name: "Estrategia",    nameEN: "Strategy",       slug: "estrategia",    icon: "♟️",  color: "#0EA5E9" },
+  { id: "7", name: "Otros",         nameEN: "Others",         slug: "otros",         icon: "🎮",  color: "#3B82F6" },
 ];

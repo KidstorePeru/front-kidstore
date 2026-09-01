@@ -49,3 +49,15 @@ export function useBadge() {
   const { lang } = usePreferences();
   return (badge: string) => lang === "EN" ? (BADGE_EN[badge] ?? badge) : badge;
 }
+
+/** Traducción de las etiquetas de categoría que se muestran en las tarjetas de juego. */
+const TAG_EN: Record<string, string> = {
+  "Estrategia":  "Strategy",
+  "Suscripción": "Subscription",
+  "Nuevo":       "New",
+};
+
+export function useTag() {
+  const { lang } = usePreferences();
+  return (tag: string) => lang === "EN" ? (TAG_EN[tag] ?? tag) : tag;
+}

@@ -1,4 +1,71 @@
-import { Game } from "@/types";
+import { Game, Product } from "@/types";
+
+import { ALL_FORTNITE_PRODUCTS }      from "./fortnite";
+import { ALL_WILDRIFT_PRODUCTS }      from "./wildrift";
+import { ALL_MARVEL_RIVALS_PRODUCTS } from "./marvelrivals";
+import { ALL_POKEMON_GO_PRODUCTS }    from "./pokemongo";
+import { ALL_ROBLOX_PRODUCTS }        from "./roblox";
+import { ALL_GENSHIN_PRODUCTS }       from "./genshinimpact";
+import { ALL_ZZZ_PRODUCTS }           from "./zenlesszonezero";
+import { ALL_HSR_PRODUCTS }           from "./honkaistarrail";
+import { ALL_WW_PRODUCTS }            from "./wutheringwaves";
+import { ALL_HOK_PRODUCTS }           from "./honorofkings";
+import { ALL_TFT_PRODUCTS }           from "./tft";
+import { ALL_DISCORD_PRODUCTS }       from "./discord";
+import { ALL_ROCKET_LEAGUE_PRODUCTS } from "./rocketleague";
+
+/**
+ * La fuente de verdad de cada juego es su catálogo propio en
+ * `src/data/<juego>.ts`. Aquí solo derivamos un resumen ligero que usan las
+ * tarjetas de juego (precio "desde", nº de opciones) y la sección de ofertas
+ * (% de descuento). Así el catálogo del home nunca se desincroniza de los
+ * precios reales.
+ */
+interface RawProduct {
+  id:              string;
+  name?:           string;
+  nameEN?:         string;
+  description?:    string;
+  descriptionEN?:  string;
+  amount?:         string;
+  amountEN?:       string;
+  badge?:          string;
+  img?:            string;
+  price?:          number;
+  priceOld?:       number;
+  priceCuenta?:    number;
+  priceOldCuenta?: number;
+  priceUID?:       number;
+  priceOldUID?:    number;
+}
+
+function summarize(list: readonly RawProduct[]): Product[] {
+  return list.map((p) => {
+    const priceCandidates = [p.price, p.priceCuenta, p.priceUID].filter(
+      (n): n is number => typeof n === "number" && n > 0,
+    );
+    const price    = priceCandidates.length ? Math.min(...priceCandidates) : 0;
+    const priceOld = p.priceOld ?? p.priceOldCuenta ?? p.priceOldUID;
+    const discount =
+      priceOld && priceOld > price ? Math.round((1 - price / priceOld) * 100) : undefined;
+    const label = p.name ?? p.amount ?? p.nameEN ?? p.id;
+    return {
+      id:            p.id,
+      name:          label,
+      nameEN:        p.nameEN ?? p.amountEN ?? label,
+      description:   p.description ?? "",
+      descriptionEN: p.descriptionEN ?? p.description ?? "",
+      price,
+      priceOld,
+      currency:      "PEN",
+      amount:        p.amount ?? label,
+      amountEN:      p.amountEN ?? p.amount ?? label,
+      badge:         p.badge || undefined,
+      discount,
+      image:         p.img,
+    };
+  });
+}
 
 export const games: Game[] = [
   {
@@ -6,152 +73,94 @@ export const games: Game[] = [
     image: "/games/fortnite.jpg", banner: "/games/fortnite.jpg",
     category: "battle-royale", tags: ["Battle Royale", "Popular"],
     popular: true, featured: true,
-    products: [
-      { id:"fn1", name:"800 V-Bucks",    nameEN:"800 V-Bucks",    description:"Moneda oficial de Fortnite", descriptionEN:"Official Fortnite currency", price:20.90,  priceOld:35.00,  currency:"PEN", amount:"800 V-Bucks" },
-      { id:"fn2", name:"2.800 V-Bucks",  nameEN:"2,800 V-Bucks",  description:"Moneda oficial de Fortnite", descriptionEN:"Official Fortnite currency", price:74.36,  priceOld:88.00,  currency:"PEN", amount:"2,800 V-Bucks", badge:"Popular" },
-      { id:"fn3", name:"5.000 V-Bucks",  nameEN:"5,000 V-Bucks",  description:"Moneda oficial de Fortnite", descriptionEN:"Official Fortnite currency", price:119.00, priceOld:140.00, currency:"PEN", amount:"5,000 V-Bucks", badge:"Oferta", discount:10 },
-      { id:"fn4", name:"13.500 V-Bucks", nameEN:"13,500 V-Bucks", description:"Moneda oficial de Fortnite", descriptionEN:"Official Fortnite currency", price:297.56, priceOld:350.00, currency:"PEN", amount:"13,500 V-Bucks", badge:"Mejor valor" },
-    ],
+    products: summarize(ALL_FORTNITE_PRODUCTS),
   },
   {
     id: "2", name: "Wild Rift", slug: "wild-rift",
     image: "/games/wild-rift.jpg", banner: "/games/wild-rift.jpg",
     category: "moba", tags: ["MOBA", "Popular"],
     popular: true, featured: true,
-    products: [
-      { id:"wr1", name:"425 Wild Cores",         nameEN:"425 Wild Cores",         description:"Moneda oficial de Wild Rift", descriptionEN:"Official Wild Rift currency", price:14.90, priceOld:22.00, currency:"PEN", amount:"425" },
-      { id:"wr2", name:"1.165 Monedas Salvajes", nameEN:"1,165 Wild Cores",       description:"Moneda oficial de Wild Rift", descriptionEN:"Official Wild Rift currency", price:37.16, priceOld:44.00, currency:"PEN", amount:"1,165", badge:"Popular" },
-      { id:"wr3", name:"3.250 Monedas Salvajes", nameEN:"3,250 Wild Cores",       description:"Moneda oficial de Wild Rift", descriptionEN:"Official Wild Rift currency", price:92.96, priceOld:110.00, currency:"PEN", amount:"3,250", badge:"Oferta", discount:8 },
-    ],
+    products: summarize(ALL_WILDRIFT_PRODUCTS),
   },
   {
     id: "3", name: "Marvel Rivals", slug: "marvel-rivals",
     image: "/games/marvel-rivals.jpg", banner: "/games/marvel-rivals.jpg",
     category: "shooter", tags: ["Shooter", "Nuevo"],
     popular: true, featured: true,
-    offer: { label:"20% OFF", labelEN:"20% OFF", description:"Descuento especial esta semana", descriptionEN:"Special discount this week" },
-    products: [
-      { id:"mr1", name:"100 Lattices",  nameEN:"100 Lattices",  description:"Moneda oficial de Marvel Rivals", descriptionEN:"Official Marvel Rivals currency", price:4.90,  priceOld:22.00, currency:"PEN", amount:"100" },
-      { id:"mr2", name:"1.300 Lattice", nameEN:"1,300 Lattice", description:"Moneda oficial de Marvel Rivals", descriptionEN:"Official Marvel Rivals currency", price:37.16, priceOld:44.00, currency:"PEN", amount:"1,300", badge:"Popular" },
-      { id:"mr3", name:"3.280 Lattice", nameEN:"3,280 Lattice", description:"Moneda oficial de Marvel Rivals", descriptionEN:"Official Marvel Rivals currency", price:92.96, priceOld:110.00, currency:"PEN", amount:"3,280", badge:"Oferta", discount:5 },
-    ],
+    offer: { label: "Oferta", labelEN: "Deal", description: "Descuento especial esta semana", descriptionEN: "Special discount this week" },
+    products: summarize(ALL_MARVEL_RIVALS_PRODUCTS),
   },
   {
-    id: "4", name: "Pokemon GO", slug: "pokemon-go",
+    id: "4", name: "Pokémon GO", slug: "pokemon-go",
     image: "/games/pokemon-go.jpg", banner: "/games/pokemon-go.jpg",
     category: "rpg", tags: ["RPG", "Popular"],
     popular: true,
-    products: [
-      { id:"pg1", name:"100 PokéCoins",     nameEN:"100 PokéCoins",     description:"Moneda oficial de Pokémon GO", descriptionEN:"Official Pokémon GO currency", price:2.90,  priceOld:4.50,  currency:"PEN", amount:"100" },
-      { id:"pg2", name:"550 PokéMonedas",   nameEN:"550 PokéCoins",     description:"Moneda oficial de Pokémon GO", descriptionEN:"Official Pokémon GO currency", price:18.56, priceOld:22.00, currency:"PEN", amount:"550",   badge:"Popular" },
-      { id:"pg3", name:"1.200 PokéMonedas", nameEN:"1,200 PokéCoins",   description:"Moneda oficial de Pokémon GO", descriptionEN:"Official Pokémon GO currency", price:37.16, priceOld:44.00, currency:"PEN", amount:"1,200", badge:"Oferta", discount:8 },
-      { id:"pg4", name:"2.500 PokéMonedas", nameEN:"2,500 PokéCoins",   description:"Moneda oficial de Pokémon GO", descriptionEN:"Official Pokémon GO currency", price:74.36, priceOld:88.00, currency:"PEN", amount:"2,500" },
-    ],
+    products: summarize(ALL_POKEMON_GO_PRODUCTS),
   },
   {
     id: "5", name: "Roblox", slug: "roblox",
     image: "/games/roblox.jpg", banner: "/games/roblox.jpg",
     category: "otros", tags: ["Popular"],
     popular: true,
-    offer: { label:"10% OFF", labelEN:"10% OFF", description:"Oferta en paquetes grandes", descriptionEN:"Discount on large packages" },
-    products: [
-      { id:"rb1", name:"80 Robux",    nameEN:"80 Robux",    description:"Moneda oficial de Roblox", descriptionEN:"Official Roblox currency", price:6.90,   priceOld:22.00,  currency:"PEN", amount:"80" },
-      { id:"rb2", name:"800 Robux",   nameEN:"800 Robux",   description:"Moneda oficial de Roblox", descriptionEN:"Official Roblox currency", price:37.16,  priceOld:44.00,  currency:"PEN", amount:"800",   badge:"Popular" },
-      { id:"rb3", name:"1.700 Robux", nameEN:"1,700 Robux", description:"Moneda oficial de Roblox", descriptionEN:"Official Roblox currency", price:74.36,  priceOld:88.00,  currency:"PEN", amount:"1,700", badge:"Oferta", discount:10 },
-      { id:"rb4", name:"4.500 Robux", nameEN:"4,500 Robux", description:"Moneda oficial de Roblox", descriptionEN:"Official Roblox currency", price:185.96, priceOld:220.00, currency:"PEN", amount:"4,500", badge:"Mejor valor" },
-    ],
+    offer: { label: "Oferta", labelEN: "Deal", description: "Descuento en paquetes grandes", descriptionEN: "Discount on large packages" },
+    products: summarize(ALL_ROBLOX_PRODUCTS),
   },
   {
     id: "6", name: "Genshin Impact", slug: "genshin-impact",
     image: "/games/genshin-impact.jpg", banner: "/games/genshin-impact.jpg",
     category: "rpg", tags: ["RPG", "Popular"],
     popular: true, featured: true,
-    offer: { label:"20% OFF", labelEN:"20% OFF", description:"Descuento en Cristales Genesis", descriptionEN:"Discount on Genesis Crystals" },
-    products: [
-      { id:"gi1", name:"60 Cristales",  nameEN:"60 Crystals",   description:"Cristales Genesis", descriptionEN:"Genesis Crystals", price:3.99,   priceOld:4.50,   currency:"PEN", amount:"60" },
-      { id:"gi2", name:"330 Gemas",     nameEN:"330 Gems",      description:"Cristales Genesis", descriptionEN:"Genesis Crystals", price:18.56,  priceOld:22.00,  currency:"PEN", amount:"330",   badge:"Popular" },
-      { id:"gi3", name:"980 Gemas",     nameEN:"980 Gems",      description:"Cristales Genesis", descriptionEN:"Genesis Crystals", price:55.76,  priceOld:66.00,  currency:"PEN", amount:"980",   badge:"Oferta", discount:5 },
-      { id:"gi4", name:"1.980 Gemas",   nameEN:"1,980 Gems",    description:"Cristales Genesis", descriptionEN:"Genesis Crystals", price:111.56, priceOld:132.00, currency:"PEN", amount:"1,980" },
-      { id:"gi5", name:"3.280 Gemas",   nameEN:"3,280 Gems",    description:"Cristales Genesis", descriptionEN:"Genesis Crystals", price:185.96, priceOld:220.00, currency:"PEN", amount:"3,280", badge:"Mejor valor", discount:8 },
-    ],
+    offer: { label: "Oferta", labelEN: "Deal", description: "Descuento en Cristales de Génesis", descriptionEN: "Discount on Genesis Crystals" },
+    products: summarize(ALL_GENSHIN_PRODUCTS),
   },
   {
     id: "7", name: "Zenless Zone Zero", slug: "zenless-zone-zero",
     image: "/games/zenless-zone-zero.jpg", banner: "/games/zenless-zone-zero.jpg",
     category: "rpg", tags: ["RPG", "Nuevo"],
     popular: true,
-    products: [
-      { id:"zz1", name:"60 Fotogramas",  nameEN:"60 Monochrome",  description:"Moneda oficial de ZZZ", descriptionEN:"Official ZZZ currency", price:3.99,  priceOld:4.50,  currency:"PEN", amount:"60" },
-      { id:"zz2", name:"330 Monochrome", nameEN:"330 Monochrome", description:"Moneda oficial de ZZZ", descriptionEN:"Official ZZZ currency", price:18.56, priceOld:22.00, currency:"PEN", amount:"330", badge:"Popular" },
-      { id:"zz3", name:"980 Monochrome", nameEN:"980 Monochrome", description:"Moneda oficial de ZZZ", descriptionEN:"Official ZZZ currency", price:55.76, priceOld:66.00, currency:"PEN", amount:"980", badge:"Oferta", discount:5 },
-    ],
+    products: summarize(ALL_ZZZ_PRODUCTS),
   },
   {
-    id: "8", name: "Honkai Star Rail", slug: "honkai-star-rail",
+    id: "8", name: "Honkai: Star Rail", slug: "honkai-star-rail",
     image: "/games/honkai-star-rail.jpg", banner: "/games/honkai-star-rail.jpg",
     category: "rpg", tags: ["RPG"],
     popular: false,
-    products: [
-      { id:"hs1", name:"60 Esquirlas Oníricas",  nameEN:"60 Oneiric Shards",  description:"Esquirlas Oníricas", descriptionEN:"Oneiric Shards", price:3.50,  priceOld:4.50,  currency:"PEN", amount:"60" },
-      { id:"hs2", name:"300 Esquirlas Oníricas", nameEN:"300 Oneiric Shards", description:"Esquirlas Oníricas", descriptionEN:"Oneiric Shards", price:17.99, priceOld:22.99, currency:"PEN", amount:"300", badge:"Popular" },
-      { id:"hs3", name:"980 Esquirlas Oníricas", nameEN:"980 Oneiric Shards", description:"Esquirlas Oníricas", descriptionEN:"Oneiric Shards", price:48.99, priceOld:62.99, currency:"PEN", amount:"980", badge:"Oferta", discount:5 },
-    ],
+    products: summarize(ALL_HSR_PRODUCTS),
   },
   {
     id: "9", name: "Wuthering Waves", slug: "wuthering-waves",
     image: "/games/wuthering-waves.jpg", banner: "/games/wuthering-waves.jpg",
     category: "rpg", tags: ["RPG"],
     popular: false,
-    products: [
-      { id:"ww1", name:"60 Lunita",     nameEN:"60 Lunite",      description:"Lunita de Wuthering Waves", descriptionEN:"Wuthering Waves Lunite", price:3.99,  priceOld:4.50,  currency:"PEN", amount:"60" },
-      { id:"ww2", name:"330 Cristales", nameEN:"330 Crystals",   description:"Cristales Lunares",         descriptionEN:"Lunar Crystals",         price:18.56, priceOld:22.00, currency:"PEN", amount:"330", badge:"Popular" },
-      { id:"ww3", name:"980 Cristales", nameEN:"980 Crystals",   description:"Cristales Lunares",         descriptionEN:"Lunar Crystals",         price:55.76, priceOld:66.00, currency:"PEN", amount:"980" },
-    ],
+    products: summarize(ALL_WW_PRODUCTS),
   },
   {
     id: "10", name: "Honor of Kings", slug: "honor-of-kings",
     image: "/games/honor-of-kings.jpg", banner: "/games/honor-of-kings.jpg",
     category: "moba", tags: ["MOBA"],
     popular: false,
-    products: [
-      { id:"hk1", name:"80 Tokens",  nameEN:"80 Tokens",  description:"Tokens de Honor of Kings", descriptionEN:"Honor of Kings Tokens", price:3.99,  priceOld:4.50,  currency:"PEN", amount:"80" },
-      { id:"hk2", name:"500 Tokens", nameEN:"500 Tokens", description:"Tokens de Honor of Kings", descriptionEN:"Honor of Kings Tokens", price:18.56, priceOld:22.00, currency:"PEN", amount:"500", badge:"Popular" },
-    ],
+    products: summarize(ALL_HOK_PRODUCTS),
   },
   {
     id: "11", name: "Teamfight Tactics", slug: "team-fight-tactics",
     image: "/games/team-fight-tactics.jpg", banner: "/games/team-fight-tactics.jpg",
     category: "estrategia", tags: ["Estrategia"],
     popular: false,
-    products: [
-      { id:"tft1", name:"575 TFT Coins",   nameEN:"575 TFT Coins",   description:"Moneda oficial de Teamfight Tactics", descriptionEN:"Official Teamfight Tactics currency", price:12.90, priceOld:14.00, currency:"PEN", amount:"575" },
-      { id:"tft2", name:"900 TFT Coins",   nameEN:"900 TFT Coins",   description:"Moneda oficial de Teamfight Tactics", descriptionEN:"Official Teamfight Tactics currency", price:26.00, priceOld:32.00, currency:"PEN", amount:"900",   badge:"Popular" },
-      { id:"tft3", name:"1.880 TFT Coins", nameEN:"1,880 TFT Coins", description:"Moneda oficial de Teamfight Tactics", descriptionEN:"Official Teamfight Tactics currency", price:52.04, priceOld:62.00, currency:"PEN", amount:"1,880", badge:"Oferta", discount:6 },
-      { id:"tft4", name:"3.600 TFT Coins", nameEN:"3,600 TFT Coins", description:"Moneda oficial de Teamfight Tactics", descriptionEN:"Official Teamfight Tactics currency", price:92.96, priceOld:110.00, currency:"PEN", amount:"3,600", badge:"Mejor valor" },
-    ],
+    products: summarize(ALL_TFT_PRODUCTS),
   },
   {
     id: "12", name: "Discord", slug: "discord",
     image: "/games/discord.jpg", banner: "/games/discord.jpg",
-    category: "suscripciones", tags: ["Suscripcion"],
+    category: "suscripciones", tags: ["Suscripción"],
     popular: false,
-    products: [
-      { id:"dc1", name:"Discord Nitro 3 meses",  nameEN:"Discord Nitro 3 months",  description:"Suscripción Discord Nitro", descriptionEN:"Discord Nitro subscription", price:9.99,   priceOld:44.00,  currency:"PEN", amount:"3 meses",  badge:"Popular" },
-      { id:"dc2", name:"Discord Nitro 3 meses",  nameEN:"Discord Nitro 3 months",  description:"Suscripción Discord Nitro", descriptionEN:"Discord Nitro subscription", price:92.96,  priceOld:110.00, currency:"PEN", amount:"3 meses",  badge:"Oferta",      discount:17 },
-      { id:"dc3", name:"Discord Nitro 12 meses", nameEN:"Discord Nitro 12 months", description:"Suscripción Discord Nitro", descriptionEN:"Discord Nitro subscription", price:334.76, priceOld:395.00, currency:"PEN", amount:"12 meses", badge:"Mejor valor", discount:25 },
-    ],
+    products: summarize(ALL_DISCORD_PRODUCTS),
   },
   {
     id: "13", name: "Rocket League", slug: "rocket-league",
     image: "/games/rocket-league.jpg", banner: "/games/rocket-league.jpg",
     category: "otros", tags: ["Popular"],
     popular: true,
-    offer: { label:"25% OFF", labelEN:"25% OFF", description:"Descuento en créditos", descriptionEN:"Discount on credits" },
-    products: [
-      { id:"rl1", name:"500 RL Créditos",   nameEN:"500 RL Credits",   description:"Créditos de Rocket League", descriptionEN:"Rocket League Credits", price:11.90,  priceOld:14.99,  currency:"PEN", amount:"500" },
-      { id:"rl2", name:"1.100 RL Créditos", nameEN:"1,100 RL Credits", description:"Créditos de Rocket League", descriptionEN:"Rocket League Credits", price:23.90,  priceOld:28.99,  currency:"PEN", amount:"1,100", badge:"Popular" },
-      { id:"rl3", name:"3.000 RL Créditos", nameEN:"3,000 RL Credits", description:"Créditos de Rocket League", descriptionEN:"Rocket League Credits", price:55.90,  priceOld:72.99,  currency:"PEN", amount:"3,000", badge:"Oferta", discount:23 },
-      { id:"rl4", name:"6.500 RL Créditos", nameEN:"6,500 RL Credits", description:"Créditos de Rocket League", descriptionEN:"Rocket League Credits", price:109.90, priceOld:142.99, currency:"PEN", amount:"6,500", badge:"Mejor valor" },
-    ],
+    offer: { label: "Oferta", labelEN: "Deal", description: "Descuento en créditos", descriptionEN: "Discount on credits" },
+    products: summarize(ALL_ROCKET_LEAGUE_PRODUCTS),
   },
 ];

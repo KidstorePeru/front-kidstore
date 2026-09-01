@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Search, X, SlidersHorizontal } from "lucide-react";
 import { usePreferences } from "@/context/PreferencesContext";
-import { useT } from "@/i18n";
+import { useT, useTag } from "@/i18n";
 import { games, categories } from "@/data";
 
 export default function SearchBar() {
@@ -14,6 +14,7 @@ export default function SearchBar() {
   const [catFilter, setCatFilter] = useState("all");
   const { formatPrice, lang }     = usePreferences();
   const t                         = useT();
+  const tag                       = useTag();
   const ref = useRef<HTMLDivElement>(null);
 
   // Close on outside click
@@ -156,7 +157,7 @@ export default function SearchBar() {
                         </div>
                         {game.tags?.[0] && (
                           <span className="text-[10px] px-2 py-0.5 rounded-full font-semibold flex-shrink-0 badge-popular">
-                            {game.tags[0]}
+                            {tag(game.tags[0])}
                           </span>
                         )}
                       </Link>

@@ -41,21 +41,10 @@ export const es = {
     options:      "opciones",
   },
 
-  // ── GamePageClient ────────────────────────────────────
+  // ── Breadcrumbs de juego ──────────────────────────────
   gamePage: {
     home:              "Inicio",
     games:             "Juegos",
-    step1:             "1. Selecciona tu región / servidor",
-    step2:             "2. Elige tu paquete",
-    from:              "Desde",
-    addToCart:         "Agregar al carrito",
-    added:             "¡Agregado!",
-    instantDelivery:   "Entrega instantánea",
-    securePayment:     "100% pago seguro",
-    guarantee:         "Garantía de devolución",
-    reviews:           "Reseñas",
-    region:            "Región",
-    format:            "Formato",
   },
 
   // ── Product shared ────────────────────────────────────

@@ -43,21 +43,10 @@ export const en: Translations = {
     options:      "options",
   },
 
-  // ── GamePageClient ────────────────────────────────────
+  // ── Game breadcrumbs ──────────────────────────────────
   gamePage: {
     home:              "Home",
     games:             "Games",
-    step1:             "1. Select your region / server",
-    step2:             "2. Choose your package",
-    from:              "From",
-    addToCart:         "Add to cart",
-    added:             "Added!",
-    instantDelivery:   "Instant delivery",
-    securePayment:     "100% secure payment",
-    guarantee:         "Money-back guarantee",
-    reviews:           "Reviews",
-    region:            "Region",
-    format:            "Format",
   },
 
   // ── Product shared ────────────────────────────────────

@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Game } from "@/types";
 import { usePreferences } from "@/context/PreferencesContext";
-import { useT } from "@/i18n";
+import { useT, useTag } from "@/i18n";
 
 interface GameCardProps {
   game: Game;
@@ -19,12 +19,14 @@ const tagStyles: Record<string, string> = {
   "MOBA":          "badge-popular",
   "RPG":           "badge-valor",
   "Shooter":       "badge-oferta",
-  "Suscripcion":   "badge-nuevo",
+  "Suscripción":   "badge-nuevo",
+  "Estrategia":    "badge-valor",
 };
 
 export default function GameCard({ game }: GameCardProps) {
   const { formatPrice, lang } = usePreferences();
   const t = useT();
+  const tag = useTag();
   const minPrice = useMemo(() => Math.min(...game.products.map((p) => p.price)), [game.products]);
   const firstTag = game.tags?.[0];
 
@@ -70,7 +72,7 @@ export default function GameCard({ game }: GameCardProps) {
                 tagStyles[firstTag] ?? "badge-popular"
               }`}
             >
-              {firstTag}
+              {tag(firstTag)}
             </span>
           )}
 
