@@ -340,8 +340,8 @@ export const en: Translations = {
   // ── Roblox ───────────────────────────────────────────────
   roblox: {
     gamingPlatform: "Gaming Platform",
-    heroSubtitle: "Via Account · Via Group · Game Pass",
-    rechargeMethodsCount: "3 recharge methods",
+    heroSubtitle: "Robux · Roblox Plus · Via Group",
+    rechargeMethodsCount: "Multiple recharge methods",
     youReceive: "You receive",
     deliveryTime: "Delivery time",
     deliveryTimeDesc: "Between 10 minutes and 7 hours maximum, depending on service availability.",

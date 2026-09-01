@@ -338,8 +338,8 @@ export const es = {
   // ── Roblox ───────────────────────────────────────────────
   roblox: {
     gamingPlatform:        "Plataforma Gaming",
-    heroSubtitle:          "Vía Cuenta · Vía Grupo · Game Pass",
-    rechargeMethodsCount:  "3 métodos de recarga",
+    heroSubtitle:          "Robux · Roblox Plus · Vía Grupo",
+    rechargeMethodsCount:  "Varios métodos de recarga",
     youReceive:            "Recibes",
     deliveryTime:          "Tiempo de entrega",
     deliveryTimeDesc:      "Entre 10 minutos y 7 horas máximo, dependiendo de la disponibilidad del servicio.",
