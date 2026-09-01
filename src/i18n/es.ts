@@ -332,6 +332,7 @@ export const es = {
   form: {
     required: "requerido",
     password: "Contraseña",
+    noPasswordNote: "No pongas tu contraseña aquí. Te la pediremos en privado por WhatsApp al procesar tu pedido.",
   },
 
   // ── Roblox ───────────────────────────────────────────────

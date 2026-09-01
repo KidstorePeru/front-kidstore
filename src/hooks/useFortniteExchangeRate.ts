@@ -1,8 +1,7 @@
 "use client";
-import { useState, useEffect } from "react";
 import { usePreferences } from "@/context/PreferencesContext";
 
-// Precio fijo base: 100 V-Bucks = S/ 1.50 PEN
+// Precio fijo base: 100 V-Bucks = S/ 1.30 PEN
 const PEN_PER_100_VBUCKS = 1.30;
 
 export function useFortniteExchangeRate() {

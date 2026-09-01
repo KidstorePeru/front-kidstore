@@ -6,7 +6,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
   ChevronRight, ShoppingCart, AlertTriangle,
-  Eye, EyeOff, Shield, Zap, MessageCircle,
+  Shield, Zap, MessageCircle,
   Check, Heart,
 } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
@@ -121,11 +121,9 @@ export default function PokemonGoProductClient({ slug }: { slug: string }) {
   const discountPct = Math.round((1 - p.price / p.priceOld) * 100);
 
   const [platform,    setPlatform]    = useState<string | null>(null);
-  const [showPass,    setShowPass]    = useState(false);
   const [whatsapp,    setWhatsapp]    = useState(false);
   const [addedCart,   setAddedCart]   = useState(false);
   const [fieldUser,   setFieldUser]   = useState("");
-  const [fieldPass,   setFieldPass]   = useState("");
   const [fieldGame,   setFieldGame]   = useState("");
   const [errors,      setErrors]      = useState<Record<string, boolean>>({});
 
@@ -138,7 +136,6 @@ export default function PokemonGoProductClient({ slug }: { slug: string }) {
     if (whatsapp) return true;
     const e: Record<string, boolean> = {};
     if (!fieldUser.trim())  e.user     = true;
-    if (!fieldPass.trim())  e.pass     = true;
     if (!fieldGame.trim())  e.gameName = true;
     if (!platform)          e.platform = true;
     setErrors(e);
@@ -148,7 +145,6 @@ export default function PokemonGoProductClient({ slug }: { slug: string }) {
   function buildOrderData() {
     return {
       user:     fieldUser  || undefined,
-      pass:     fieldPass  || undefined,
       gameName: fieldGame  || undefined,
       platform: platform   || undefined,
     };
@@ -343,28 +339,10 @@ export default function PokemonGoProductClient({ slug }: { slug: string }) {
                       onBlur={e  => (e.currentTarget.style.borderColor = errors.user ? "#EF4444" : "var(--border)")}/>
                   </div>
 
-                  {/* Contraseña */}
-                  <div>
-                    <label className="text-[11px] font-semibold uppercase tracking-wider mb-1.5 block"
-                      style={{ color: errors.pass ? "#EF4444" : "var(--text-subtle)" }}>
-                      {lang === "ES" ? "Contraseña" : "Password"}
-                      {errors.pass && <span className="normal-case font-normal"> — {lang === "ES" ? "requerido" : "required"}</span>}
-                    </label>
-                    <div className="relative">
-                      <input type={showPass ? "text" : "password"} placeholder="••••••••"
-                        value={fieldPass}
-                        onChange={e => { setFieldPass(e.target.value); setErrors(prev => ({ ...prev, pass:false })); }}
-                        className="w-full px-4 py-3 pr-11 rounded-xl text-sm outline-none transition-all"
-                        style={inputStyle(errors.pass)}
-                        onFocus={e => (e.currentTarget.style.borderColor = errors.pass ? "#EF4444" : BRAND_DARK)}
-                        onBlur={e  => (e.currentTarget.style.borderColor = errors.pass ? "#EF4444" : "var(--border)")}/>
-                      <button type="button" onClick={() => setShowPass(!showPass)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 hover:opacity-70"
-                        style={{ color:"var(--text-subtle)" }}>
-                        {showPass ? <EyeOff size={16}/> : <Eye size={16}/>}
-                      </button>
-                    </div>
-                  </div>
+                  {/* Seguridad: nunca se pide la contraseña en la web */}
+                  <p className="text-[11px] flex items-start gap-1.5 -mt-1" style={{ color:"var(--text-subtle)" }}>
+                    <span aria-hidden>🔒</span> {t.form.noPasswordNote}
+                  </p>
 
                   {/* Nombre en el juego */}
                   <div>

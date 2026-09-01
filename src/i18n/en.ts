@@ -334,6 +334,7 @@ export const en: Translations = {
   form: {
     required: "required",
     password: "Password",
+    noPasswordNote: "Don't enter your password here. We'll request it privately on WhatsApp when we process your order.",
   },
 
   // ── Roblox ───────────────────────────────────────────────

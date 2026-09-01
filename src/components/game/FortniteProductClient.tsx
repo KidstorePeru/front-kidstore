@@ -5,8 +5,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
-  ChevronRight, ShoppingCart, AlertTriangle, Clock,
-  Eye, EyeOff, Shield, Zap, Info, X, MessageCircle,
+  ChevronRight, ShoppingCart, ZoomIn,
+  Shield, Zap, X, MessageCircle, Lock,
   ExternalLink, Check, Users, Heart,
 } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
@@ -371,7 +371,7 @@ function DescBattlePass() {
 function MonthSelector({
   options, selected, onSelect,
 }: { options: ClubXboxOption[]; selected: number; onSelect: (o: ClubXboxOption) => void }) {
-  const { lang } = usePreferences();
+  const { lang, formatPrice } = usePreferences();
   return (
     <div>
       <label className="text-[11px] font-semibold uppercase tracking-wider mb-2 block"
@@ -395,10 +395,10 @@ function MonthSelector({
                 </span>
               )}
               <span className="text-sm font-bold mt-1" style={{ color: active ? "var(--brand-light)" : "var(--text)" }}>
-                {opt.label}
+                {lang === "EN" ? opt.labelEN : opt.label}
               </span>
               <span className="text-xs font-bold" style={{ color: active ? "var(--brand-light)" : "var(--text-muted)" }}>
-                S/ {opt.price.toFixed(2)}
+                {formatPrice(opt.price)}
               </span>
               <span className="text-[10px] px-1.5 py-0.5 rounded-full font-semibold"
                 style={{ background:"rgba(16,185,129,0.12)", color:"#4ADE80" }}>
@@ -433,7 +433,6 @@ export default function FortniteProductClient({ slug }: { slug: string }) {
 
   // ── State ─────────────────────────────────────────────────────
   const [whatsapp,     setWhatsapp]     = useState(false);
-  const [showPass,     setShowPass]     = useState(false);
   const [platform,     setPlatform]     = useState<string | null>(null);
   const [lightbox,     setLightbox]     = useState(false);
   const [addedCart,    setAddedCart]    = useState(false);
@@ -445,29 +444,30 @@ export default function FortniteProductClient({ slug }: { slug: string }) {
   const activePrice    = type === "club-xbox" ? (selectedOpt?.price    ?? p.price)    : p.price;
   const activePriceOld = type === "club-xbox" ? (selectedOpt?.priceOld ?? p.priceOld) : p.priceOld;
   const discountPct    = Math.round((1 - activePrice / activePriceOld) * 100);
+  const optLabel      = lang === "EN" ? (selectedOpt?.labelEN ?? selectedOpt?.label ?? "") : (selectedOpt?.label ?? "");
   const activeSubtitle = type === "club-xbox"
-    ? `Activación Vía Xbox — ${selectedOpt?.label ?? ""}`
+    ? `${lang === "EN" ? "Xbox activation" : "Activación Vía Xbox"} — ${optLabel}`
     : (lang==="EN" ? p.subtitleEN || p.subtitle : p.subtitle);
+  const cartName = type === "club-xbox"
+    ? `${displayName} ${optLabel} (Xbox)`.replace(/\s+/g, " ").trim()
+    : displayName;
   const alreadyInCart = isInCart(p.slug);
   const wished        = isWished(p.slug);
 
   // ── Form state ────────────────────────────────────────────────
   const [fieldUser,     setFieldUser]     = useState("");
-  const [fieldPass,     setFieldPass]     = useState("");
   const [fieldGameName, setFieldGameName] = useState("");
   const [errors,        setErrors]        = useState<Record<string, boolean>>({});
 
   // Qué campos son obligatorios según productType
   const needsCredentials = type !== "battle-pass";
-  const needsGameName    = true;
 
   function validate(): boolean {
     if (whatsapp) return true;
     const e: Record<string, boolean> = {};
-    if (needsCredentials && !fieldUser.trim())     e.user     = true;
-    if (needsCredentials && !fieldPass.trim())     e.pass     = true;
-    if (needsGameName    && !fieldGameName.trim()) e.gameName = true;
-    if (type !== "battle-pass" && !platform)       e.platform = true;
+    if (needsCredentials && !fieldUser.trim())  e.user     = true;
+    if (!fieldGameName.trim())                  e.gameName = true;
+    if (type !== "battle-pass" && !platform)    e.platform = true;
     setErrors(e);
     return Object.keys(e).length === 0;
   }
@@ -475,20 +475,16 @@ export default function FortniteProductClient({ slug }: { slug: string }) {
   function buildOrderData() {
     return {
       user:     fieldUser     || undefined,
-      pass:     fieldPass     || undefined,
       gameName: fieldGameName || undefined,
       platform: platform      || undefined,
       months:   selectedOpt?.months,
     };
   }
 
-  function handleAddToCart() {
-    if (!validate()) return;
+  function addToCart() {
     addItem({
       slug:      p.slug,
-      name:      type === "club-xbox"
-        ? `${displayName} ${selectedOpt?.label ?? ""} (Xbox)`
-        : displayName,
+      name:      cartName,
       img:       p.img,
       price:     activePrice,
       priceOld:  activePriceOld,
@@ -497,25 +493,18 @@ export default function FortniteProductClient({ slug }: { slug: string }) {
       tabLabel:  p.tabLabel,
       orderData: buildOrderData(),
     });
+  }
+
+  function handleAddToCart() {
+    if (!validate()) return;
+    addToCart();
     setAddedCart(true);
     setTimeout(() => setAddedCart(false), 2000);
   }
 
   function handleBuyNow() {
     if (!validate()) return;
-    addItem({
-      slug:      p.slug,
-      name:      type === "club-xbox"
-        ? `${displayName} ${selectedOpt?.label ?? ""} (Xbox)`
-        : displayName,
-      img:       p.img,
-      price:     activePrice,
-      priceOld:  activePriceOld,
-      region:    p.region,
-      format:    p.format,
-      tabLabel:  p.tabLabel,
-      orderData: buildOrderData(),
-    });
+    if (!alreadyInCart) addToCart();
     window.location.href = "/checkout";
   }
 
@@ -535,25 +524,25 @@ export default function FortniteProductClient({ slug }: { slug: string }) {
   }
 
   // ── Qué secciones mostrar según productType ───────────────────
-  const showTurkeyNotice  = p.needsTurkey;
-  const showFriendNotice  = type === "battle-pass";
-  const showSecurityNotice = type !== "battle-pass";       // Fix 2: ocultar en battle-pass
-  // Credenciales (usuario + contraseña): todos EXCEPTO battle-pass — Fix 1: incluye club-xbox
-  const showCredentials   = type !== "battle-pass";
+  const showTurkeyNotice   = p.needsTurkey;
+  const showFriendNotice   = type === "battle-pass";
+  const showSecurityNotice = type !== "battle-pass";
+  // Dato de cuenta (usuario/correo, SIN contraseña): todos excepto battle-pass
+  const showAccountField   = type !== "battle-pass";
   // Solo Xbox como plataforma para club-xbox
-  const platformsToShow   = type === "club-xbox"
+  const platformsToShow    = type === "club-xbox"
     ? ALL_PLATFORMS.filter(pl => pl.id === "xbox")
     : ALL_PLATFORMS;
   // Selector de meses solo para club-xbox
-  const showMonthSelector = type === "club-xbox";
+  const showMonthSelector  = type === "club-xbox";
 
   return (
     <>
       <Navbar />
       <main style={{ background:"var(--bg)", minHeight:"100vh" }}>
 
-        {/* ── Barra de tabs ─────────────────────────────────── */}
-        <div className="sticky top-[65px] z-40 w-full"
+        {/* ── Barra de tabs ── offset = alto del Navbar (66px móvil / 107px desktop) */}
+        <div className="sticky top-[66px] md:top-[107px] z-40 w-full"
           style={{ background:"var(--navbar-bg)", backdropFilter:"blur(16px)", WebkitBackdropFilter:"blur(16px)", borderBottom:"1px solid var(--border)" }}>
           <div className="max-w-[1400px] mx-auto px-4 lg:px-8">
             <div className="flex justify-center overflow-x-auto" style={{ scrollbarWidth:"none" }}>
@@ -597,6 +586,25 @@ export default function FortniteProductClient({ slug }: { slug: string }) {
                 style={{ aspectRatio:"4/3", background:"linear-gradient(135deg,rgba(124,58,237,0.18),rgba(15,10,40,0.7))", border:"1px solid var(--border)" }}>
                 <Image src={p.img} alt={displayName} fill className="object-contain p-8" priority/>
               </div>
+
+              {/* Aviso + referencia de región Turquía */}
+              {showTurkeyNotice && (
+                <div className="rounded-xl p-4" style={{ background:"rgba(245,158,11,0.07)", border:"1px solid rgba(245,158,11,0.25)" }}>
+                  <p className="text-xs font-bold mb-1" style={{ color:"#F59E0B" }}>
+                    🇹🇷 {lang === "EN" ? "Turkey region product" : "Producto de región Turquía"}
+                  </p>
+                  <p className="text-xs leading-relaxed mb-3" style={{ color:"var(--text-muted)" }}>
+                    {lang === "EN"
+                      ? "This top-up is done through the Turkey store region, which is why the price is lower. Our team handles the region change; you don't need to do anything."
+                      : "Esta recarga se hace a través de la región de tienda de Turquía, por eso el precio es más bajo. Nuestro equipo se encarga del cambio de región; tú no tienes que hacer nada."}
+                  </p>
+                  <button onClick={() => setLightbox(true)}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all hover:opacity-80"
+                    style={{ background:"rgba(245,158,11,0.12)", border:"1px solid rgba(245,158,11,0.3)", color:"#F59E0B" }}>
+                    <ZoomIn size={12}/> {lang === "EN" ? "See how it looks" : "Ver cómo se ve"}
+                  </button>
+                </div>
+              )}
               <div className="rounded-2xl p-6" style={{ background:"var(--card)", border:"1px solid var(--border)" }}>
                 {type === "battle-pass"   && <DescBattlePass />}
                 {type === "club-xbox"     && <DescClubXbox />}
@@ -642,8 +650,8 @@ export default function FortniteProductClient({ slug }: { slug: string }) {
 
               {/* Precio */}
               <div className="flex items-end gap-3">
-                <p className="text-3xl font-bold" style={{ color:"var(--brand-light)" }}>S/ {activePrice.toFixed(2)}</p>
-                <p className="text-base line-through mb-0.5" style={{ color:"var(--text-subtle)" }}>S/ {activePriceOld.toFixed(2)}</p>
+                <p className="text-3xl font-bold" style={{ color:"var(--brand-light)" }}>{formatPrice(activePrice)}</p>
+                <p className="text-base line-through mb-0.5" style={{ color:"var(--text-subtle)" }}>{formatPrice(activePriceOld)}</p>
                 <span className="mb-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold"
                   style={{ background:"rgba(16,185,129,0.15)", border:"1px solid rgba(16,185,129,0.3)", color:"#4ADE80" }}>
                   -{discountPct}%
@@ -666,11 +674,13 @@ export default function FortniteProductClient({ slug }: { slug: string }) {
               {/* Aviso seguridad — oculto en battle-pass */}
               {showSecurityNotice && (
                 <div className="rounded-xl p-4 flex gap-3"
-                  style={{ background:"rgba(239,68,68,0.07)", border:"1px solid rgba(239,68,68,0.2)" }}>
-                  <AlertTriangle size={15} className="text-red-400 flex-shrink-0 mt-0.5"/>
+                  style={{ background:"rgba(59,130,246,0.07)", border:"1px solid rgba(59,130,246,0.2)" }}>
+                  <Shield size={15} className="text-blue-400 flex-shrink-0 mt-0.5"/>
                   <div className="text-xs" style={{ color:"var(--text-muted)" }}>
-                    <p className="font-semibold text-red-400 mb-0.5">{lang === "EN" ? "Important notice" : "Aviso importante"}</p>
-                    <p>{lang === "EN" ? "We will need access to your account to complete the top-up. Your data is only used to complete the purchase within the game." : "Necesitaremos acceder a tu cuenta para realizar la recarga. Tus datos solo se utilizan para completar la compra dentro del juego."}</p>
+                    <p className="font-semibold mb-0.5" style={{ color:"#60A5FA" }}>{lang === "EN" ? "How the delivery works" : "Cómo funciona la entrega"}</p>
+                    <p>{lang === "EN"
+                      ? "This product needs access to your account. After payment we contact you on WhatsApp to coordinate access safely — we never ask for your password on this website."
+                      : "Este producto necesita acceso a tu cuenta. Tras el pago te contactamos por WhatsApp para coordinar el acceso de forma segura — nunca pedimos tu contraseña en la web."}</p>
                   </div>
                 </div>
               )}
@@ -694,57 +704,34 @@ export default function FortniteProductClient({ slug }: { slug: string }) {
               {!whatsapp ? (
                 <div className="space-y-3">
 
-                  {/* Credenciales: todos excepto battle-pass (incluye club-xbox) */}
-                  {showCredentials && (
-                    <>
-                      <div>
-                        <label className="text-[11px] font-semibold uppercase tracking-wider mb-1.5 block"
-                          style={{ color: errors.user ? "#EF4444" : "var(--text-subtle)" }}>
-                          {lang === "EN" ? "Username / Email / Phone" : "Usuario / Correo / Teléfono"} {errors.user && <span className="normal-case font-normal">— {lang === "EN" ? "required" : "requerido"}</span>}
-                        </label>
-                        <input
-                          type="text"
-                          placeholder="tu_usuario / correo@email.com"
-                          value={fieldUser}
-                          onChange={e => { setFieldUser(e.target.value); setErrors(prev => ({ ...prev, user: false })); }}
-                          className="w-full px-4 py-3 rounded-xl text-sm outline-none transition-all"
-                          style={{
-                            background:"var(--card)",
-                            border:`1px solid ${errors.user ? "#EF4444" : "var(--border)"}`,
-                            color:"var(--text)",
-                          }}
-                          onFocus={e => (e.currentTarget.style.borderColor = errors.user ? "#EF4444" : "#7C3AED")}
-                          onBlur={e  => (e.currentTarget.style.borderColor = errors.user ? "#EF4444" : "var(--border)")}
-                        />
-                      </div>
-                      <div>
-                        <label className="text-[11px] font-semibold uppercase tracking-wider mb-1.5 block"
-                          style={{ color: errors.pass ? "#EF4444" : "var(--text-subtle)" }}>
-                          {lang === "EN" ? "Password" : "Contraseña"} {errors.pass && <span className="normal-case font-normal">— {lang === "EN" ? "required" : "requerido"}</span>}
-                        </label>
-                        <div className="relative">
-                          <input
-                            type={showPass ? "text" : "password"}
-                            placeholder="••••••••"
-                            value={fieldPass}
-                            onChange={e => { setFieldPass(e.target.value); setErrors(prev => ({ ...prev, pass: false })); }}
-                            className="w-full px-4 py-3 pr-11 rounded-xl text-sm outline-none transition-all"
-                            style={{
-                              background:"var(--card)",
-                              border:`1px solid ${errors.pass ? "#EF4444" : "var(--border)"}`,
-                              color:"var(--text)",
-                            }}
-                            onFocus={e => (e.currentTarget.style.borderColor = errors.pass ? "#EF4444" : "#7C3AED")}
-                            onBlur={e  => (e.currentTarget.style.borderColor = errors.pass ? "#EF4444" : "var(--border)")}
-                          />
-                          <button type="button" onClick={() => setShowPass(!showPass)}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 hover:opacity-70"
-                            style={{ color:"var(--text-subtle)" }}>
-                            {showPass ? <EyeOff size={16}/> : <Eye size={16}/>}
-                          </button>
-                        </div>
-                      </div>
-                    </>
+                  {/* Dato de cuenta (SIN contraseña): todos excepto battle-pass */}
+                  {showAccountField && (
+                    <div>
+                      <label className="text-[11px] font-semibold uppercase tracking-wider mb-1.5 block"
+                        style={{ color: errors.user ? "#EF4444" : "var(--text-subtle)" }}>
+                        {lang === "EN" ? "Account username / Email" : "Usuario / Correo de la cuenta"} {errors.user && <span className="normal-case font-normal">— {lang === "EN" ? "required" : "requerido"}</span>}
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="tu_usuario / correo@email.com"
+                        value={fieldUser}
+                        onChange={e => { setFieldUser(e.target.value); setErrors(prev => ({ ...prev, user: false })); }}
+                        className="w-full px-4 py-3 rounded-xl text-sm outline-none transition-all"
+                        style={{
+                          background:"var(--card)",
+                          border:`1px solid ${errors.user ? "#EF4444" : "var(--border)"}`,
+                          color:"var(--text)",
+                        }}
+                        onFocus={e => (e.currentTarget.style.borderColor = errors.user ? "#EF4444" : "#7C3AED")}
+                        onBlur={e  => (e.currentTarget.style.borderColor = errors.user ? "#EF4444" : "var(--border)")}
+                      />
+                      <p className="text-[11px] mt-1.5 flex items-center gap-1.5" style={{ color:"var(--text-subtle)" }}>
+                        <Lock size={11}/>
+                        {lang === "EN"
+                          ? "Never enter your password here. We'll ask for it privately on WhatsApp when we process your order."
+                          : "No pongas tu contraseña aquí. Te la pediremos en privado por WhatsApp al procesar tu pedido."}
+                      </p>
+                    </div>
                   )}
 
                   {/* Nombre en el juego — todos los productos */}
@@ -849,15 +836,11 @@ export default function FortniteProductClient({ slug }: { slug: string }) {
                 <X size={15}/>
               </button>
             </div>
-            <div className="overflow-y-auto" style={{ background:"#0a0a0a" }}>
-              {(p.productType === "pavos" || p.productType === "paquete") ? (
-                <div className="space-y-2 p-2">
-                  <img src="/fortnite/referencia-1.png" alt="Referencia 1" className="w-full h-auto rounded-lg"/>
-                  <img src="/fortnite/referencia-2.png" alt="Referencia 2" className="w-full h-auto rounded-lg"/>
-                </div>
-              ) : p.referenceImg ? (
-                <img src={p.referenceImg} alt={lang === "EN" ? "Turkey region reference" : "Referencia región Turquía"} className="w-full h-auto"/>
-              ) : null}
+            <div className="overflow-y-auto p-2 space-y-2" style={{ background:"#0a0a0a" }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/fortnite/referencia-1.png" alt={lang === "EN" ? "Turkey region reference 1" : "Referencia región Turquía 1"} className="w-full h-auto rounded-lg"/>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/fortnite/referencia-2.png" alt={lang === "EN" ? "Turkey region reference 2" : "Referencia región Turquía 2"} className="w-full h-auto rounded-lg"/>
             </div>
             <button onClick={() => setLightbox(false)}
               className="w-full py-3.5 text-sm font-semibold hover:opacity-80 flex-shrink-0"

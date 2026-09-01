@@ -7,7 +7,6 @@ import { useFortniteShop, FortniteEntry } from "@/hooks/useFortniteShop";
 import { useFortniteExchangeRate } from "@/hooks/useFortniteExchangeRate";
 import { useCart } from "@/context/CartContext";
 import { usePreferences } from "@/context/PreferencesContext";
-import { useT } from "@/i18n";
 
 // ── Hora de reset de la tienda: 19:00 Lima (UTC-5) ───────
 // Fortnite rota la tienda a las 19:00 ET; Lima también es UTC-5 → coinciden
@@ -159,8 +158,8 @@ const AR_BY_SPAN: Record<number,string> = { 1:"0.628", 2:"1.27", 3:"1.92", 4:"2.
 // ══════════════════════════════════════════════════════════
 const SLIDE_MS = 3000;
 
-function ItemCard({ entry, vbucksToSoles, sym, formatPrice, lang, onClick }: {
-  entry: FortniteEntry; vbucksToSoles:(v:number)=>string; sym:string; formatPrice:(p:number)=>string; lang:string; onClick:(e:FortniteEntry)=>void;
+function ItemCard({ entry, vbucksToSoles, sym, lang, onClick }: {
+  entry: FortniteEntry; vbucksToSoles:(v:number)=>string; sym:string; lang:string; onClick:(e:FortniteEntry)=>void;
 }) {
   const { images, isSlideshow } = getCardImages(entry);
   const [activeIdx,setActiveIdx]=useState(0);
@@ -315,8 +314,8 @@ function ItemCard({ entry, vbucksToSoles, sym, formatPrice, lang, onClick }: {
 // ══════════════════════════════════════════════════════════
 // TRACK CARD
 // ══════════════════════════════════════════════════════════
-function TrackCard({ entry, vbucksToSoles, sym, formatPrice, lang, onClick }: {
-  entry:FortniteEntry; vbucksToSoles:(v:number)=>string; sym:string; formatPrice:(p:number)=>string; lang:string; onClick:(e:FortniteEntry)=>void;
+function TrackCard({ entry, vbucksToSoles, sym, onClick }: {
+  entry:FortniteEntry; vbucksToSoles:(v:number)=>string; sym:string; onClick:(e:FortniteEntry)=>void;
 }) {
   const track=entry.tracks?.[0];
   if (!track) return null;
@@ -345,9 +344,9 @@ function TrackCard({ entry, vbucksToSoles, sym, formatPrice, lang, onClick }: {
 // ══════════════════════════════════════════════════════════
 // SECTION
 // ══════════════════════════════════════════════════════════
-function ShopSection({ group, vbucksToSoles, sym, formatPrice, lang, onItemClick }: {
+function ShopSection({ group, vbucksToSoles, sym, lang, onItemClick }: {
   group:{id:string;name:string;rank:number;entries:FortniteEntry[]};
-  vbucksToSoles:(v:number)=>string; sym:string; formatPrice:(p:number)=>string; lang:string; onItemClick:(e:FortniteEntry)=>void;
+  vbucksToSoles:(v:number)=>string; sym:string; lang:string; onItemClick:(e:FortniteEntry)=>void;
 }) {
   const isJam=isJamSection(group.entries);
   const { r1,g1,b1 }=getSectionGlow(group);
@@ -374,8 +373,8 @@ function ShopSection({ group, vbucksToSoles, sym, formatPrice, lang, onItemClick
         maxWidth:1380, width:"100%", margin:"0 auto",
       }}>
         {isJam
-          ? group.entries.map(e=><TrackCard key={e.offerId} entry={e} vbucksToSoles={vbucksToSoles} sym={sym} formatPrice={formatPrice} lang={lang} onClick={onItemClick}/>)
-          : group.entries.map(e=><ItemCard  key={e.offerId} entry={e} vbucksToSoles={vbucksToSoles} sym={sym} formatPrice={formatPrice} lang={lang} onClick={onItemClick}/>)
+          ? group.entries.map(e=><TrackCard key={e.offerId} entry={e} vbucksToSoles={vbucksToSoles} sym={sym} onClick={onItemClick}/>)
+          : group.entries.map(e=><ItemCard  key={e.offerId} entry={e} vbucksToSoles={vbucksToSoles} sym={sym} lang={lang} onClick={onItemClick}/>)
         }
       </div>
     </section>
@@ -386,8 +385,8 @@ function ShopSection({ group, vbucksToSoles, sym, formatPrice, lang, onItemClick
 // MODAL — diseño KidStore, sin blur overlay, 3 botones,
 //         usuario Epic obligatorio
 // ══════════════════════════════════════════════════════════
-function ShopModal({ entry, onClose, vbucksToSoles, vbucksToPen, sym, formatPrice, referentialNote, lang }: {
-  entry:FortniteEntry; onClose:()=>void; vbucksToSoles:(v:number)=>string; vbucksToPen:(v:number)=>number; sym:string; formatPrice:(p:number)=>string; referentialNote:string; lang:string;
+function ShopModal({ entry, onClose, vbucksToSoles, vbucksToPen, sym, referentialNote, lang }: {
+  entry:FortniteEntry; onClose:()=>void; vbucksToSoles:(v:number)=>string; vbucksToPen:(v:number)=>number; sym:string; referentialNote:string; lang:string;
 }) {
   const { addItem, isInCart }=useCart();
   const router=useRouter();
@@ -803,9 +802,8 @@ function NavPanel({ groups, lang }: { groups: { id: string; name: string }[]; la
 // MAIN
 // ══════════════════════════════════════════════════════════
 export default function FortniteShopTab() {
-  const { currencySymbol, formatPrice, lang } = usePreferences();
+  const { currencySymbol, lang } = usePreferences();
   const { vbucksToSoles, vbucksToPen, referentialNote } = useFortniteExchangeRate();
-  const t = useT();
 
   // Sync shop language with web language, allow manual override
   const webLang: "es-419"|"en" = lang === "EN" ? "en" : "es-419";
@@ -972,7 +970,7 @@ export default function FortniteShopTab() {
       {/* ── SECCIONES ────────────────────────────────────── */}
       <div style={{ margin:"0 -1rem" }}>
         {groups.map(group=>(
-          <ShopSection key={group.id} group={group} vbucksToSoles={vbucksToSoles} sym={currencySymbol} formatPrice={formatPrice} lang={lang} onItemClick={setSelected}/>
+          <ShopSection key={group.id} group={group} vbucksToSoles={vbucksToSoles} sym={currencySymbol} lang={lang} onItemClick={setSelected}/>
         ))}
       </div>
 
@@ -988,7 +986,7 @@ export default function FortniteShopTab() {
       <NavPanel groups={groups.map(g=>({ id:g.id, name:g.name }))} lang={lang}/>
 
       {selected&&(
-        <ShopModal entry={selected} onClose={()=>setSelected(null)} vbucksToSoles={vbucksToSoles} vbucksToPen={vbucksToPen} sym={currencySymbol} formatPrice={formatPrice} referentialNote={referentialNote} lang={lang}/>
+        <ShopModal entry={selected} onClose={()=>setSelected(null)} vbucksToSoles={vbucksToSoles} vbucksToPen={vbucksToPen} sym={currencySymbol} referentialNote={referentialNote} lang={lang}/>
       )}
     </>
   );

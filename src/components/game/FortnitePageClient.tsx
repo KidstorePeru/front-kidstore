@@ -29,7 +29,7 @@ const BOT_GRADIENTS = [
 ];
 
 const badgeStyle: Record<string, string> = {
-  "Popular":"badge-popular", "Oferta":"badge-oferta", "Mejor valor":"badge-valor",
+  "Popular":"badge-popular", "Oferta":"badge-oferta", "Mejor valor":"badge-valor", "Nuevo":"badge-nuevo",
 };
 
 // ─── TABS — sin duplicado ──────────────────────────────────
@@ -49,7 +49,7 @@ function ProductCard({ name, subtitle, amount, description, price, priceOld, bad
   price:number; priceOld:number; badge:string; img:string; slug:string;
   fromPrice?: boolean;
 }) {
-  const { formatPrice: fmt, currencySymbol, lang } = usePreferences();
+  const { formatPrice: fmt, lang } = usePreferences();
   const t = useT();
   const translateBadge = useBadge();
   return (
@@ -321,7 +321,7 @@ function TabPases() {
   const { lang } = usePreferences();
   return (
     <div>
-      <h3 className="text-sm font-bold mb-4" style={{ color:"var(--text)" }}>🎮 Club de Fortnite</h3>
+      <h3 className="text-sm font-bold mb-4" style={{ color:"var(--text)" }}>🎮 {lang === "EN" ? "Fortnite Crew" : "Club de Fortnite"}</h3>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         {CLUB.map((p) => (
           <ProductCard key={p.id} name={lang==="EN"?p.nameEN||p.name:p.name} subtitle={lang==="EN"?p.subtitleEN||p.subtitle:p.subtitle} description={lang==="EN"?p.descriptionEN:p.description}
@@ -329,7 +329,7 @@ function TabPases() {
             fromPrice={p.productType === "club-xbox"}/>
         ))}
       </div>
-      <h3 className="text-sm font-bold mb-4" style={{ color:"var(--text)" }}>⭐ Pases de Batalla</h3>
+      <h3 className="text-sm font-bold mb-4" style={{ color:"var(--text)" }}>⭐ {lang === "EN" ? "Battle Passes" : "Pases de Batalla"}</h3>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
         {BATTLE_PASSES.map((p) => (
           <ProductCard key={p.id} name={lang==="EN"?p.nameEN||p.name:p.name} subtitle={lang==="EN"?p.subtitleEN||p.subtitle:p.subtitle} description={lang==="EN"?p.descriptionEN:p.description}
@@ -425,7 +425,7 @@ function TabPases() {
 
 // ─── INNER ────────────────────────────────────────────────
 function FortnitePageInner() {
-  const { formatPrice: fmt, lang } = usePreferences();
+  const { lang } = usePreferences();
   const t = useT();
   const TABS = getTabs(lang);
   const searchParams = useSearchParams();
@@ -492,8 +492,8 @@ function FortnitePageInner() {
           </div>
         </section>
 
-        {/* TABS */}
-        <div className="sticky top-[65px] z-40 w-full"
+        {/* TABS — offset = alto del Navbar (66px móvil / 107px con fila de categorías en desktop) */}
+        <div className="sticky top-[66px] md:top-[107px] z-40 w-full"
           style={{ background:"var(--navbar-bg)", backdropFilter:"blur(16px)", WebkitBackdropFilter:"blur(16px)", borderBottom:"1px solid var(--border)" }}>
           <div className="max-w-[1400px] mx-auto px-4 lg:px-8">
             <div className="flex justify-center overflow-x-auto" style={{ scrollbarWidth:"none" }}>

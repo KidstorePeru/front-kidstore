@@ -426,7 +426,6 @@ function SuccessScreen({ total, paymentMethod, items, contact, orderNumber, curr
     let line = `\u00B7 ${item.name} x${item.quantity} - S/ ${(item.price * item.quantity).toFixed(2)}`;
     if (od?.gameName) line += `\n   \uD83D\uDC64 Usuario: ${od.gameName}`;
     if (od?.user)     line += `\n   \uD83D\uDCE7 Cuenta: ${od.user}`;
-    if (od?.pass)     line += `\n   \uD83D\uDD12 Contrase\u00F1a: ${od.pass}`;
     if (od?.platform) line += `\n   \uD83C\uDFAE Plataforma: ${PLATFORM_LABELS[od.platform] ?? od.platform}`;
     if (od?.months)   line += `\n   \uD83D\uDCC5 Duraci\u00F3n: ${od.months} ${od.months === 1 ? "mes" : "meses"}`;
     return line;
@@ -596,7 +595,6 @@ function OrderSummary({ selectedMethod }: { selectedMethod: PaymentId }) {
                     style={{ background:"var(--surface)", border:"1px solid var(--border)" }}>
                     {od.gameName && <p className="text-[11px]" style={{ color:"var(--text-muted)" }}>👤 <strong style={{ color:"var(--text)" }}>{t.checkout.userLabel}:</strong> {od.gameName}</p>}
                     {od.user     && <p className="text-[11px]" style={{ color:"var(--text-muted)" }}>{isShopItem ? "🎮" : "📧"} <strong style={{ color:"var(--text)" }}>{isShopItem ? `${t.checkout.epicUserLabel}:` : `${t.checkout.accountLabel}:`}</strong> {od.user}</p>}
-                    {od.pass     && <p className="text-[11px]" style={{ color:"var(--text-muted)" }}>🔒 <strong style={{ color:"var(--text)" }}>{t.checkout.passwordLabel}:</strong> {"•".repeat(od.pass.length)}</p>}
                     {od.platform && <p className="text-[11px]" style={{ color:"var(--text-muted)" }}>🎮 <strong style={{ color:"var(--text)" }}>{t.checkout.platformLabel}:</strong> {PLATFORM_LABELS[od.platform] ?? od.platform}</p>}
                     {od.months   && <p className="text-[11px]" style={{ color:"var(--text-muted)" }}>📅 <strong style={{ color:"var(--text)" }}>{t.checkout.durationLabel}:</strong> {od.months} {od.months === 1 ? t.checkout.month : t.checkout.months}</p>}
                   </div>
@@ -856,7 +854,6 @@ export default function CheckoutPageClient() {
       const od = item.orderData;
       if (od?.user && !formData.epicUser)     formData.epicUser = od.user;
       if (od?.gameName && !formData.gameName)  formData.gameName = od.gameName;
-      if (od?.pass && !formData.password)      formData.password = od.pass;
       if (od?.platform && !formData.platform)  formData.platform = od.platform;
     }
 

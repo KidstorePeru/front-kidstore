@@ -21,12 +21,13 @@ export interface CartItem {
 }
 
 export interface OrderData {
-  user?:       string;   // usuario / correo / teléfono
-  pass?:       string;   // contraseña
+  user?:       string;   // usuario / correo / teléfono (dato de contacto, NO contraseña)
   gameName?:   string;   // nombre en el juego / Epic ID
   platform?:   string;   // medio de acceso (epic, xbox, etc.)
   months?:     number;   // meses (solo club-xbox)
 }
+// NOTA DE SEGURIDAD: nunca se recogen contraseñas de cuentas de juego en la web.
+// El acceso a la cuenta se coordina con el cliente por WhatsApp tras la compra.
 
 interface CartContextType {
   items:       CartItem[];

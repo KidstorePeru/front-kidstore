@@ -5,9 +5,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
-  ChevronRight, ShoppingCart, AlertTriangle, Clock,
-  Eye, EyeOff, Shield, Zap, Info, X, MessageCircle,
-  ExternalLink, Check, Users, Heart,
+  ChevronRight, ShoppingCart, AlertTriangle,
+  Shield, Zap, Info, X, MessageCircle,
+  Check, Heart,
 } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
@@ -263,7 +263,6 @@ export default function RocketLeagueProductClient({ slug }: { slug: string }) {
 
   // ── State ─────────────────────────────────────────────────────
   const [whatsapp,     setWhatsapp]     = useState(false);
-  const [showPass,     setShowPass]     = useState(false);
   const [platform,     setPlatform]     = useState<string | null>(null);
   const [lightbox,     setLightbox]     = useState(false);
   const [addedCart,    setAddedCart]    = useState(false);
@@ -278,20 +277,15 @@ export default function RocketLeagueProductClient({ slug }: { slug: string }) {
 
   // ── Form state ────────────────────────────────────────────────
   const [fieldUser,     setFieldUser]     = useState("");
-  const [fieldPass,     setFieldPass]     = useState("");
   const [fieldGameName, setFieldGameName] = useState("");
   const [errors,        setErrors]        = useState<Record<string, boolean>>({});
-
-  const needsCredentials = true;
-  const needsGameName    = true;
 
   function validate(): boolean {
     if (whatsapp) return true;
     const e: Record<string, boolean> = {};
-    if (needsCredentials && !fieldUser.trim())     e.user     = true;
-    if (needsCredentials && !fieldPass.trim())     e.pass     = true;
-    if (needsGameName    && !fieldGameName.trim()) e.gameName = true;
-    if (!platform)                                 e.platform = true;
+    if (!fieldUser.trim())     e.user     = true;
+    if (!fieldGameName.trim()) e.gameName = true;
+    if (!platform)             e.platform = true;
     setErrors(e);
     return Object.keys(e).length === 0;
   }
@@ -299,7 +293,6 @@ export default function RocketLeagueProductClient({ slug }: { slug: string }) {
   function buildOrderData() {
     return {
       user:     fieldUser     || undefined,
-      pass:     fieldPass     || undefined,
       gameName: fieldGameName || undefined,
       platform: platform      || undefined,
     };
@@ -516,33 +509,9 @@ export default function RocketLeagueProductClient({ slug }: { slug: string }) {
                       onBlur={e  => (e.currentTarget.style.borderColor = errors.user ? "#EF4444" : "var(--border)")}
                     />
                   </div>
-                  <div>
-                    <label className="text-[11px] font-semibold uppercase tracking-wider mb-1.5 block"
-                      style={{ color: errors.pass ? "#EF4444" : "var(--text-subtle)" }}>
-                      {lang === "EN" ? "Password" : "Contraseña"} {errors.pass && <span className="normal-case font-normal">— {lang === "EN" ? "required" : "requerido"}</span>}
-                    </label>
-                    <div className="relative">
-                      <input
-                        type={showPass ? "text" : "password"}
-                        placeholder="••••••••"
-                        value={fieldPass}
-                        onChange={e => { setFieldPass(e.target.value); setErrors(prev => ({ ...prev, pass: false })); }}
-                        className="w-full px-4 py-3 pr-11 rounded-xl text-sm outline-none transition-all"
-                        style={{
-                          background:"var(--card)",
-                          border:`1px solid ${errors.pass ? "#EF4444" : "var(--border)"}`,
-                          color:"var(--text)",
-                        }}
-                        onFocus={e => (e.currentTarget.style.borderColor = errors.pass ? "#EF4444" : "#EA580C")}
-                        onBlur={e  => (e.currentTarget.style.borderColor = errors.pass ? "#EF4444" : "var(--border)")}
-                      />
-                      <button type="button" onClick={() => setShowPass(!showPass)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 hover:opacity-70"
-                        style={{ color:"var(--text-subtle)" }}>
-                        {showPass ? <EyeOff size={16}/> : <Eye size={16}/>}
-                      </button>
-                    </div>
-                  </div>
+                  <p className="text-[11px] flex items-start gap-1.5 -mt-1" style={{ color:"var(--text-subtle)" }}>
+                    <span aria-hidden>🔒</span> {t.form.noPasswordNote}
+                  </p>
 
                   {/* Nombre en el juego */}
                   <div>

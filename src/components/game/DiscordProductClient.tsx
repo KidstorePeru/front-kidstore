@@ -6,8 +6,8 @@ import Link from "next/link";
 import { notFound, useRouter } from "next/navigation";
 import {
   ChevronRight, ShoppingCart, AlertTriangle,
-  Eye, EyeOff, Shield, Zap, MessageCircle,
-  Check, Heart, Info, Clock, Key,
+  Shield, Zap, MessageCircle,
+  Check, Heart, Clock,
 } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
@@ -21,7 +21,6 @@ import { useWishlist } from "@/context/WishlistContext";
 const ACCENT       = "#5865F2";
 const ACCENT_LIGHT = "#7983F5";
 const ACCENT_BG    = "rgba(88,101,242,0.1)";
-const ACCENT_BORDER= "rgba(88,101,242,0.3)";
 
 const TABS_ES = [
   { id: "nitro",   label: "💎 Nitro"   },
@@ -45,9 +44,8 @@ function inputStyle(err?: boolean): React.CSSProperties {
 // ══════════════════════════════════════════════════════════════
 // DESCRIPCIÓN IZQUIERDA — varía según tipo de producto
 // ══════════════════════════════════════════════════════════════
-function DiscordDescription({ productType, needsBackupCodes, isTrialProduct, isKey }: {
+function DiscordDescription({ productType, isTrialProduct, isKey }: {
   productType: string;
-  needsBackupCodes?: boolean;
   isTrialProduct?:   boolean;
   isKey?:            boolean;
 }) {
@@ -101,13 +99,12 @@ function DiscordDescription({ productType, needsBackupCodes, isTrialProduct, isK
         ) : (
           <>
             <p className="text-xs flex gap-2" style={{ color: "var(--text-muted)" }}><span>•</span><span>{lang === "ES" ? "Tu correo electrónico de Discord." : "Your Discord email address."}</span></p>
-            <p className="text-xs flex gap-2" style={{ color: "var(--text-muted)" }}><span>•</span><span>{lang === "ES" ? "Tu contraseña de Discord." : "Your Discord password."}</span></p>
-            {needsBackupCodes && (
-              <p className="text-xs flex gap-2" style={{ color: "var(--text-muted)" }}>
-                <span>•</span>
-                <span>{lang === "ES" ? "2 códigos de respaldo (Configuración → Mi cuenta → Autenticación de dos factores → Ver códigos de respaldo)." : "2 backup codes (Settings → My Account → Two-Factor Authentication → View Backup Codes)."}</span>
-              </p>
-            )}
+            <p className="text-xs flex gap-2" style={{ color: "var(--text-muted)" }}>
+              <span>•</span>
+              <span>{lang === "ES"
+                ? "Tras el pago te contactamos por WhatsApp para coordinar el acceso de forma segura. Nunca pedimos tu contraseña por la web."
+                : "After payment we contact you on WhatsApp to coordinate access securely. We never ask for your password on the website."}</span>
+            </p>
           </>
         )}
       </div>
@@ -200,13 +197,9 @@ export default function DiscordProductClient({ slug }: { slug: string }) {
   const isMejoras   = p.productType === "mejoras";
   const isKey       = p.deliveryMethod === "key";
 
-  const [showPass,     setShowPass]     = useState(false);
   const [whatsapp,     setWhatsapp]     = useState(false);
   const [addedCart,    setAddedCart]    = useState(false);
   const [fieldUser,    setFieldUser]    = useState("");
-  const [fieldPass,    setFieldPass]    = useState("");
-  const [fieldBackup1, setFieldBackup1] = useState("");
-  const [fieldBackup2, setFieldBackup2] = useState("");
   const [fieldServer,  setFieldServer]  = useState("");
   const [errors,       setErrors]       = useState<Record<string, boolean>>({});
 
@@ -222,9 +215,6 @@ export default function DiscordProductClient({ slug }: { slug: string }) {
       if (!fieldServer.trim()) e.server = true;
     } else if (!isKey) {
       if (!fieldUser.trim()) e.user = true;
-      if (!fieldPass.trim()) e.pass = true;
-      if (p.needsBackupCodes && !fieldBackup1.trim()) e.backup1 = true;
-      if (p.needsBackupCodes && !fieldBackup2.trim()) e.backup2 = true;
     }
     setErrors(e);
     return Object.keys(e).length === 0;
@@ -233,13 +223,7 @@ export default function DiscordProductClient({ slug }: { slug: string }) {
   function buildOrderData() {
     if (isMejoras) return { user: fieldServer };
     if (isKey)     return { user: fieldUser || undefined };
-    return {
-      user:     fieldUser || undefined,
-      pass:     fieldPass || undefined,
-      gameName: p.needsBackupCodes
-        ? `Backup1: ${fieldBackup1} | Backup2: ${fieldBackup2}`
-        : undefined,
-    };
+    return { user: fieldUser || undefined };
   }
 
   function handleAddToCart() {
@@ -338,7 +322,6 @@ export default function DiscordProductClient({ slug }: { slug: string }) {
               <div className="rounded-2xl p-6" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
                 <DiscordDescription
                   productType={p.productType}
-                  needsBackupCodes={p.needsBackupCodes}
                   isTrialProduct={p.isTrialProduct}
                   isKey={isKey}
                 />
@@ -489,58 +472,9 @@ export default function DiscordProductClient({ slug }: { slug: string }) {
                           onBlur={e  => (e.currentTarget.style.borderColor = errors.user ? "#EF4444" : "var(--border)")} />
                       </div>
 
-                      <div>
-                        <label className="text-[11px] font-semibold uppercase tracking-wider mb-1.5 block"
-                          style={{ color: errors.pass ? "#EF4444" : "var(--text-subtle)" }}>
-                          {lang === "ES" ? "Contraseña" : "Password"}{errors.pass && <span className="normal-case font-normal">{lang === "ES" ? " — requerido" : " — required"}</span>}
-                        </label>
-                        <div className="relative">
-                          <input type={showPass ? "text" : "password"} placeholder="••••••••"
-                            value={fieldPass} onChange={e => { setFieldPass(e.target.value); setErrors(p => ({ ...p, pass: false })); }}
-                            className="w-full px-4 py-3 pr-11 rounded-xl text-sm outline-none transition-all"
-                            style={inputStyle(errors.pass)}
-                            onFocus={e => (e.currentTarget.style.borderColor = errors.pass ? "#EF4444" : ACCENT)}
-                            onBlur={e  => (e.currentTarget.style.borderColor = errors.pass ? "#EF4444" : "var(--border)")} />
-                          <button type="button" onClick={() => setShowPass(!showPass)}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 hover:opacity-70"
-                            style={{ color: "var(--text-subtle)" }}>
-                            {showPass ? <EyeOff size={16} /> : <Eye size={16} />}
-                          </button>
-                        </div>
-                      </div>
-
-                      {p.needsBackupCodes && (
-                        <>
-                          <div className="rounded-xl px-3 py-2.5 flex gap-2"
-                            style={{ background: ACCENT_BG, border: `1px solid ${ACCENT_BORDER}` }}>
-                            <Key size={12} className="flex-shrink-0 mt-0.5" style={{ color: ACCENT_LIGHT }} />
-                            <p className="text-[11px]" style={{ color: "var(--text-muted)" }}>
-                              {lang === "ES" ? "Encuentra tus códigos en: " : "Find your codes at: "}
-                              <strong style={{ color: "var(--text)" }}>{lang === "ES" ? "Configuración → Mi cuenta → Autenticación → Ver códigos de respaldo" : "Settings → My Account → Authentication → View Backup Codes"}</strong>
-                            </p>
-                          </div>
-                          <div className="grid grid-cols-2 gap-3">
-                            {[
-                              { key: "backup1", val: fieldBackup1, set: setFieldBackup1, label: lang === "ES" ? "Código respaldo 1" : "Backup code 1" },
-                              { key: "backup2", val: fieldBackup2, set: setFieldBackup2, label: lang === "ES" ? "Código respaldo 2" : "Backup code 2" },
-                            ].map(f => (
-                              <div key={f.key}>
-                                <label className="text-[11px] font-semibold uppercase tracking-wider mb-1.5 block"
-                                  style={{ color: errors[f.key] ? "#EF4444" : "var(--text-subtle)" }}>
-                                  {f.label}
-                                  {errors[f.key] && <span className="normal-case font-normal">{lang === "ES" ? " — req." : " — req."}</span>}
-                                </label>
-                                <input type="text" placeholder="xxxxxx-xxxxxx"
-                                  value={f.val} onChange={e => { f.set(e.target.value); setErrors(p => ({ ...p, [f.key]: false })); }}
-                                  className="w-full px-3 py-3 rounded-xl text-sm outline-none transition-all"
-                                  style={inputStyle(errors[f.key])}
-                                  onFocus={e => (e.currentTarget.style.borderColor = errors[f.key] ? "#EF4444" : ACCENT)}
-                                  onBlur={e  => (e.currentTarget.style.borderColor = errors[f.key] ? "#EF4444" : "var(--border)")} />
-                              </div>
-                            ))}
-                          </div>
-                        </>
-                      )}
+                      <p className="text-[11px] flex items-start gap-1.5" style={{ color: "var(--text-subtle)" }}>
+                        <span aria-hidden>🔒</span> {t.form.noPasswordNote}
+                      </p>
                     </>
                   )}
                 </div>

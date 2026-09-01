@@ -6,7 +6,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
   ChevronRight, ShoppingCart, AlertTriangle, Clock,
-  Eye, EyeOff, Shield, Zap, MessageCircle,
+  Shield, Zap, MessageCircle,
   Check, Heart, ExternalLink,
 } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
@@ -30,8 +30,8 @@ const badgeStyle: Record<string, string> = {
   "Popular":"badge-popular", "Sale":"badge-oferta", "Best value":"badge-valor",
 };
 
-function RobloxDescription({ productType, bonusRobux, robux }: {
-  productType: string; bonusRobux?: number; robux: number;
+function RobloxDescription({ productType, bonusRobux }: {
+  productType: string; bonusRobux?: number;
 }) {
   const t = useT();
   const isGrupo = productType === "grupo";
@@ -135,11 +135,9 @@ export default function RobloxProductClient({ slug }: { slug: string }) {
   const discountPct = Math.round((1 - p.price / p.priceOld) * 100);
   const isGrupo     = p.productType === "grupo";
 
-  const [showPass,  setShowPass]  = useState(false);
   const [whatsapp,  setWhatsapp]  = useState(false);
   const [addedCart, setAddedCart] = useState(false);
   const [fieldUser, setFieldUser] = useState("");
-  const [fieldPass, setFieldPass] = useState("");
   const [fieldGame, setFieldGame] = useState("");
   const [errors,    setErrors]    = useState<Record<string, boolean>>({});
 
@@ -152,7 +150,6 @@ export default function RobloxProductClient({ slug }: { slug: string }) {
     if (whatsapp) return true;
     const e: Record<string, boolean> = {};
     if (!fieldUser.trim()) e.user = true;
-    if (!isGrupo && !fieldPass.trim()) e.pass = true;
     if (!fieldGame.trim()) e.gameName = true;
     setErrors(e);
     return Object.keys(e).length === 0;
@@ -161,7 +158,6 @@ export default function RobloxProductClient({ slug }: { slug: string }) {
   function buildOrderData() {
     return {
       user:     fieldUser || undefined,
-      pass:     (!isGrupo && fieldPass) ? fieldPass : undefined,
       gameName: fieldGame || undefined,
     };
   }
@@ -261,7 +257,7 @@ export default function RobloxProductClient({ slug }: { slug: string }) {
                 )}
               </div>
               <div className="rounded-2xl p-6" style={{ background:"var(--card)", border:"1px solid var(--border)" }}>
-                <RobloxDescription productType={p.productType} bonusRobux={p.bonusRobux} robux={p.robux}/>
+                <RobloxDescription productType={p.productType} bonusRobux={p.bonusRobux}/>
               </div>
             </div>
 
@@ -380,26 +376,9 @@ export default function RobloxProductClient({ slug }: { slug: string }) {
                       onBlur={e  => (e.currentTarget.style.borderColor = errors.user ? "#EF4444" : "var(--border)")}/>
                   </div>
                   {!isGrupo && (
-                    <div>
-                      <label className="text-[11px] font-semibold uppercase tracking-wider mb-1.5 block"
-                        style={{ color: errors.pass ? "#EF4444" : "var(--text-subtle)" }}>
-                        {t.form.password}{errors.pass && <span className="normal-case font-normal"> — {t.form.required}</span>}
-                      </label>
-                      <div className="relative">
-                        <input type={showPass ? "text" : "password"} placeholder="••••••••"
-                          value={fieldPass}
-                          onChange={e => { setFieldPass(e.target.value); setErrors(prev => ({ ...prev, pass:false })); }}
-                          className="w-full px-4 py-3 pr-11 rounded-xl text-sm outline-none transition-all"
-                          style={inputStyle(errors.pass)}
-                          onFocus={e => (e.currentTarget.style.borderColor = errors.pass ? "#EF4444" : BRAND)}
-                          onBlur={e  => (e.currentTarget.style.borderColor = errors.pass ? "#EF4444" : "var(--border)")}/>
-                        <button type="button" onClick={() => setShowPass(!showPass)}
-                          className="absolute right-3 top-1/2 -translate-y-1/2 hover:opacity-70"
-                          style={{ color:"var(--text-subtle)" }}>
-                          {showPass ? <EyeOff size={16}/> : <Eye size={16}/>}
-                        </button>
-                      </div>
-                    </div>
+                    <p className="text-[11px] flex items-start gap-1.5 -mt-1" style={{ color:"var(--text-subtle)" }}>
+                      <span aria-hidden>🔒</span> {t.form.noPasswordNote}
+                    </p>
                   )}
                   <div>
                     <label className="text-[11px] font-semibold uppercase tracking-wider mb-1.5 block"

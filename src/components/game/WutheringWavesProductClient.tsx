@@ -6,7 +6,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
   ChevronRight, ShoppingCart, AlertTriangle, Info,
-  Eye, EyeOff, Shield, Zap, MessageCircle,
+  Shield, Zap, MessageCircle,
   Check, Heart, Sparkles, Hash, User,
 } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
@@ -175,11 +175,9 @@ export default function WutheringWavesProductClient({ slug }: { slug: string }) 
   const badge = useBadge();
 
   const [method,      setMethod]      = useState<"cuenta" | "uid">("cuenta");
-  const [showPass,    setShowPass]    = useState(false);
   const [whatsapp,    setWhatsapp]    = useState(false);
   const [addedCart,   setAddedCart]   = useState(false);
   const [fieldUser,   setFieldUser]   = useState("");
-  const [fieldPass,   setFieldPass]   = useState("");
   const [fieldPlat,   setFieldPlat]   = useState("");
   const [fieldUID,    setFieldUID]    = useState("");
   const [fieldServer, setFieldServer] = useState("");
@@ -204,7 +202,6 @@ export default function WutheringWavesProductClient({ slug }: { slug: string }) 
     if (!fieldGame.trim()) e.game = true;
     if (isCuenta) {
       if (!fieldUser.trim()) e.user = true;
-      if (!fieldPass.trim()) e.pass = true;
       if (!fieldPlat.trim()) e.plat = true;
     } else {
       if (!fieldUID.trim())    e.uid    = true;
@@ -216,7 +213,7 @@ export default function WutheringWavesProductClient({ slug }: { slug: string }) 
 
   function buildOrderData() {
     return isCuenta
-      ? { user:fieldUser||undefined, pass:fieldPass||undefined, gameName:fieldGame||undefined, platform:fieldPlat||undefined }
+      ? { user:fieldUser||undefined, gameName:fieldGame||undefined, platform:fieldPlat||undefined }
       : { user:fieldUID||undefined, gameName:fieldGame||undefined, platform:`UID·${fieldServer}` };
   }
 
@@ -519,26 +516,10 @@ export default function WutheringWavesProductClient({ slug }: { slug: string }) 
                           onBlur={e  => (e.currentTarget.style.borderColor = errors.user ? "#EF4444" : "var(--border)")}/>
                       </div>
 
-                      {/* Password */}
-                      <div>
-                        <label className="text-[11px] font-semibold uppercase tracking-wider mb-1.5 block"
-                          style={{ color: errors.pass ? "#EF4444" : "var(--text-subtle)" }}>
-                          {t.form.password}{errors.pass && <span className="normal-case font-normal text-red-400"> — {t.form.required}</span>}
-                        </label>
-                        <div className="relative">
-                          <input type={showPass ? "text" : "password"} placeholder="••••••••" value={fieldPass}
-                            onChange={e => { setFieldPass(e.target.value); setErrors(p => ({...p, pass:false})); }}
-                            className="w-full px-4 py-3 pr-11 rounded-xl text-sm outline-none transition-all"
-                            style={inputStyle(errors.pass)}
-                            onFocus={e => (e.currentTarget.style.borderColor = errors.pass ? "#EF4444" : "var(--ww-vio)")}
-                            onBlur={e  => (e.currentTarget.style.borderColor = errors.pass ? "#EF4444" : "var(--border)")}/>
-                          <button type="button" onClick={() => setShowPass(!showPass)}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 hover:opacity-70"
-                            style={{ color:"var(--text-subtle)" }}>
-                            {showPass ? <EyeOff size={16}/> : <Eye size={16}/>}
-                          </button>
-                        </div>
-                      </div>
+                      {/* Seguridad: nunca se pide la contraseña en la web */}
+                      <p className="text-[11px] flex items-start gap-1.5 -mt-1" style={{ color:"var(--text-subtle)" }}>
+                        <span aria-hidden>🔒</span> {t.form.noPasswordNote}
+                      </p>
 
                       {/* Platform */}
                       <div>

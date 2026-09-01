@@ -1,7 +1,9 @@
 "use client";
 import { useState, useEffect, useCallback, useRef } from "react";
 
-const API_BASE = "https://fortnite-api.com/v2/shop";
+// Vía proxy propio (/api/fortnite-shop): añade caché server-side (revalidate 1800s)
+// y evita depender de CORS de terceros desde el navegador.
+const API_BASE = "/api/fortnite-shop";
 const MAX_CACHE_ENTRIES = 10;
 const cache = new Map<string, FortniteShopData>();
 
