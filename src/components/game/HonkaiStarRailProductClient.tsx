@@ -57,7 +57,7 @@ const HSR_SERVERS_ES = ["América", "Europa", "Asia", "HK, MO, TW"];
 const HSR_SERVERS_EN = ["America", "Europe", "Asia", "HK, MO, TW"];
 
 // ── Description ────────────────────────────────────────────────
-function HSRDescription({ productType, bonus }: { productType: string; bonus?: string }) {
+function HSRDescription({ productType, bonus, recurringBonus }: { productType: string; bonus?: string; recurringBonus?: string }) {
   const { lang } = usePreferences();
   const isPase = productType === "pase";
   return (
@@ -69,47 +69,25 @@ function HSRDescription({ productType, bonus }: { productType: string; bonus?: s
         <p><strong style={{ color:"var(--text)" }}>{lang === "ES" ? "Equipo KidStore" : "KidStore Team"}</strong> — PC / Mobile / PS5</p>
       </div>
 
-      {/* Sin contraseña */}
-      <div className="rounded-xl p-4 flex gap-3"
-        style={{ background:"var(--hsr-bg)", border:"1.5px solid var(--hsr-border)" }}>
-        <Check size={15} className="flex-shrink-0 mt-0.5" style={{ color:"var(--hsr-text)" }}/>
-        <div className="text-xs">
-          <p className="font-bold mb-0.5" style={{ color:"var(--hsr-text)" }}>{lang === "ES" ? "Sin contraseña requerida" : "No password required"}</p>
-          <p style={{ color:"var(--text-muted)" }}>
-            {lang === "ES" ? <>Solo necesitamos tu <strong style={{ color:"var(--text)" }}>UID</strong> y{" "}<strong style={{ color:"var(--text)" }}>servidor</strong>. Tu cuenta permanece completamente privada.</> : <>We only need your <strong style={{ color:"var(--text)" }}>UID</strong> and{" "}<strong style={{ color:"var(--text)" }}>server</strong>. Your account stays completely private.</>}
-          </p>
-        </div>
-      </div>
-
       <div className="rounded-xl p-4 space-y-2" style={{ background:"var(--surface)", border:"1px solid var(--border)" }}>
         <p className="text-xs font-bold mb-1" style={{ color:"var(--text)" }}>❓ {lang === "ES" ? "¿Qué necesitamos?" : "What do we need?"}</p>
-        {(lang === "ES" ? ["Tu UID de Honkai: Star Rail.", "El servidor donde tienes tu cuenta."] : ["Your Honkai: Star Rail UID.", "The server where you have your account."]).map((t,i) => (
+        {(lang === "ES" ? ["Tu usuario o correo de la cuenta de Honkai: Star Rail (HoYoverse).", "El servidor de tu cuenta y tu nombre de Trailblazer."] : ["Your Honkai: Star Rail (HoYoverse) account username or email.", "Your account server and your Trailblazer name."]).map((t,i) => (
           <p key={i} className="text-xs flex gap-2" style={{ color:"var(--text-muted)" }}>
             <span>•</span><span>{t}</span>
           </p>
         ))}
       </div>
 
-      {/* Cómo encontrar UID */}
-      <div className="rounded-xl p-4 space-y-2.5" style={{ background:"var(--surface)", border:"1px solid var(--border)" }}>
-        <p className="text-xs font-bold mb-1" style={{ color:"var(--text)" }}>🆔 {lang === "ES" ? "¿Cómo encontrar tu UID?" : "How to find your UID?"}</p>
-        {(lang === "ES" ? [
-          "Abre Honkai: Star Rail en tu dispositivo.",
-          "Ve al menú del Teléfono Pony → tu perfil de Trailblazer.",
-          "Tu UID de 9 dígitos aparecerá debajo de tu nombre.",
-        ] : [
-          "Open Honkai: Star Rail on your device.",
-          "Go to the Pom-Pom Phone menu → your Trailblazer profile.",
-          "Your 9-digit UID will appear below your name.",
-        ]).map((t,i) => (
-          <div key={i} className="flex items-start gap-2.5 text-xs" style={{ color:"var(--text-muted)" }}>
-            <span className="w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-black text-white flex-shrink-0 mt-0.5"
-              style={{ background:"var(--hsr-dark)" }}>
-              {i + 1}
-            </span>
-            <p>{t}</p>
-          </div>
-        ))}
+      {/* Seguridad: acceso coordinado por WhatsApp */}
+      <div className="rounded-xl p-4 flex gap-3"
+        style={{ background:"rgba(59,130,246,0.07)", border:"1px solid rgba(59,130,246,0.2)" }}>
+        <Shield size={15} className="flex-shrink-0 mt-0.5 text-blue-400"/>
+        <div className="text-xs">
+          <p className="font-bold mb-0.5" style={{ color:"#60A5FA" }}>{lang === "ES" ? "Cómo funciona la entrega" : "How the delivery works"}</p>
+          <p style={{ color:"var(--text-muted)" }}>
+            {lang === "ES" ? "Coordinamos el acceso a tu cuenta de forma privada por WhatsApp al procesar tu pedido. Nunca te pedimos tu contraseña en la web." : "We coordinate access to your account privately via WhatsApp when processing your order. We never ask for your password on the website."}
+          </p>
+        </div>
       </div>
 
       {isPase ? (
@@ -138,9 +116,22 @@ function HSRDescription({ productType, bonus }: { productType: string; bonus?: s
               style={{ background:"var(--hsr-bg)", border:"1px solid var(--hsr-border)" }}>
               <Sparkles size={15} className="flex-shrink-0 mt-0.5" style={{ color:"var(--hsr-text)" }}/>
               <div className="text-xs">
-                <p className="font-bold mb-0.5" style={{ color:"var(--hsr-text)" }}>✨ {lang === "ES" ? "Bonus de primera compra" : "First purchase bonus"}</p>
+                <p className="font-bold mb-0.5" style={{ color:"var(--hsr-text)" }}>✨ {lang === "ES" ? "Doble por primera recarga" : "Double on first recharge"}</p>
                 <p style={{ color:"var(--text-muted)" }}>
-                  {lang === "ES" ? <>Primera compra = <strong style={{ color:"var(--text)" }}>doble de Esquirlas</strong>. ({bonus})</> : <>First purchase = <strong style={{ color:"var(--text)" }}>double Shards</strong>. ({bonus})</>}
+                  {lang === "ES" ? <>Primera recarga = <strong style={{ color:"var(--text)" }}>doble de Esquirlas</strong>. ({bonus})</> : <>First recharge = <strong style={{ color:"var(--text)" }}>double Shards</strong>. ({bonus})</>}
+                </p>
+              </div>
+            </div>
+          )}
+          {recurringBonus && (
+            <div className="rounded-xl p-4 flex gap-3"
+              style={{ background:"var(--surface)", border:"1px solid var(--border)" }}>
+              <span className="text-sm flex-shrink-0">🔄</span>
+              <div className="text-xs">
+                <p className="font-bold mb-0.5" style={{ color:"var(--text)" }}>{lang === "ES" ? "Bonus recurrente" : "Recurring bonus"}</p>
+                <p style={{ color:"var(--text-muted)" }}>
+                  {lang === "ES" ? "Después de la primera recarga doble, cada compra de este paquete incluye un extra: " : "After the first double recharge, every purchase of this pack includes an extra: "}
+                  <strong style={{ color:"var(--text)" }}>{recurringBonus}</strong>
                 </p>
               </div>
             </div>
@@ -168,13 +159,13 @@ function HSRDescription({ productType, bonus }: { productType: string; bonus?: s
         {(lang === "ES" ? [
           { icon:"⚡", text:"Entrega en 5-10 minutos." },
           { icon:"✅", text:"100% garantizado. Si no se puede entregar, te devolvemos el dinero." },
-          { icon:"🛡️", text:"No necesitamos tu contraseña. Solo UID y servidor." },
+          { icon:"🛡️", text:"Nunca pedimos tu contraseña en la web. El acceso se coordina por WhatsApp." },
           { icon:"🌐", text:"Disponible para todos los servidores globales." },
           { icon:"💬", text:"Soporte disponible por WhatsApp o Messenger." },
         ] : [
           { icon:"⚡", text:"Delivery in 5-10 minutes." },
           { icon:"✅", text:"100% guaranteed. If we can't deliver, you get a full refund." },
-          { icon:"🛡️", text:"We don't need your password. Only UID and server." },
+          { icon:"🛡️", text:"We never ask for your password on the website. Access is coordinated via WhatsApp." },
           { icon:"🌐", text:"Available for all global servers." },
           { icon:"💬", text:"Support available via WhatsApp or Messenger." },
         ]).map((item,i) => (
@@ -196,9 +187,9 @@ export default function HonkaiStarRailProductClient({ slug }: { slug: string }) 
   const t = useT();
   const badge = useBadge();
   const p           = product;
-  const discountPct = Math.round((1 - p.price / p.priceOld) * 100);
+  const discountPct = p.priceOld > p.price ? Math.round((1 - p.price / p.priceOld) * 100) : 0;
 
-  const [fieldUID,    setFieldUID]    = useState("");
+  const [fieldUser,   setFieldUser]   = useState("");
   const [fieldGame,   setFieldGame]   = useState("");
   const [fieldServer, setFieldServer] = useState("");
   const [whatsapp,    setWhatsapp]    = useState(false);
@@ -213,7 +204,7 @@ export default function HonkaiStarRailProductClient({ slug }: { slug: string }) 
   function validate() {
     if (whatsapp) return true;
     const e: Record<string, boolean> = {};
-    if (!fieldUID.trim())    e.uid    = true;
+    if (!fieldUser.trim())   e.uid    = true;
     if (!fieldGame.trim())   e.game   = true;
     if (!fieldServer.trim()) e.server = true;
     setErrors(e);
@@ -222,7 +213,7 @@ export default function HonkaiStarRailProductClient({ slug }: { slug: string }) 
 
   function buildOrderData() {
     return {
-      user:     fieldUID    || undefined,
+      user:     fieldUser   || undefined,
       gameName: fieldGame   || undefined,
       platform: fieldServer || undefined,
     };
@@ -304,7 +295,7 @@ export default function HonkaiStarRailProductClient({ slug }: { slug: string }) 
             <ChevronRight size={11}/>
             <Link href="/games/honkai-star-rail" className="hover:opacity-80">Honkai: Star Rail</Link>
             <ChevronRight size={11}/>
-            <Link href={`/games/honkai-star-rail?tab=${p.tab}`} className="hover:opacity-80">{p.tabLabel}</Link>
+            <Link href={`/games/honkai-star-rail?tab=${p.tab}`} className="hover:opacity-80">{lang==="EN" ? p.tabLabelEN || p.tabLabel : p.tabLabel}</Link>
             <ChevronRight size={11}/>
             <span style={{ color:"var(--text)" }}>{lang==="EN" ? p.nameEN || p.name : p.name}</span>
           </nav>
@@ -324,7 +315,11 @@ export default function HonkaiStarRailProductClient({ slug }: { slug: string }) 
                 )}
               </div>
               <div className="rounded-2xl p-6" style={{ background:"var(--card)", border:"1px solid var(--border)" }}>
-                <HSRDescription productType={p.productType} bonus={p.bonus}/>
+                <HSRDescription
+                  productType={p.productType}
+                  bonus={lang==="EN" ? p.bonusEN || p.bonus : p.bonus}
+                  recurringBonus={lang==="EN" ? p.recurringBonusEN || p.recurringBonus : p.recurringBonus}
+                />
               </div>
             </div>
 
@@ -349,6 +344,7 @@ export default function HonkaiStarRailProductClient({ slug }: { slug: string }) 
                 </div>
                 {p.subtitle && <p className="text-sm mt-0.5 font-medium" style={{ color:"var(--hsr-text)" }}>{lang==="EN" ? p.subtitleEN || p.subtitle : p.subtitle}</p>}
                 {p.bonus && <p className="text-xs mt-0.5 font-semibold" style={{ color:"#4ADE80" }}>✨ {lang==="EN" ? p.bonusEN || p.bonus : p.bonus}</p>}
+                {p.recurringBonus && <p className="text-xs mt-0.5 font-semibold" style={{ color:"var(--text-muted)" }}>🔄 {lang==="EN" ? p.recurringBonusEN || p.recurringBonus : p.recurringBonus}</p>}
                 <p className="text-xs mt-0.5" style={{ color:"var(--text-subtle)" }}>{p.format} · {p.region}</p>
               </div>
 
@@ -373,14 +369,14 @@ export default function HonkaiStarRailProductClient({ slug }: { slug: string }) 
                 ))}
               </div>
 
-              {/* Aviso sin contraseña */}
+              {/* Cómo funciona la entrega */}
               <div className="rounded-xl p-4 flex gap-3"
-                style={{ background:"var(--hsr-bg)", border:"1.5px solid var(--hsr-border)" }}>
-                <Info size={15} className="flex-shrink-0 mt-0.5" style={{ color:"var(--hsr-text)" }}/>
+                style={{ background:"rgba(59,130,246,0.07)", border:"1.5px solid rgba(59,130,246,0.2)" }}>
+                <Info size={15} className="flex-shrink-0 mt-0.5 text-blue-400"/>
                 <div className="text-xs">
-                  <p className="font-semibold mb-0.5" style={{ color:"var(--hsr-text)" }}>{lang === "ES" ? "Sin necesidad de contraseña" : "No password needed"}</p>
+                  <p className="font-semibold mb-0.5" style={{ color:"#60A5FA" }}>{lang === "ES" ? "Cómo funciona la entrega" : "How the delivery works"}</p>
                   <p style={{ color:"var(--text-muted)" }}>
-                    {lang === "ES" ? "Solo necesitamos tu UID y servidor. Tus datos de acceso permanecen completamente privados." : "We only need your UID and server. Your login data remains completely private."}
+                    {lang === "ES" ? "Es con acceso a cuenta. Coordinamos el acceso de forma privada por WhatsApp al procesar tu pedido — nunca te pedimos tu contraseña en la web." : "This is via account access. We coordinate access privately via WhatsApp when processing your order — we never ask for your password on the website."}
                   </p>
                 </div>
               </div>
@@ -408,22 +404,22 @@ export default function HonkaiStarRailProductClient({ slug }: { slug: string }) 
 
               {!whatsapp ? (
                 <div className="space-y-3">
-                  {/* UID */}
+                  {/* Usuario / correo de la cuenta */}
                   <div>
                     <label className="text-[11px] font-semibold uppercase tracking-wider mb-1.5 block"
                       style={{ color: errors.uid ? "#EF4444" : "var(--text-subtle)" }}>
-                      {lang === "ES" ? "UID de Honkai: Star Rail" : "Honkai: Star Rail UID"}
+                      {lang === "ES" ? "Usuario / Correo de la cuenta" : "Account username / email"}
                       {errors.uid && <span className="normal-case font-normal"> — {lang === "ES" ? "requerido" : "required"}</span>}
                     </label>
-                    <input type="text" placeholder="Ej: 600123456"
-                      value={fieldUID}
-                      onChange={e => { setFieldUID(e.target.value); setErrors(prev => ({ ...prev, uid:false })); }}
+                    <input type="text" placeholder={lang === "ES" ? "correo@ejemplo.com" : "email@example.com"}
+                      value={fieldUser}
+                      onChange={e => { setFieldUser(e.target.value); setErrors(prev => ({ ...prev, uid:false })); }}
                       className="w-full px-4 py-3 rounded-xl text-sm outline-none transition-all"
                       style={inputStyle(errors.uid)}
                       onFocus={e => (e.currentTarget.style.borderColor = errors.uid ? "#EF4444" : "var(--hsr-dark)")}
                       onBlur={e  => (e.currentTarget.style.borderColor = errors.uid ? "#EF4444" : "var(--border)")}/>
                     <p className="text-[10px] mt-1" style={{ color:"var(--text-subtle)" }}>
-                      {lang === "ES" ? "Encuéntralo en el Teléfono Pony → tu perfil de Trailblazer." : "Find it in the Pom-Pom Phone → your Trailblazer profile."}
+                      {lang === "ES" ? "No pongas tu contraseña aquí — la coordinamos por WhatsApp." : "Do not enter your password here — we coordinate it via WhatsApp."}
                     </p>
                   </div>
 
@@ -480,7 +476,7 @@ export default function HonkaiStarRailProductClient({ slug }: { slug: string }) 
                   style={{ background:"rgba(37,211,102,0.06)", border:"1px solid rgba(37,211,102,0.2)", color:"var(--text-muted)" }}>
                   <p className="font-semibold" style={{ color:"var(--text)" }}>{lang === "ES" ? "¿Cómo funciona?" : "How does it work?"}</p>
                   <p>{lang === "ES" ? <>1. Haz clic en <strong style={{ color:"var(--text)" }}>{t.product.buyNow}</strong> y te redirigiremos a WhatsApp.</> : <>1. Click <strong style={{ color:"var(--text)" }}>{t.product.buyNow}</strong> and we will redirect you to WhatsApp.</>}</p>
-                  <p>{lang === "ES" ? "2. Envíanos el nombre del producto, tu UID y servidor de HSR." : "2. Send us the product name, your UID and HSR server."}</p>
+                  <p>{lang === "ES" ? "2. Envíanos el nombre del producto, tu usuario y servidor de HSR." : "2. Send us the product name, your account username and HSR server."}</p>
                   <p>{lang === "ES" ? "3. Nuestro equipo procesará tu pedido en 5-10 minutos." : "3. Our team will process your order in 5-10 minutes."}</p>
                 </div>
               )}

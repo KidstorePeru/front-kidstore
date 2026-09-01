@@ -92,9 +92,9 @@ export const games: Game[] = [
     category: "rpg", tags: ["RPG"],
     popular: false,
     products: [
-      { id:"hs1", name:"60 Esquirlas", nameEN:"60 Oneiric Shards", description:"Esquirlas Oníricas", descriptionEN:"Oneiric Shards", price:3.90,  priceOld:4.50,  currency:"PEN", amount:"60" },
-      { id:"hs2", name:"330 Onyx",     nameEN:"330 Onyx",          description:"Onyx de Onírico",   descriptionEN:"Oneiric Onyx",   price:18.56, priceOld:22.00, currency:"PEN", amount:"330", badge:"Popular" },
-      { id:"hs3", name:"980 Onyx",     nameEN:"980 Onyx",          description:"Onyx de Onírico",   descriptionEN:"Oneiric Onyx",   price:55.76, priceOld:66.00, currency:"PEN", amount:"980", badge:"Oferta", discount:5 },
+      { id:"hs1", name:"60 Esquirlas Oníricas",  nameEN:"60 Oneiric Shards",  description:"Esquirlas Oníricas", descriptionEN:"Oneiric Shards", price:3.50,  priceOld:4.50,  currency:"PEN", amount:"60" },
+      { id:"hs2", name:"300 Esquirlas Oníricas", nameEN:"300 Oneiric Shards", description:"Esquirlas Oníricas", descriptionEN:"Oneiric Shards", price:17.99, priceOld:22.99, currency:"PEN", amount:"300", badge:"Popular" },
+      { id:"hs3", name:"980 Esquirlas Oníricas", nameEN:"980 Oneiric Shards", description:"Esquirlas Oníricas", descriptionEN:"Oneiric Shards", price:48.99, priceOld:62.99, currency:"PEN", amount:"980", badge:"Oferta", discount:5 },
     ],
   },
   {

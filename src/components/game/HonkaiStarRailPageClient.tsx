@@ -57,7 +57,7 @@ function ProductCard({ p }: { p: HSRProduct }) {
   const { formatPrice, lang } = usePreferences();
   const t = useT();
   const badge = useBadge();
-  const disc = Math.round((1 - p.price / p.priceOld) * 100);
+  const disc = p.priceOld > p.price ? Math.round((1 - p.price / p.priceOld) * 100) : 0;
   return (
     <div className="rounded-2xl overflow-hidden flex flex-col transition-all duration-200 hover:-translate-y-1 group"
       style={{ background:"var(--card)", border:"1px solid var(--border)" }}>
@@ -70,10 +70,12 @@ function ProductCard({ p }: { p: HSRProduct }) {
             {badge(p.badge)}
           </span>
         )}
-        <span className="absolute top-2 left-2 px-2 py-0.5 rounded-full text-[10px] font-bold"
-          style={{ background:"rgba(16,185,129,0.15)", border:"1px solid rgba(16,185,129,0.3)", color:"#4ADE80" }}>
-          -{disc}%
-        </span>
+        {disc > 0 && (
+          <span className="absolute top-2 left-2 px-2 py-0.5 rounded-full text-[10px] font-bold"
+            style={{ background:"rgba(16,185,129,0.15)", border:"1px solid rgba(16,185,129,0.3)", color:"#4ADE80" }}>
+            -{disc}%
+          </span>
+        )}
       </div>
       <div className="p-4 flex flex-col flex-1">
         <p className="text-sm font-bold leading-tight mb-0.5" style={{ color:"var(--text)" }}>{lang==="EN" ? p.nameEN || p.name : p.name}</p>
@@ -81,7 +83,10 @@ function ProductCard({ p }: { p: HSRProduct }) {
           <p className="text-[11px] mb-1 font-medium" style={{ color:"var(--hsr-text)" }}>{lang==="EN" ? p.subtitleEN || p.subtitle : p.subtitle}</p>
         )}
         {p.bonus && (
-          <p className="text-[10px] mb-1.5 font-semibold" style={{ color:"#4ADE80" }}>✨ {lang==="EN" ? p.bonusEN || p.bonus : p.bonus}</p>
+          <p className="text-[10px] mb-0.5 font-semibold" style={{ color:"#4ADE80" }}>✨ {lang==="EN" ? p.bonusEN || p.bonus : p.bonus}</p>
+        )}
+        {p.recurringBonus && (
+          <p className="text-[10px] mb-1.5 font-semibold" style={{ color:"var(--text-subtle)" }}>🔄 {lang==="EN" ? p.recurringBonusEN || p.recurringBonus : p.recurringBonus}</p>
         )}
         <p className="text-xs leading-relaxed mb-3 flex-1" style={{ color:"var(--text-muted)" }}>{lang==="EN" ? p.descriptionEN || p.description : p.description}</p>
         <div className="flex items-end justify-between gap-2 mt-auto">
@@ -125,14 +130,14 @@ function InfoEsquirla() {
               items: lang === "ES" ? ["Intercambiables por Jade Estelar","Usables en Warps de personajes y conos","Válidos para el Pase de Suministros del Expreso"] : ["Exchangeable for Stellar Jade","Usable on character and light cone Warps","Valid for the Express Supply Pass"],
             },
             {
-              icon:"✨", title: lang === "ES" ? "Bonus de primera compra" : "First purchase bonus",
-              body: lang === "ES" ? "Cada paquete incluye un bonus del 100% en la primera compra. Si compras 980 Esquirlas por primera vez, recibirás 1.960 en total." : "Each pack includes a 100% bonus on the first purchase. If you buy 980 Shards for the first time, you will receive 1,960 total.",
+              icon:"✨", title: lang === "ES" ? "Doble por primera recarga" : "Double on first recharge",
+              body: lang === "ES" ? "Cada paquete incluye un bonus del 100% en la primera recarga. Si compras 980 Esquirlas por primera vez, recibirás 1.960 en total." : "Each pack includes a 100% bonus on the first recharge. If you buy 980 Shards for the first time, you will receive 1,960 total.",
               items: lang === "ES" ? ["Doble de Esquirlas la primera vez","Aplica una vez por paquete","Aprovéchalo al máximo en cuentas nuevas"] : ["Double Shards the first time","Applies once per pack","Make the most of it on new accounts"],
             },
             {
-              icon:"🆔", title: lang === "ES" ? "Solo UID y Servidor" : "Only UID and Server",
-              body: lang === "ES" ? "No necesitamos tu contraseña. Solo tu UID y el servidor donde juegas. Tu cuenta permanece completamente segura durante todo el proceso." : "We don't need your password. Just your UID and the server you play on. Your account stays completely secure throughout the process.",
-              items: lang === "ES" ? ["Sin necesidad de contraseña","Solo UID + Servidor","Entrega en 5-10 minutos"] : ["No password needed","Only UID + Server","Delivery in 5-10 minutes"],
+              icon:"🔄", title: lang === "ES" ? "Bonus recurrente" : "Recurring bonus",
+              body: lang === "ES" ? "Después de la primera recarga doble, cada compra del mismo paquete sigue incluyendo un extra de Esquirlas (desde el paquete de 300)." : "After the first double recharge, every purchase of the same pack still includes an extra amount of Shards (from the 300 pack onward).",
+              items: lang === "ES" ? ["300 → +30 · 980 → +110 · 1.980 → +260","3.280 → +600 · 6.480 → +1.600","Es con acceso a cuenta, sin contraseña en la web"] : ["300 → +30 · 980 → +110 · 1,980 → +260","3,280 → +600 · 6,480 → +1,600","Via account access, no password on the website"],
             },
           ].map(card => (
             <div key={card.title} className="rounded-xl p-5 space-y-3"
@@ -247,14 +252,14 @@ function HSRPageInner() {
                     <span className="text-xs">{lang === "ES" ? "Entrega en 5-10 min" : "Delivery in 5-10 min"}</span>
                   </div>
                   <div style={{ color:"rgba(255,255,255,0.65)" }}>
-                    <span className="text-xs">{lang === "ES" ? "🆔 Solo UID + Servidor" : "🆔 Only UID + Server"}</span>
+                    <span className="text-xs">{lang === "ES" ? "🎮 Acceso a cuenta" : "🎮 Account access"}</span>
                   </div>
                   <div style={{ color:"rgba(255,255,255,0.65)" }}>
-                    <span className="text-xs">{lang === "ES" ? "✨ Bonus primera compra" : "✨ First purchase bonus"}</span>
+                    <span className="text-xs">{lang === "ES" ? "✨ Doble por primera recarga" : "✨ Double on first recharge"}</span>
                   </div>
                 </div>
                 <p className="mt-4 text-base" style={{ color:"rgba(255,255,255,0.7)" }}>
-                  {t.gameCard.from} <span className="text-2xl font-bold text-white">{formatPrice(4.9)}</span>
+                  {t.gameCard.from} <span className="text-2xl font-bold text-white">{formatPrice(3.5)}</span>
                 </p>
               </div>
             </div>
@@ -285,13 +290,13 @@ function HSRPageInner() {
 
         <div className="max-w-[1400px] mx-auto px-4 lg:px-8 py-10">
 
-          {/* Aviso UID */}
+          {/* Aviso método */}
           <div className="flex items-center gap-3 px-4 py-3 rounded-xl mb-8"
             style={{ background:"var(--hsr-bg)", border:"1px solid var(--hsr-border)" }}>
-            <span className="text-base flex-shrink-0">🆔</span>
+            <span className="text-base flex-shrink-0">🎮</span>
             <p className="text-xs" style={{ color:"var(--text-muted)" }}>
-              <strong style={{ color:"var(--hsr-text)" }}>{lang === "ES" ? "Sin necesidad de contraseña." : "No password needed."}</strong>{" "}
-              {lang === "ES" ? "Para esta recarga solo necesitamos tu UID y el servidor donde juegas. Tus datos de acceso permanecen privados." : "For this top-up we only need your UID and the server you play on. Your login data remains private."}
+              <strong style={{ color:"var(--hsr-text)" }}>{lang === "ES" ? "Recarga con acceso a cuenta." : "Top-up via account access."}</strong>{" "}
+              {lang === "ES" ? "Coordinamos el acceso de forma privada por WhatsApp al procesar tu pedido. Nunca te pedimos tu contraseña en la web." : "We coordinate access privately via WhatsApp when processing your order. We never ask for your password on the website."}
             </p>
           </div>
 
