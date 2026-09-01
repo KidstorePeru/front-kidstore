@@ -9,6 +9,8 @@ import Footer from "@/components/layout/Footer";
 import { games } from "@/data";
 import { categories } from "@/data/categories";
 import { usePreferences } from "@/context/PreferencesContext";
+import { useVisibility } from "@/context/VisibilityContext";
+import { gameKey } from "@/config/visibility";
 import { useT } from "@/i18n";
 
 interface Props {
@@ -19,11 +21,12 @@ export default function CategoryPage({ params }: Props) {
   const { slug } = use(params);
   const { formatPrice, lang } = usePreferences();
   const t = useT();
+  const { isVisible } = useVisibility();
 
   const cat      = categories.find(c => c.slug === slug);
   if (!cat) notFound();
 
-  const filtered = games.filter(g => g.category === slug);
+  const filtered = games.filter(g => g.category === slug && isVisible(gameKey(g.slug)));
 
   return (
     <>

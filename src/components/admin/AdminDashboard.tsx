@@ -13,6 +13,9 @@ import {
   Filter, Phone, Mail, Calendar, Hash,
 } from "lucide-react";
 import { useAdminAuth } from "@/context/AdminAuthContext";
+import { useVisibility } from "@/context/VisibilityContext";
+import { gameKey } from "@/config/visibility";
+import { games } from "@/data";
 import Link from "next/link";
 
 // ── Types ──────────────────────────────────────────────────────
@@ -175,6 +178,7 @@ const NAV = [
   { id:"pedidos",       icon:<ShoppingBag     size={16}/>, label:"Pedidos"        },
   { id:"usuarios",      icon:<Users           size={16}/>, label:"Usuarios"       },
   { id:"transacciones", icon:<BarChart3       size={16}/>, label:"Transacciones"  },
+  { id:"visibilidad",   icon:<EyeOff          size={16}/>, label:"Visibilidad"    },
 ];
 
 // ── Shared styles ──────────────────────────────────────────────
@@ -452,6 +456,7 @@ export default function AdminDashboard() {
           {tab==="pedidos"       && <TabPedidos   orders={orders} users={users} onRefresh={refresh}/>}
           {tab==="usuarios"      && <TabUsuarios  users={users}  orders={orders}/>}
           {tab==="transacciones" && <TabTransacciones orders={orders} transactions={transactions} users={users}/>}
+          {tab==="visibilidad"   && <TabVisibilidad/>}
         </main>
       </div>
     </div>
@@ -1459,6 +1464,166 @@ function TabTransacciones({ orders, transactions, users }: { orders: Order[]; tr
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+// ══════════════════════════════════════════════════════════════
+// VISIBILIDAD — ocultar / mostrar juegos sin borrar nada
+// ══════════════════════════════════════════════════════════════
+function TabVisibilidad() {
+  const { overrides, setOverride, refresh } = useVisibility();
+  const [config, setConfig]   = useState<Record<string, boolean>>(overrides);
+  const [saving, setSaving]   = useState<string | null>(null);
+  const [msg,    setMsg]      = useState<{ text: string; ok: boolean } | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const res  = await fetch("/api/site-config", { cache: "no-store" });
+        const json = await res.json();
+        // Solo pisar el estado si el backend respondió de verdad; si está caído
+        // conservamos lo que ya haya en el contexto (cache local).
+        if (json?.success && json.config && typeof json.config === "object") {
+          setConfig(json.config);
+        }
+      } catch { /* se queda con lo que haya */ }
+      finally { setLoading(false); }
+    })();
+  }, []);
+
+  const isGameVisible = (slug: string) => config[gameKey(slug)] !== false;
+  const hiddenCount   = games.filter(g => !isGameVisible(g.slug)).length;
+
+  async function toggleGame(slug: string, nextVisible: boolean) {
+    const key = gameKey(slug);
+    setSaving(slug);
+    setMsg(null);
+    // Optimista (panel + contexto global + cache)
+    setConfig(prev => ({ ...prev, [key]: nextVisible }));
+    setOverride(key, nextVisible);
+    try {
+      const res  = await fetch("/api/admin-site-config", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ key, value: nextVisible }),
+      });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok || !json?.success) {
+        const raw = json?.error || `Error ${res.status}`;
+        throw new Error(
+          /fetch failed|network|ECONNREFUSED|timeout|abort/i.test(raw)
+            ? "No se pudo conectar con el servidor. Inténtalo de nuevo."
+            : raw,
+        );
+      }
+      if (json.config && typeof json.config === "object") setConfig(json.config);
+      await refresh();
+      setMsg({ text: nextVisible ? "Juego visible de nuevo." : "Juego oculto de la tienda.", ok: true });
+    } catch (err) {
+      setConfig(prev => ({ ...prev, [key]: !nextVisible }));
+      setOverride(key, !nextVisible);
+      setMsg({ text: err instanceof Error ? err.message : "No se pudo guardar.", ok: false });
+    } finally {
+      setSaving(null);
+      setTimeout(() => setMsg(null), 4000);
+    }
+  }
+
+  return (
+    <div className="space-y-4">
+      {/* Stats */}
+      <div className="grid grid-cols-2 gap-3">
+        <div className="px-4 py-4 rounded-2xl flex items-center gap-3" style={card}>
+          <div className="w-9 h-9 rounded-xl flex items-center justify-center"
+            style={{ background:"rgba(34,197,94,0.08)", color:"#22C55E" }}>
+            <Eye size={16}/>
+          </div>
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-[0.1em]" style={{ color:"rgba(255,255,255,0.35)" }}>Juegos visibles</p>
+            <p className="text-xl font-black" style={{ color:"#22C55E" }}>{games.length - hiddenCount}</p>
+          </div>
+        </div>
+        <div className="px-4 py-4 rounded-2xl flex items-center gap-3" style={card}>
+          <div className="w-9 h-9 rounded-xl flex items-center justify-center"
+            style={{ background:"rgba(234,88,12,0.08)", color:"#EA580C" }}>
+            <EyeOff size={16}/>
+          </div>
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-[0.1em]" style={{ color:"rgba(255,255,255,0.35)" }}>Ocultos</p>
+            <p className="text-xl font-black" style={{ color:"#EA580C" }}>{hiddenCount}</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="rounded-2xl px-4 py-3 flex items-start gap-2.5" style={cardInner}>
+        <AlertCircle size={14} className="flex-shrink-0 mt-0.5" style={{ color:"rgba(255,255,255,0.35)" }}/>
+        <p className="text-[12px] leading-relaxed" style={{ color:"rgba(255,255,255,0.5)" }}>
+          Ocultar un juego lo quita de la tienda al instante (inicio, listados, buscador y su enlace directo)
+          <strong className="text-white/70"> sin borrar nada</strong>: sus datos y su código quedan intactos y
+          vuelve con un clic. Ocultar pestañas y productos individuales llegará pronto.
+        </p>
+      </div>
+
+      {msg && (
+        <div className="rounded-2xl px-4 py-2.5 text-[12px] font-semibold"
+          style={{
+            background: msg.ok ? "rgba(34,197,94,0.08)" : "rgba(239,68,68,0.08)",
+            border: `1px solid ${msg.ok ? "rgba(34,197,94,0.2)" : "rgba(239,68,68,0.2)"}`,
+            color: msg.ok ? "#22C55E" : "#EF4444",
+          }}>
+          {msg.ok ? "✓ " : "⚠ "}{msg.text}
+        </div>
+      )}
+
+      {/* Lista de juegos */}
+      <div className="space-y-2">
+        {games.map(g => {
+          const visible = isGameVisible(g.slug);
+          const busy    = saving === g.slug;
+          return (
+            <div key={g.id} className="rounded-2xl px-3 py-2.5 flex items-center gap-3"
+              style={{ ...card, opacity: visible ? 1 : 0.55 }}>
+              <div className="relative w-11 h-11 rounded-xl overflow-hidden flex-shrink-0"
+                style={{ border:"1px solid rgba(255,255,255,0.06)" }}>
+                <Image src={g.image} alt={g.name} fill className="object-cover"/>
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-[13px] font-bold text-white truncate">{g.name}</p>
+                <p className="text-[10px]" style={{ color:"rgba(255,255,255,0.3)" }}>
+                  {g.products.length} {g.products.length === 1 ? "producto" : "productos"} &middot; /{g.slug}
+                </p>
+              </div>
+              <span className="text-[10px] font-bold uppercase tracking-[0.08em] hidden sm:inline"
+                style={{ color: visible ? "rgba(34,197,94,0.7)" : "rgba(234,88,12,0.8)" }}>
+                {visible ? "Visible" : "Oculto"}
+              </span>
+              <button
+                onClick={() => toggleGame(g.slug, !visible)}
+                disabled={busy}
+                role="switch"
+                aria-checked={visible}
+                aria-label={`${visible ? "Ocultar" : "Mostrar"} ${g.name}`}
+                className="relative flex-shrink-0 w-11 h-6 rounded-full transition-colors"
+                style={{
+                  background: visible ? "#22C55E" : "rgba(255,255,255,0.12)",
+                  opacity: busy ? 0.5 : 1,
+                  cursor: busy ? "wait" : "pointer",
+                }}>
+                <span className="absolute top-0.5 w-5 h-5 rounded-full bg-white transition-all"
+                  style={{ left: visible ? 22 : 2 }}/>
+              </button>
+            </div>
+          );
+        })}
+      </div>
+
+      {loading && (
+        <p className="text-[11px] text-center" style={{ color:"rgba(255,255,255,0.25)" }}>
+          Sincronizando con el servidor…
+        </p>
+      )}
     </div>
   );
 }

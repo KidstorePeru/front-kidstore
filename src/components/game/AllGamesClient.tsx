@@ -6,14 +6,18 @@ import Footer from "@/components/layout/Footer";
 import GameCard from "@/components/ui/GameCard";
 import { games, categories } from "@/data";
 import { usePreferences } from "@/context/PreferencesContext";
+import { useVisibility } from "@/context/VisibilityContext";
+import { gameKey } from "@/config/visibility";
 import { useT } from "@/i18n";
 
 export default function AllGamesClient() {
   const t = useT();
   const { lang } = usePreferences();
+  const { isVisible } = useVisibility();
   const [active, setActive] = useState<string>("all");
 
-  const filtered = active === "all" ? games : games.filter((g) => g.category === active);
+  const visibleGames = games.filter((g) => isVisible(gameKey(g.slug)));
+  const filtered = active === "all" ? visibleGames : visibleGames.filter((g) => g.category === active);
 
   return (
     <>

@@ -7,6 +7,8 @@ import { Search, X, SlidersHorizontal } from "lucide-react";
 import { usePreferences } from "@/context/PreferencesContext";
 import { useT, useTag } from "@/i18n";
 import { games, categories } from "@/data";
+import { useVisibility } from "@/context/VisibilityContext";
+import { gameKey } from "@/config/visibility";
 
 export default function SearchBar() {
   const [query, setQuery]         = useState("");
@@ -15,6 +17,7 @@ export default function SearchBar() {
   const { formatPrice, lang }     = usePreferences();
   const t                         = useT();
   const tag                       = useTag();
+  const { isVisible }             = useVisibility();
   const ref = useRef<HTMLDivElement>(null);
 
   // Close on outside click
@@ -34,10 +37,11 @@ export default function SearchBar() {
   }, [query]);
 
   const results = useMemo(() => games.filter((g) => {
+    if (!isVisible(gameKey(g.slug))) return false;
     const matchQuery = g.name.toLowerCase().includes(debouncedQuery.toLowerCase());
     const matchCat   = catFilter === "all" || g.category === catFilter;
     return matchQuery && matchCat;
-  }), [debouncedQuery, catFilter]);
+  }), [debouncedQuery, catFilter, isVisible]);
 
   const showDropdown = open && (query.length > 0 || catFilter !== "all");
 

@@ -10,6 +10,8 @@ import GameCard from "@/components/ui/GameCard";
 import Reveal from "@/components/ui/Reveal";
 import { games, categories } from "@/data";
 import { usePreferences } from "@/context/PreferencesContext";
+import { useVisibility } from "@/context/VisibilityContext";
+import { gameKey } from "@/config/visibility";
 import { useT } from "@/i18n";
 
 const GRID =
@@ -18,8 +20,10 @@ const GRID =
 export default function HomePageClient() {
   const t = useT();
   const { lang } = usePreferences();
+  const { isVisible } = useVisibility();
 
-  const popular = games.filter((g) => g.popular);
+  const visibleGames = games.filter((g) => isVisible(gameKey(g.slug)));
+  const popular = visibleGames.filter((g) => g.popular);
 
   return (
     <>
@@ -88,12 +92,12 @@ export default function HomePageClient() {
               <h2 className="section-title">
                 {t.home.allGames}
                 <span className="text-xs font-normal" style={{ color: "var(--text-subtle)" }}>
-                  ({games.length} {t.home.available})
+                  ({visibleGames.length} {t.home.available})
                 </span>
               </h2>
             </Reveal>
             <div className={GRID}>
-              {games.map((game, i) => (
+              {visibleGames.map((game, i) => (
                 <Reveal key={game.id} delay={(i % 6) * 55}>
                   <GameCard game={game} />
                 </Reveal>

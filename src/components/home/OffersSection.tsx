@@ -6,11 +6,17 @@ import Image from "next/image";
 import { usePreferences } from "@/context/PreferencesContext";
 import { useT } from "@/i18n";
 import { games } from "@/data";
+import { useVisibility } from "@/context/VisibilityContext";
+import { gameKey } from "@/config/visibility";
 
 export default function OffersSection() {
   const { formatPrice, lang } = usePreferences();
   const t = useT();
-  const offerGames = useMemo(() => games.filter((g) => g.offer), []);
+  const { isVisible } = useVisibility();
+  const offerGames = useMemo(
+    () => games.filter((g) => g.offer && isVisible(gameKey(g.slug))),
+    [isVisible],
+  );
 
   if (offerGames.length === 0) return null;
 

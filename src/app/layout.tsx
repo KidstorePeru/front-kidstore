@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 import { PreferencesProvider } from "@/context/PreferencesContext";
+import { VisibilityProvider } from "@/context/VisibilityContext";
 import { AuthProvider } from "@/context/AuthContext";
 import { WishlistProvider } from "@/context/WishlistContext";
 import { CartProvider } from "@/context/CartContext";
@@ -45,13 +46,15 @@ export default function RootLayout({
     <html lang="es" data-theme="light" suppressHydrationWarning>
       <body>
         <PreferencesProvider>
-          <AuthProvider>
-            <WishlistProvider>
-              <CartProvider>
-                <AuthModalProvider>{children}</AuthModalProvider>
-              </CartProvider>
-            </WishlistProvider>
-          </AuthProvider>
+          <VisibilityProvider>
+            <AuthProvider>
+              <WishlistProvider>
+                <CartProvider>
+                  <AuthModalProvider>{children}</AuthModalProvider>
+                </CartProvider>
+              </WishlistProvider>
+            </AuthProvider>
+          </VisibilityProvider>
         </PreferencesProvider>
       </body>
     </html>
