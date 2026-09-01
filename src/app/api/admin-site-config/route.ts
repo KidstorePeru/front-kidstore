@@ -5,7 +5,9 @@ export const dynamic = "force-dynamic";
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL ?? "";
 const API_KEY     = process.env.NEXT_PUBLIC_API_KEY ?? "";
-const ADMIN_TOKEN = "kidstore-admin-secret-2025";
+// Debe coincidir con ADMIN_SESSION_TOKEN del backend. Si rotas el secreto en
+// Railway, define esta misma variable en el entorno del front.
+const ADMIN_TOKEN = process.env.ADMIN_SESSION_TOKEN ?? "kidstore-admin-secret-2025";
 
 export async function PUT(request: Request) {
   try {
