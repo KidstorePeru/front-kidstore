@@ -348,6 +348,7 @@ function GamePassGuide({ onClose }: { onClose: () => void }) {
 // ── Tab Game Pass ──────────────────────────────────────────────
 function TabGamePass() {
   const t = useT();
+  const { formatPrice } = usePreferences();
   const [robux,     setRobux]     = useState(1000);
   const [inputVal,  setInputVal]  = useState("1000");
   const [fieldUser, setFieldUser] = useState("");
@@ -476,7 +477,7 @@ function TabGamePass() {
                 <p className="text-[10px] font-semibold uppercase tracking-wider" style={{ color:"var(--text-subtle)" }}>
                   {t.product.price}
                 </p>
-                <p className="text-2xl font-black" style={{ color:BRAND }}>S/ {price.toFixed(2)}</p>
+                <p className="text-2xl font-black" style={{ color:BRAND }}>{formatPrice(price)}</p>
               </div>
               <div className="text-right">
                 <p className="text-[10px] font-semibold uppercase tracking-wider" style={{ color:"var(--text-subtle)" }}>
@@ -554,7 +555,7 @@ function TabGamePass() {
                   { label:t.roblox.robuxInGamePass,  value:`${robux.toLocaleString()} R`,    color:"var(--text)" },
                   { label:t.roblox.robloxTax,        value:`-${taxAmt.toLocaleString()} R`,  color:BRAND         },
                   { label:t.roblox.netRobuxReceived, value:`${afterTax.toLocaleString()} R`, color:"#4ADE80"     },
-                  { label:t.roblox.priceToPay,       value:`S/ ${price.toFixed(2)}`,         color:BRAND, bold:true },
+                  { label:t.roblox.priceToPay,       value:formatPrice(price),               color:BRAND, bold:true },
                 ].map(row => (
                   <div key={row.label} className="flex items-center justify-between text-xs">
                     <span style={{ color:"var(--text-muted)" }}>{row.label}</span>
@@ -698,7 +699,7 @@ function TabGamePass() {
                       </p>
                     </div>
                   </div>
-                  <p className="text-sm font-black" style={{ color:BRAND }}>S/ {price.toFixed(2)}</p>
+                  <p className="text-sm font-black" style={{ color:BRAND }}>{formatPrice(price)}</p>
                 </div>
               </div>
 
@@ -838,7 +839,7 @@ function RobloxPageInner() {
 
         {/* ── TABS ── */}
         <div
-          className="sticky top-[65px] z-40 w-full"
+          className="sticky top-[66px] md:top-[107px] z-40 w-full"
           style={{ background:"var(--navbar-bg)", backdropFilter:"blur(16px)", WebkitBackdropFilter:"blur(16px)", borderBottom:"1px solid var(--border)" }}
         >
           <div className="max-w-[1400px] mx-auto px-4 lg:px-8">
