@@ -10,10 +10,12 @@ import {
 } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import { CREDITOS, PAQUETES, BULK_PRICES, type BulkPrice } from "@/data/rocketleague";
+import Reveal from "@/components/ui/Reveal";
+import { CREDITOS, BULK_PRICES, type BulkPrice } from "@/data/rocketleague";
 import { usePreferences } from "@/context/PreferencesContext";
 import { useT, useBadge } from "@/i18n";
 import { useCart } from "@/context/CartContext";
+import { isVisible } from "@/config/visibility";
 
 // ─── BRAND COLOR ──────────────────────────────────────────
 const BRAND = "#EA580C";
@@ -25,78 +27,101 @@ const badgeStyle: Record<string, string> = {
 
 // ─── TABS ─────────────────────────────────────────────────
 function getTabs(lang: string) {
-  return [
-    { id: "creditos",  label: lang === "EN" ? "Credits"    : "Creditos"  },
-    { id: "paquetes",  label: lang === "EN" ? "Bundles"    : "Paquetes"  },
+  const tabs = [
+    { id: "creditos",  label: lang === "EN" ? "Credits" : "Créditos" },
+    { id: "paquetes",  label: lang === "EN" ? "Bundles" : "Paquetes" },
   ];
+  return tabs.filter(t => t.id !== "paquetes" || isVisible("rocket-league:bundles-tab"));
 }
 
 // ─── TURKEY WARNING ───────────────────────────────────────
 function TurkeyWarning() {
   const { lang } = usePreferences();
   return (
-    <div className="rounded-xl p-4 mb-8 flex gap-3"
-      style={{ background:"rgba(245,158,11,0.07)", border:"1px solid rgba(245,158,11,0.22)" }}>
-      <div className="text-yellow-400 flex-shrink-0 mt-0.5">&#9888;&#65039;</div>
+    <div className="rounded-2xl p-5 mb-8 flex gap-4"
+      style={{ background:"rgba(245,158,11,0.07)", border:"1px solid rgba(245,158,11,0.28)" }}>
+      <div className="w-10 h-10 rounded-xl flex items-center justify-center text-lg flex-shrink-0"
+        style={{ background:"rgba(245,158,11,0.12)", border:"1px solid rgba(245,158,11,0.25)" }}>
+        {"\ud83c\uddf9\ud83c\uddf7"}
+      </div>
       <div>
-        <p className="text-xs font-bold text-yellow-400 mb-1.5">
-          {lang === "EN" ? "Prices in Turkish Lira (TRY)" : "Precios en Lira Turca (TRY)"}
+        <p className="text-sm font-bold mb-1" style={{ color:"#F59E0B" }}>
+          {lang === "EN" ? "Turkey region \u2014 best price" : "Regi\u00f3n Turqu\u00eda \u2014 el mejor precio"}
         </p>
-        <ul className="space-y-1">
-          <li className="text-xs" style={{ color:"var(--text-muted)" }}>
-            {"\u2022"} {lang === "EN"
-              ? "These prices are exclusive to accounts with the region set to Turkey (TRY \u2013 Turkish Lira)."
-              : "Estos precios son exclusivos para cuentas con regi\u00f3n configurada en Turqu\u00eda (TRY \u2013 Lira Turca)."}
-          </li>
-          <li className="text-xs" style={{ color:"var(--text-muted)" }}>
-            {"\u2022"} {lang === "EN"
-              ? "If your account does not show prices in TRY, you will not be able to access these values."
-              : "Si tu cuenta no muestra los precios en TRY, no podr\u00e1s acceder a estos valores."}
-          </li>
-        </ul>
+        <p className="text-xs leading-relaxed" style={{ color:"var(--text-muted)" }}>
+          {lang === "EN"
+            ? "These prices come from the Turkey store region (TRY). Our team handles the region change on your account \u2014 you don\u2019t need to do anything."
+            : "Estos precios vienen de la regi\u00f3n de tienda de Turqu\u00eda (TRY). Nuestro equipo se encarga del cambio de regi\u00f3n en tu cuenta \u2014 t\u00fa no tienes que hacer nada."}
+        </p>
       </div>
     </div>
   );
 }
 
 // ─── PRODUCT CARD ─────────────────────────────────────────
-function ProductCard({ name, amount, description, price, priceOld, badge, img, slug }: {
+function ProductCard({ name, amount, description, price, priceOld, badge, img, slug, featured }: {
   name?: string; amount?: string; description: string;
   price: number; priceOld: number; badge: string; img: string; slug: string;
+  featured?: boolean;
 }) {
-  const { formatPrice: fmt, lang } = usePreferences();
+  const { formatPrice: fmt } = usePreferences();
   const t = useT();
   const translateBadge = useBadge();
+  const disc = priceOld > price ? Math.round((1 - price / priceOld) * 100) : 0;
+
   return (
-    <div className="rounded-2xl overflow-hidden flex flex-col transition-all duration-200 hover:-translate-y-1 group"
-      style={{ background:"var(--card)", border:"1px solid var(--border)" }}>
+    <Link
+      href={`/games/rocket-league/${slug}`}
+      className="group lift flex flex-col rounded-2xl overflow-hidden h-full"
+      style={{
+        background: "var(--card)",
+        border: `1px solid ${featured ? `${BRAND}66` : "var(--border)"}`,
+        boxShadow: featured ? `0 0 0 1px ${BRAND}33, 0 12px 34px rgba(234,88,12,0.14)` : undefined,
+      }}
+    >
       <div className="relative w-full overflow-hidden"
-        style={{ aspectRatio:"4/3", background:`linear-gradient(135deg,rgba(234,88,12,0.15),rgba(15,10,40,0.6))` }}>
-        <Image src={img} alt={name ?? amount ?? "producto"} fill
-          className="object-contain p-3 transition-transform duration-300 group-hover:scale-105" />
+        style={{ aspectRatio:"4/3", background:`linear-gradient(135deg,rgba(234,88,12,0.18),rgba(15,10,40,0.6))` }}>
+        <Image src={img} alt={name ?? amount ?? "Rocket League"} fill
+          className="object-contain p-4 transition-transform duration-500 group-hover:scale-110" />
+        <div className="absolute inset-0"
+          style={{ background:"linear-gradient(to top, rgba(0,0,0,0.35) 0%, transparent 45%)" }}/>
         {badge && (
-          <span className={`absolute top-2 right-2 px-2 py-0.5 rounded-full text-[10px] font-bold ${badgeStyle[badge] ?? "badge-popular"}`}>
+          <span className={`absolute top-2.5 left-2.5 px-2 py-0.5 rounded-full text-[10px] font-bold ${badgeStyle[badge] ?? "badge-popular"}`}>
             {translateBadge(badge)}
           </span>
         )}
+        {disc > 0 && (
+          <span className="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-full text-[10px] font-black text-white"
+            style={{ background:`linear-gradient(135deg,${BRAND},${BRAND_DARK})` }}>
+            -{disc}%
+          </span>
+        )}
       </div>
+
       <div className="p-4 flex flex-col flex-1">
-        {name   && <p className="text-sm font-bold leading-tight mb-0.5" style={{ color:"var(--text)" }}>{name}</p>}
-        {amount && <p className="text-xs font-semibold mb-2" style={{ color: BRAND }}>{amount}</p>}
+        <div className="flex items-baseline gap-1.5 mb-0.5">
+          <Coins size={14} style={{ color: BRAND }} className="flex-shrink-0 self-center"/>
+          <p className="text-base font-bold leading-tight" style={{ color:"var(--text)" }}>
+            {amount ?? name}
+          </p>
+        </div>
         <p className="text-xs leading-relaxed mb-4 flex-1" style={{ color:"var(--text-muted)" }}>{description}</p>
-        <div className="flex items-end justify-between gap-3 mt-auto">
+
+        <div className="flex items-end justify-between gap-2 mt-auto">
           <div>
-            <p className="text-[11px] line-through" style={{ color:"var(--text-subtle)" }}>{fmt(priceOld)}</p>
+            {priceOld > price && (
+              <p className="text-[11px] line-through" style={{ color:"var(--text-subtle)" }}>{fmt(priceOld)}</p>
+            )}
             <p className="text-xl font-bold" style={{ color: BRAND }}>{fmt(price)}</p>
           </div>
-          <Link href={`/games/rocket-league/${slug}`}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white transition-all hover:scale-105 whitespace-nowrap"
+          <span
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-white whitespace-nowrap transition-transform group-hover:scale-105"
             style={{ background:`linear-gradient(135deg,${BRAND},${BRAND_DARK})`, boxShadow:`0 2px 12px rgba(234,88,12,0.35)` }}>
             <ShoppingCart size={13} /> {t.product.buyNow}
-          </Link>
+          </span>
         </div>
       </div>
-    </div>
+    </Link>
   );
 }
 
@@ -270,27 +295,32 @@ function TabCreditos() {
 
       {/* Fixed products grid */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
-        {CREDITOS.map((p) => (
-          <ProductCard
-            key={p.id}
-            amount={lang === "EN" ? p.amountEN || p.amount : p.amount}
-            description={lang === "EN" ? p.descriptionEN : p.description}
-            price={p.price}
-            priceOld={p.priceOld}
-            badge={p.badge}
-            img={p.img}
-            slug={p.slug}
-          />
+        {CREDITOS.map((p, i) => (
+          <Reveal key={p.id} delay={i * 55}>
+            <ProductCard
+              name={lang === "EN" ? p.nameEN || p.name : p.name}
+              amount={lang === "EN" ? p.amountEN || p.amount : p.amount}
+              description={lang === "EN" ? p.descriptionEN : p.description}
+              price={p.price}
+              priceOld={p.priceOld}
+              badge={p.badge}
+              img={p.img}
+              slug={p.slug}
+              featured={p.badge === "Mejor valor"}
+            />
+          </Reveal>
         ))}
       </div>
 
-      {/* Bulk selector */}
-      <div className="mb-10">
-        <BulkSelector />
-      </div>
+      {/* Bulk selector — se oculta/muestra desde config/visibility.ts (futuro: panel admin) */}
+      {isVisible("rocket-league:bulk-credits") && (
+        <div className="mb-10">
+          <BulkSelector />
+        </div>
+      )}
 
       {/* Info section */}
-      <div className="rounded-2xl overflow-hidden" style={{ border:"1px solid var(--border)" }}>
+      <Reveal className="rounded-2xl overflow-hidden block" style={{ border:"1px solid var(--border)" }}>
         <div className="px-6 py-4 flex items-center gap-3"
           style={{ background:`linear-gradient(135deg,rgba(234,88,12,0.15),rgba(59,130,246,0.08))`, borderBottom:"1px solid var(--border)" }}>
           <div className="w-9 h-9 rounded-xl flex items-center justify-center"
@@ -388,7 +418,7 @@ function TabCreditos() {
             </div>
           </div>
         </div>
-      </div>
+      </Reveal>
     </div>
   );
 }
@@ -440,7 +470,7 @@ function RocketLeaguePageInner() {
 
         {/* HERO */}
         <section className="relative overflow-hidden" style={{ height:"65vh", minHeight:"460px" }}>
-          <Image src="/games/rocket-league.jpg" alt="Rocket League" fill className="object-cover object-center" priority/>
+          <Image src="/games/rocket-league.jpg" alt="Rocket League" fill className="object-cover object-center kenburns" priority/>
           <div className="absolute inset-0"
             style={{ background:"linear-gradient(to right,rgba(0,0,0,0.88) 0%,rgba(0,0,0,0.45) 55%,rgba(0,0,0,0.1) 100%)" }}/>
           <div className="absolute inset-0"
@@ -488,32 +518,35 @@ function RocketLeaguePageInner() {
           </div>
         </section>
 
-        {/* TABS */}
-        <div className="sticky top-[65px] z-40 w-full"
-          style={{ background:"var(--navbar-bg)", backdropFilter:"blur(16px)", WebkitBackdropFilter:"blur(16px)", borderBottom:"1px solid var(--border)" }}>
-          <div className="max-w-[1400px] mx-auto px-4 lg:px-8">
-            <div className="flex justify-center overflow-x-auto" style={{ scrollbarWidth:"none" }}>
-              <div className="flex">
-                {TABS.map(tab => (
-                  <button key={tab.id} onClick={() => handleTabClick(tab.id)}
-                    className="flex-shrink-0 px-5 py-4 text-sm font-semibold transition-all relative whitespace-nowrap"
-                    style={{ color: activeTab === tab.id ? BRAND : "var(--text-muted)" }}>
-                    {tab.label}
-                    {activeTab === tab.id && (
-                      <div className="absolute bottom-0 left-3 right-3 h-[2px] rounded-full"
-                        style={{ background:`linear-gradient(90deg,${BRAND},${BRAND_DARK})` }}/>
-                    )}
-                  </button>
-                ))}
+        {/* TABS — offset = alto del Navbar (66px móvil / 107px desktop). Se ocultan si solo hay una. */}
+        {TABS.length > 1 && (
+          <div className="sticky top-[66px] md:top-[107px] z-40 w-full"
+            style={{ background:"var(--navbar-bg)", backdropFilter:"blur(16px)", WebkitBackdropFilter:"blur(16px)", borderBottom:"1px solid var(--border)" }}>
+            <div className="max-w-[1400px] mx-auto px-4 lg:px-8">
+              <div className="flex justify-center overflow-x-auto" style={{ scrollbarWidth:"none" }}>
+                <div className="flex">
+                  {TABS.map(tab => (
+                    <button key={tab.id} onClick={() => handleTabClick(tab.id)}
+                      className="flex-shrink-0 px-5 py-4 text-sm font-semibold transition-all relative whitespace-nowrap"
+                      style={{ color: activeTab === tab.id ? BRAND : "var(--text-muted)" }}>
+                      {tab.label}
+                      {activeTab === tab.id && (
+                        <div className="absolute bottom-0 left-3 right-3 h-[2px] rounded-full"
+                          style={{ background:`linear-gradient(90deg,${BRAND},${BRAND_DARK})` }}/>
+                      )}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        )}
 
         {/* CONTENT */}
         <div className="max-w-[1400px] mx-auto px-4 lg:px-8 py-8">
-          {activeTab === "creditos" && <TabCreditos />}
-          {activeTab === "paquetes" && <TabPaquetes />}
+          {activeTab === "paquetes" && isVisible("rocket-league:bundles-tab")
+            ? <TabPaquetes />
+            : <TabCreditos />}
         </div>
       </main>
       <Footer />

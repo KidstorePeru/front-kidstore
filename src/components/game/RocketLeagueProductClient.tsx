@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
-  ChevronRight, ShoppingCart, AlertTriangle,
+  ChevronRight, ShoppingCart,
   Shield, Zap, Info, X, MessageCircle,
   Check, Heart,
 } from "lucide-react";
@@ -201,7 +201,7 @@ function PlatformGrid({
 }
 
 // ── Descripción: Créditos / Paquetes (con credenciales) ─────────
-function DescCredenciales({ type }: { type: "creditos" | "paquete" }) {
+function DescCredenciales() {
   const { lang } = usePreferences();
   return (
     <div className="space-y-4">
@@ -250,7 +250,6 @@ export default function RocketLeagueProductClient({ slug }: { slug: string }) {
   if (!product) notFound();
 
   const p           = product;
-  const type        = p.productType;
 
   const { addItem, isInCart } = useCart();
   const { toggle: toggleWish, isWished } = useWishlist();
@@ -317,17 +316,19 @@ export default function RocketLeagueProductClient({ slug }: { slug: string }) {
 
   function handleBuyNow() {
     if (!validate()) return;
-    addItem({
-      slug:      p.slug,
-      name:      displayName,
-      img:       p.img,
-      price:     activePrice,
-      priceOld:  activePriceOld,
-      region:    p.region,
-      format:    p.format,
-      tabLabel:  p.tabLabel,
-      orderData: buildOrderData(),
-    });
+    if (!alreadyInCart) {
+      addItem({
+        slug:      p.slug,
+        name:      displayName,
+        img:       p.img,
+        price:     activePrice,
+        priceOld:  activePriceOld,
+        region:    p.region,
+        format:    p.format,
+        tabLabel:  p.tabLabel,
+        orderData: buildOrderData(),
+      });
+    }
     window.location.href = "/checkout";
   }
 
@@ -350,16 +351,13 @@ export default function RocketLeagueProductClient({ slug }: { slug: string }) {
   const showTurkeyNotice   = p.needsTurkey;
   const showSecurityNotice = true;
 
-  // Reference image for Turkey notice lightbox
-  const referenceImg = "/rocket-league/ref-turkey.png";
-
   return (
     <>
       <Navbar />
       <main style={{ background:"var(--bg)", minHeight:"100vh" }}>
 
-        {/* ── Barra de tabs ─────────────────────────────────── */}
-        <div className="sticky top-[65px] z-40 w-full"
+        {/* ── Barra de tabs ── offset = alto del Navbar (66px móvil / 107px desktop) */}
+        <div className="sticky top-[66px] md:top-[107px] z-40 w-full"
           style={{ background:"var(--navbar-bg)", backdropFilter:"blur(16px)", WebkitBackdropFilter:"blur(16px)", borderBottom:"1px solid var(--border)" }}>
           <div className="max-w-[1400px] mx-auto px-4 lg:px-8">
             <div className="flex justify-center overflow-x-auto" style={{ scrollbarWidth:"none" }}>
@@ -404,7 +402,7 @@ export default function RocketLeagueProductClient({ slug }: { slug: string }) {
                 <Image src={p.img} alt={displayName} fill className="object-contain p-8" priority/>
               </div>
               <div className="rounded-2xl p-6" style={{ background:"var(--card)", border:"1px solid var(--border)" }}>
-                <DescCredenciales type={type as "creditos" | "paquete"} />
+                <DescCredenciales />
               </div>
             </div>
 
@@ -445,8 +443,8 @@ export default function RocketLeagueProductClient({ slug }: { slug: string }) {
 
               {/* Precio */}
               <div className="flex items-end gap-3">
-                <p className="text-3xl font-bold" style={{ color:"var(--brand-light)" }}>S/ {activePrice.toFixed(2)}</p>
-                <p className="text-base line-through mb-0.5" style={{ color:"var(--text-subtle)" }}>S/ {activePriceOld.toFixed(2)}</p>
+                <p className="text-3xl font-bold" style={{ color:"var(--brand-light)" }}>{formatPrice(activePrice)}</p>
+                <p className="text-base line-through mb-0.5" style={{ color:"var(--text-subtle)" }}>{formatPrice(activePriceOld)}</p>
                 <span className="mb-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold"
                   style={{ background:"rgba(16,185,129,0.15)", border:"1px solid rgba(16,185,129,0.3)", color:"#4ADE80" }}>
                   -{discountPct}%
@@ -469,11 +467,13 @@ export default function RocketLeagueProductClient({ slug }: { slug: string }) {
               {/* Aviso seguridad */}
               {showSecurityNotice && (
                 <div className="rounded-xl p-4 flex gap-3"
-                  style={{ background:"rgba(239,68,68,0.07)", border:"1px solid rgba(239,68,68,0.2)" }}>
-                  <AlertTriangle size={15} className="text-red-400 flex-shrink-0 mt-0.5"/>
+                  style={{ background:"rgba(59,130,246,0.07)", border:"1px solid rgba(59,130,246,0.2)" }}>
+                  <Shield size={15} className="text-blue-400 flex-shrink-0 mt-0.5"/>
                   <div className="text-xs" style={{ color:"var(--text-muted)" }}>
-                    <p className="font-semibold text-red-400 mb-0.5">{lang === "EN" ? "Important notice" : "Aviso importante"}</p>
-                    <p>{lang === "EN" ? "We will need access to your account to complete the top-up. Your data is only used to complete the purchase within the game." : "Necesitaremos acceder a tu cuenta para realizar la recarga. Tus datos solo se utilizan para completar la compra dentro del juego."}</p>
+                    <p className="font-semibold mb-0.5" style={{ color:"#60A5FA" }}>{lang === "EN" ? "How the delivery works" : "Cómo funciona la entrega"}</p>
+                    <p>{lang === "EN"
+                      ? "This product needs access to your account. After payment we contact you on WhatsApp to coordinate access safely — we never ask for your password on this website."
+                      : "Este producto necesita acceso a tu cuenta. Tras el pago te contactamos por WhatsApp para coordinar el acceso de forma segura — nunca pedimos tu contraseña en la web."}</p>
                   </div>
                 </div>
               )}
