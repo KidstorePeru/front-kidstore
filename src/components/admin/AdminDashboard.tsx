@@ -40,10 +40,9 @@ interface Transaction {
   amount: string; type: string; status: string;
 }
 
-// ── API helpers — connect to Railway backend ──────────────────
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "";
-const API_KEY = process.env.NEXT_PUBLIC_API_KEY ?? "";
-const ADMIN_TOKEN = "kidstore-admin-secret-2025";
+// ── API helpers ──────────────────────────────────────────────
+// Todo va por los proxies /api/* de Next: el x-admin-key y el x-api-key se
+// inyectan en el servidor, nunca en el bundle del cliente.
 
 async function fetchAdminOrders(): Promise<Order[]> {
   try {

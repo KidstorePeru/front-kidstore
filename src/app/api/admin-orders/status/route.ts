@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 
 const BACKEND_URL  = process.env.NEXT_PUBLIC_API_URL ?? "";
 const API_KEY      = process.env.NEXT_PUBLIC_API_KEY ?? "";
-const ADMIN_TOKEN  = "kidstore-admin-secret-2025";
+// Debe coincidir con ADMIN_SESSION_TOKEN del backend (Railway).
+const ADMIN_TOKEN  = process.env.ADMIN_SESSION_TOKEN ?? "kidstore-admin-secret-2025";
 
 export async function PATCH(request: Request) {
   try {
