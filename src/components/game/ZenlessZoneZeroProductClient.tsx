@@ -54,8 +54,9 @@ const badgeStyle: Record<string, string> = {
 const ZZZ_SERVERS = ["America", "Europe", "Asia", "Sar Hong, Macau, Taiwan"];
 
 // ── Description ────────────────────────────────────────────────
-function ZZZDescription({ productType, bonus }: { productType: string; bonus?: string }) {
+function ZZZDescription({ productType, bonus, recurringBonus }: { productType: string; bonus?: string; recurringBonus?: string }) {
   const t = useT();
+  const { lang } = usePreferences();
   const isMembership = productType === "pase";
   return (
     <div className="space-y-4">
@@ -64,16 +65,6 @@ function ZZZDescription({ productType, bonus }: { productType: string; bonus?: s
       <div className="flex items-start gap-2 text-xs" style={{ color:"var(--text-muted)" }}>
         <span>🎮</span>
         <p><strong style={{ color:"var(--text)" }}>KidStore Team</strong> — {t.zzz.platforms}</p>
-      </div>
-
-      {/* No password — advantage */}
-      <div className="rounded-xl p-4 flex gap-3"
-        style={{ background:"var(--zzz-bg)", border:"1.5px solid var(--zzz-border)" }}>
-        <Check size={15} className="flex-shrink-0 mt-0.5" style={{ color:"var(--zzz-text)" }}/>
-        <div className="text-xs">
-          <p className="font-bold mb-0.5" style={{ color:"var(--zzz-text)" }}>{t.zzz.noPasswordRequired}</p>
-          <p style={{ color:"var(--text-muted)" }}>{t.zzz.noPasswordBody}</p>
-        </div>
       </div>
 
       <div className="rounded-xl p-4 space-y-2" style={{ background:"var(--surface)", border:"1px solid var(--border)" }}>
@@ -85,18 +76,14 @@ function ZZZDescription({ productType, bonus }: { productType: string; bonus?: s
         ))}
       </div>
 
-      {/* How to find UID */}
-      <div className="rounded-xl p-4 space-y-2" style={{ background:"var(--surface)", border:"1px solid var(--border)" }}>
-        <p className="text-xs font-bold mb-2" style={{ color:"var(--text)" }}>🆔 {t.zzz.howToFindUID}</p>
-        {[t.zzz.uid_step1, t.zzz.uid_step2, t.zzz.uid_step3].map((txt, i) => (
-          <div key={i} className="flex items-start gap-2.5 text-xs" style={{ color:"var(--text-muted)" }}>
-            <span className="w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-black flex-shrink-0 mt-0.5 text-white"
-              style={{ background:"var(--zzz-dark)" }}>
-              {i + 1}
-            </span>
-            <p>{txt}</p>
-          </div>
-        ))}
+      {/* Seguridad: acceso coordinado por WhatsApp */}
+      <div className="rounded-xl p-4 flex gap-3"
+        style={{ background:"rgba(59,130,246,0.07)", border:"1px solid rgba(59,130,246,0.2)" }}>
+        <Shield size={15} className="flex-shrink-0 mt-0.5 text-blue-400"/>
+        <div className="text-xs">
+          <p className="font-bold mb-0.5" style={{ color:"#60A5FA" }}>{t.zzz.noPasswordNotice}</p>
+          <p style={{ color:"var(--text-muted)" }}>{t.zzz.noPasswordUID}</p>
+        </div>
       </div>
 
       {isMembership ? (
@@ -118,6 +105,18 @@ function ZZZDescription({ productType, bonus }: { productType: string; bonus?: s
                 <p className="font-bold mb-0.5" style={{ color:"var(--zzz-text)" }}>{t.zzz.firstPurchaseBonus}</p>
                 <p style={{ color:"var(--text-muted)" }}>
                   {t.zzz.firstPurchaseDesc} ({bonus})
+                </p>
+              </div>
+            </div>
+          )}
+          {recurringBonus && (
+            <div className="rounded-xl p-4 flex gap-3"
+              style={{ background:"var(--surface)", border:"1px solid var(--border)" }}>
+              <span className="text-sm flex-shrink-0">🔄</span>
+              <div className="text-xs">
+                <p className="font-bold mb-0.5" style={{ color:"var(--text)" }}>{lang === "EN" ? "Recurring bonus" : "Bonus recurrente"}</p>
+                <p style={{ color:"var(--text-muted)" }}>
+                  {t.zzz.recurringBonusDesc} <strong style={{ color:"var(--text)" }}>{recurringBonus}</strong>
                 </p>
               </div>
             </div>
@@ -165,7 +164,7 @@ export default function ZenlessZoneZeroProductClient({ slug }: { slug: string })
   const p           = product;
   const discountPct = Math.round((1 - p.price / p.priceOld) * 100);
 
-  const [fieldUID,    setFieldUID]    = useState("");
+  const [fieldUser,    setFieldUser]    = useState("");
   const [fieldGame,   setFieldGame]   = useState("");
   const [fieldServer, setFieldServer] = useState("");
   const [whatsapp,    setWhatsapp]    = useState(false);
@@ -180,7 +179,7 @@ export default function ZenlessZoneZeroProductClient({ slug }: { slug: string })
   function validate() {
     if (whatsapp) return true;
     const e: Record<string, boolean> = {};
-    if (!fieldUID.trim())    e.uid    = true;
+    if (!fieldUser.trim())    e.uid    = true;
     if (!fieldGame.trim())   e.game   = true;
     if (!fieldServer.trim()) e.server = true;
     setErrors(e);
@@ -189,7 +188,7 @@ export default function ZenlessZoneZeroProductClient({ slug }: { slug: string })
 
   function buildOrderData() {
     return {
-      user:     fieldUID    || undefined,
+      user:     fieldUser    || undefined,
       gameName: fieldGame   || undefined,
       platform: fieldServer || undefined,
     };
@@ -271,7 +270,7 @@ export default function ZenlessZoneZeroProductClient({ slug }: { slug: string })
             <ChevronRight size={11}/>
             <Link href="/games/zenless-zone-zero" className="hover:opacity-80">Zenless Zone Zero</Link>
             <ChevronRight size={11}/>
-            <Link href={`/games/zenless-zone-zero?tab=${p.tab}`} className="hover:opacity-80">{p.tabLabel}</Link>
+            <Link href={`/games/zenless-zone-zero?tab=${p.tab}`} className="hover:opacity-80">{lang==="EN" ? p.tabLabelEN || p.tabLabel : p.tabLabel}</Link>
             <ChevronRight size={11}/>
             <span style={{ color:"var(--text)" }}>{lang==="EN" ? p.nameEN || p.name : p.name}</span>
           </nav>
@@ -291,7 +290,11 @@ export default function ZenlessZoneZeroProductClient({ slug }: { slug: string })
                 )}
               </div>
               <div className="rounded-2xl p-6" style={{ background:"var(--card)", border:"1px solid var(--border)" }}>
-                <ZZZDescription productType={p.productType} bonus={p.bonus}/>
+                <ZZZDescription
+                  productType={p.productType}
+                  bonus={lang==="EN" ? p.bonusEN || p.bonus : p.bonus}
+                  recurringBonus={lang==="EN" ? p.recurringBonusEN || p.recurringBonus : p.recurringBonus}
+                />
               </div>
             </div>
 
@@ -316,6 +319,7 @@ export default function ZenlessZoneZeroProductClient({ slug }: { slug: string })
                 </div>
                 {p.subtitle && <p className="text-sm mt-0.5 font-medium" style={{ color:"var(--zzz-text)" }}>{lang==="EN" ? p.subtitleEN || p.subtitle : p.subtitle}</p>}
                 {p.bonus && <p className="text-xs mt-0.5 font-semibold" style={{ color:"#4ADE80" }}>✨ {lang==="EN" ? p.bonusEN || p.bonus : p.bonus}</p>}
+                {p.recurringBonus && <p className="text-xs mt-0.5 font-semibold" style={{ color:"var(--text-muted)" }}>🔄 {lang==="EN" ? p.recurringBonusEN || p.recurringBonus : p.recurringBonus}</p>}
                 <p className="text-xs mt-0.5" style={{ color:"var(--text-subtle)" }}>{p.format} · {p.region}</p>
               </div>
 
@@ -379,8 +383,8 @@ export default function ZenlessZoneZeroProductClient({ slug }: { slug: string })
                       {errors.uid && <span className="normal-case font-normal"> — {t.form.required}</span>}
                     </label>
                     <input type="text" placeholder={t.zzz.uidPlaceholder}
-                      value={fieldUID}
-                      onChange={e => { setFieldUID(e.target.value); setErrors(prev => ({ ...prev, uid:false })); }}
+                      value={fieldUser}
+                      onChange={e => { setFieldUser(e.target.value); setErrors(prev => ({ ...prev, uid:false })); }}
                       className="w-full px-4 py-3 rounded-xl text-sm outline-none transition-all"
                       style={inputStyle(errors.uid)}
                       onFocus={e => (e.currentTarget.style.borderColor = errors.uid ? "#EF4444" : "var(--zzz-dark)")}

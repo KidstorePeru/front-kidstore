@@ -96,7 +96,10 @@ function ProductCard({ p }: { p: ZZZProduct }) {
           <p className="text-[11px] mb-1 font-medium" style={{ color:"var(--zzz-text)" }}>{lang==="EN" ? p.subtitleEN || p.subtitle : p.subtitle}</p>
         )}
         {p.bonus && (
-          <p className="text-[10px] mb-1.5 font-semibold" style={{ color:"#4ADE80" }}>✨ {lang==="EN" ? p.bonusEN || p.bonus : p.bonus}</p>
+          <p className="text-[10px] mb-0.5 font-semibold" style={{ color:"#4ADE80" }}>✨ {lang==="EN" ? p.bonusEN || p.bonus : p.bonus}</p>
+        )}
+        {p.recurringBonus && (
+          <p className="text-[10px] mb-1.5 font-semibold" style={{ color:"var(--text-subtle)" }}>🔄 {lang==="EN" ? p.recurringBonusEN || p.recurringBonus : p.recurringBonus}</p>
         )}
         <p className="text-xs leading-relaxed mb-3 flex-1" style={{ color:"var(--text-muted)" }}>
           {lang==="EN" ? p.descriptionEN || p.description : p.description}
@@ -165,7 +168,7 @@ function InfoFotogramas() {
               items:[t.zzz.foto_2_item1, t.zzz.foto_2_item2, t.zzz.foto_2_item3],
             },
             {
-              icon:"🆔", title:t.zzz.foto_3_title,
+              icon:"🔄", title:t.zzz.foto_3_title,
               body:t.zzz.foto_3_body,
               items:[t.zzz.foto_3_item1, t.zzz.foto_3_item2, t.zzz.foto_3_item3],
             },
@@ -351,7 +354,7 @@ function ZZZPageInner() {
                 </div>
                 <p className="mt-4 text-base" style={{ color:"rgba(255,255,255,0.7)" }}>
                   {t.product.from}{" "}
-                  <span className="text-2xl font-bold text-white">{formatPrice(3.99)}</span>
+                  <span className="text-2xl font-bold text-white">{formatPrice(3.50)}</span>
                 </p>
               </div>
             </div>
@@ -364,12 +367,12 @@ function ZZZPageInner() {
         {/* ── CONTENT ── */}
         <div className="max-w-[1400px] mx-auto px-4 lg:px-8 py-10">
 
-          {/* UID notice */}
+          {/* Método: acceso a cuenta */}
           <div
             className="flex items-center gap-3 px-4 py-3 rounded-xl mb-8"
             style={{ background:"var(--zzz-bg)", border:"1px solid var(--zzz-border)" }}
           >
-            <span className="text-base flex-shrink-0">🆔</span>
+            <span className="text-base flex-shrink-0">🎮</span>
             <p className="text-xs" style={{ color:"var(--text-muted)" }}>
               <strong style={{ color:"var(--zzz-text)" }}>{t.zzz.noPasswordTitle}</strong>{" "}
               {t.zzz.noPasswordDesc}
