@@ -11,7 +11,7 @@ import {
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import Reveal from "@/components/ui/Reveal";
-import { CREDITOS, BULK_PRICES, type BulkPrice } from "@/data/rocketleague";
+import { CREDITOS, BULK_PRICES, type BulkPrice, type RocketLeagueProduct } from "@/data/rocketleague";
 import { usePreferences } from "@/context/PreferencesContext";
 import { useT, useBadge } from "@/i18n";
 import { useCart } from "@/context/CartContext";
@@ -290,10 +290,8 @@ function BulkSelector() {
 }
 
 // ─── TAB CREDITOS ─────────────────────────────────────────
-function TabCreditos() {
+function TabCreditos({ products, bulkVisible }: { products: RocketLeagueProduct[]; bulkVisible: boolean }) {
   const { lang } = usePreferences();
-  const { isVisible } = useVisibility();
-  const products = useGameVisibility(SLUG).filterProducts(CREDITOS);
   return (
     <div>
       <TurkeyWarning />
@@ -317,8 +315,8 @@ function TabCreditos() {
         ))}
       </div>
 
-      {/* Bulk selector — se oculta/muestra desde config/visibility.ts (futuro: panel admin) */}
-      {isVisible("rocket-league:bulk-credits") && (
+      {/* Selector de créditos a granel — se controla desde /admin → Visibilidad */}
+      {bulkVisible && (
         <div className="mb-10">
           <BulkSelector />
         </div>
@@ -450,11 +448,11 @@ function TabPaquetes() {
 }
 
 // ─── INNER ────────────────────────────────────────────────
-function RocketLeaguePageInner() {
+function RocketLeaguePageInner({ TABS, creditos, bulkVisible }: {
+  TABS: { id: string; label: string }[]; creditos: RocketLeagueProduct[]; bulkVisible: boolean;
+}) {
   const { lang } = usePreferences();
   const t = useT();
-  const vis  = useGameVisibility(SLUG);
-  const TABS = getTabs(lang, vis.tabVisible);
   const searchParams = useSearchParams();
   const router       = useRouter();
   const tabParam     = searchParams.get("tab");
@@ -464,9 +462,7 @@ function RocketLeaguePageInner() {
     if (tabParam) setActiveTab(tabParam);
   }, [tabParam]);
 
-  useEffect(() => {
-    if (TABS.length && !TABS.some(tb => tb.id === activeTab)) setActiveTab(TABS[0].id);
-  }, [TABS.length, activeTab]);
+  const shownTab = TABS.some(tb => tb.id === activeTab) ? activeTab : (TABS[0]?.id ?? "creditos");
 
   function handleTabClick(id: string) {
     setActiveTab(id);
@@ -538,9 +534,9 @@ function RocketLeaguePageInner() {
                   {TABS.map(tab => (
                     <button key={tab.id} onClick={() => handleTabClick(tab.id)}
                       className="flex-shrink-0 px-5 py-4 text-sm font-semibold transition-all relative whitespace-nowrap"
-                      style={{ color: activeTab === tab.id ? BRAND : "var(--text-muted)" }}>
+                      style={{ color: shownTab === tab.id ? BRAND : "var(--text-muted)" }}>
                       {tab.label}
-                      {activeTab === tab.id && (
+                      {shownTab === tab.id && (
                         <div className="absolute bottom-0 left-3 right-3 h-[2px] rounded-full"
                           style={{ background:`linear-gradient(90deg,${BRAND},${BRAND_DARK})` }}/>
                       )}
@@ -554,9 +550,9 @@ function RocketLeaguePageInner() {
 
         {/* CONTENT */}
         <div className="max-w-[1400px] mx-auto px-4 lg:px-8 py-8">
-          {activeTab === "paquetes" && vis.tabVisible("paquetes")
+          {shownTab === "paquetes"
             ? <TabPaquetes />
-            : <TabCreditos />}
+            : <TabCreditos products={creditos} bulkVisible={bulkVisible} />}
         </div>
       </main>
       <Footer />
@@ -565,9 +561,17 @@ function RocketLeaguePageInner() {
 }
 
 export default function RocketLeaguePageClient() {
+  const { lang } = usePreferences();
+  const { isVisible } = useVisibility();
+  const vis  = useGameVisibility(SLUG);
+  const TABS = getTabs(lang, vis.tabVisible);
   return (
     <Suspense fallback={null}>
-      <RocketLeaguePageInner />
+      <RocketLeaguePageInner
+        TABS={TABS}
+        creditos={vis.filterProducts(CREDITOS)}
+        bulkVisible={isVisible("rocket-league:bulk-credits")}
+      />
     </Suspense>
   );
 }

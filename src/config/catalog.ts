@@ -26,11 +26,14 @@ import { ALL_ROCKET_LEAGUE_PRODUCTS } from "@/data/rocketleague";
 
 export interface CatalogTab     { id: string; label: string; }
 export interface CatalogProduct  { slug: string; name: string; tab: string; }
+/** Sub-sección con clave de visibilidad propia (no es pestaña ni producto). */
+export interface CatalogExtra    { key: string; label: string; }
 export interface CatalogGame {
   slug: string;
   name: string;
   tabs: CatalogTab[];
   products: CatalogProduct[];
+  extras?: CatalogExtra[];
 }
 
 interface RawP {
@@ -124,6 +127,7 @@ export const CATALOG: CatalogGame[] = [
     slug: "rocket-league", name: "Rocket League",
     tabs: [{ id: "creditos", label: "Créditos" }, { id: "paquetes", label: "Paquetes" }],
     products: prods(ALL_ROCKET_LEAGUE_PRODUCTS, "creditos"),
+    extras: [{ key: "rocket-league:bulk-credits", label: "Selector de créditos a granel" }],
   },
 ];
 

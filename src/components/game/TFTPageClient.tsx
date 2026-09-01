@@ -186,10 +186,9 @@ function InfoCoins() {
 }
 
 // ── Inner ─────────────────────────────────────────────────────
-function TFTPageInner() {
+function TFTPageInner({ coins }: { coins: TFTProduct[] }) {
   const t = useT();
   const { formatPrice } = usePreferences();
-  const coins = useGameVisibility("team-fight-tactics").filterProducts(TFT_COINS);
   const searchParams = useSearchParams();
   const router       = useRouter();
   const tabParam     = searchParams.get("tab");
@@ -329,9 +328,10 @@ function TFTPageInner() {
 }
 
 export default function TFTPageClient() {
+  const coins = useGameVisibility("team-fight-tactics").filterProducts(TFT_COINS);
   return (
     <Suspense fallback={null}>
-      <TFTPageInner />
+      <TFTPageInner coins={coins} />
     </Suspense>
   );
 }

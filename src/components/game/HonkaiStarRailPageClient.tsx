@@ -205,7 +205,9 @@ function InfoPases() {
 }
 
 // ── Inner ──────────────────────────────────────────────────────
-function HSRPageInner() {
+function HSRPageInner({ tabDefs, esquirlas, pases }: {
+  tabDefs: typeof TABS_ES; esquirlas: HSRProduct[]; pases: HSRProduct[];
+}) {
   const { formatPrice, lang } = usePreferences();
   const t = useT();
   const searchParams = useSearchParams();
@@ -215,8 +217,6 @@ function HSRPageInner() {
 
   useEffect(() => { if (tabParam) setActiveTab(tabParam); }, [tabParam]);
 
-  const vis      = useGameVisibility(SLUG);
-  const tabDefs  = (lang === "ES" ? TABS_ES : TABS_EN).filter(tb => vis.tabVisible(tb.id));
   const shownTab = tabDefs.some(tb => tb.id === activeTab) ? activeTab : (tabDefs[0]?.id ?? activeTab);
 
   function handleTab(id: string) {
@@ -224,7 +224,7 @@ function HSRPageInner() {
     router.push(`/games/honkai-star-rail?tab=${id}`, { scroll: false });
   }
 
-  const products = vis.filterProducts(shownTab === "pases" ? PASES : ESQUIRLAS);
+  const products = shownTab === "pases" ? pases : esquirlas;
 
   return (
     <>
@@ -324,9 +324,17 @@ function HSRPageInner() {
 }
 
 export default function HonkaiStarRailPageClient() {
+  // Visibilidad resuelta fuera del <Suspense> (ver nota en ZenlessZoneZeroPageClient).
+  const { lang } = usePreferences();
+  const vis      = useGameVisibility(SLUG);
+  const tabDefs  = (lang === "ES" ? TABS_ES : TABS_EN).filter(tb => vis.tabVisible(tb.id));
   return (
     <Suspense fallback={null}>
-      <HSRPageInner/>
+      <HSRPageInner
+        tabDefs={tabDefs}
+        esquirlas={vis.filterProducts(ESQUIRLAS)}
+        pases={vis.filterProducts(PASES)}
+      />
     </Suspense>
   );
 }

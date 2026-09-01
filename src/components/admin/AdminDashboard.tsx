@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { useAdminAuth } from "@/context/AdminAuthContext";
 import { useVisibility } from "@/context/VisibilityContext";
-import { gameKey, tabKey, productKey } from "@/config/visibility";
+import { gameKey, tabKey, productKey, isVisible as isVisibleBase } from "@/config/visibility";
 import { CATALOG } from "@/config/catalog";
 import { games } from "@/data";
 import Link from "next/link";
@@ -1514,7 +1514,8 @@ function TabVisibilidad() {
     })();
   }, []);
 
-  const visible = (key: string) => config[key] !== false;
+  // Igual que en la tienda: override si existe, si no el default del código, si no visible.
+  const visible = (key: string) => isVisibleBase(key, config);
 
   async function toggle(key: string, next: boolean, okText: string) {
     setSaving(key);
@@ -1619,6 +1620,7 @@ function TabVisibilidad() {
                     <p className="text-[13px] font-bold text-white truncate">{g.name}</p>
                     <p className="text-[10px]" style={{ color:"rgba(255,255,255,0.3)" }}>
                       {g.tabs.length} pestaña{g.tabs.length === 1 ? "" : "s"} &middot; {g.products.length} producto{g.products.length === 1 ? "" : "s"}
+                      {g.extras?.length ? ` · ${g.extras.length} extra${g.extras.length === 1 ? "" : "s"}` : ""}
                     </p>
                   </div>
                   <ChevronDown size={15} style={{ color:"rgba(255,255,255,0.3)", transform: isOpen ? "rotate(180deg)" : "none", transition:"transform .15s" }}/>
@@ -1631,6 +1633,18 @@ function TabVisibilidad() {
               {/* pestañas + productos */}
               {isOpen && (
                 <div className="px-3 pb-3 space-y-1.5" style={{ borderTop:"1px solid rgba(255,255,255,0.05)" }}>
+                  {(g.extras ?? []).map(ex => {
+                    const ev = visible(ex.key);
+                    return (
+                      <div key={ex.key} className="rounded-xl mt-1.5 px-3 py-2 flex items-center gap-2"
+                        style={{ background:"rgba(234,88,12,0.05)", opacity: ev ? 1 : 0.55 }}>
+                        <span className="text-[12px] font-semibold text-white/80 flex-1 min-w-0 truncate">{ex.label}</span>
+                        <VisSwitch on={ev} busy={saving === ex.key}
+                          onClick={() => toggle(ex.key, !ev, ev ? `"${ex.label}" oculto.` : `"${ex.label}" visible.`)}
+                          label={`${ev ? "Ocultar" : "Mostrar"} ${ex.label}`}/>
+                      </div>
+                    );
+                  })}
                   {g.tabs.map(tb => {
                     const tk        = tabKey(g.slug, tb.id);
                     const tVisible  = visible(tk);

@@ -15,10 +15,9 @@ import { gameKey } from "@/config/visibility";
 export default function GamesLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router   = useRouter();
-  const { isVisible, loading } = useVisibility();
+  const { isVisible } = useVisibility();
 
   useEffect(() => {
-    if (loading) return;
     const match = pathname?.match(/^\/games\/([^/]+)/);
     const slug  = match?.[1];
     if (!slug) return;
@@ -26,7 +25,7 @@ export default function GamesLayout({ children }: { children: React.ReactNode })
     if (!isVisible(gameKey(slug))) {
       router.replace("/games");
     }
-  }, [pathname, isVisible, loading, router]);
+  }, [pathname, isVisible, router]);
 
   return <>{children}</>;
 }

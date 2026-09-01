@@ -157,7 +157,9 @@ function AboutSection() {
 }
 
 // ── Inner ──────────────────────────────────────────────────────
-function PokemonGoPageInner() {
+function PokemonGoPageInner({ tabDefs, coins, pases }: {
+  tabDefs: typeof TABS_ES; coins: PokemonGoProduct[]; pases: PokemonGoProduct[];
+}) {
   const { formatPrice, lang } = usePreferences();
   const t = useT();
   const searchParams = useSearchParams();
@@ -167,8 +169,6 @@ function PokemonGoPageInner() {
 
   useEffect(() => { if (tabParam) setActiveTab(tabParam); }, [tabParam]);
 
-  const vis     = useGameVisibility(SLUG);
-  const tabDefs = (lang === "EN" ? TABS_EN : TABS_ES).filter(tb => vis.tabVisible(tb.id));
   const shownTab = tabDefs.some(tb => tb.id === activeTab) ? activeTab : (tabDefs[0]?.id ?? activeTab);
 
   function handleTab(id: string) {
@@ -176,7 +176,7 @@ function PokemonGoPageInner() {
     router.push(`/games/pokemon-go?tab=${id}`, { scroll: false });
   }
 
-  const products = vis.filterProducts(shownTab === "pases" ? PASES : POKECOINS);
+  const products = shownTab === "pases" ? pases : coins;
 
   return (
     <>
@@ -265,9 +265,16 @@ function PokemonGoPageInner() {
 }
 
 export default function PokemonGoPageClient() {
+  const { lang } = usePreferences();
+  const vis      = useGameVisibility(SLUG);
+  const tabDefs  = (lang === "EN" ? TABS_EN : TABS_ES).filter(tb => vis.tabVisible(tb.id));
   return (
     <Suspense fallback={null}>
-      <PokemonGoPageInner/>
+      <PokemonGoPageInner
+        tabDefs={tabDefs}
+        coins={vis.filterProducts(POKECOINS)}
+        pases={vis.filterProducts(PASES)}
+      />
     </Suspense>
   );
 }

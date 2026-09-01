@@ -1,7 +1,7 @@
 "use client";
 
 import {
-  createContext, useContext, useState, useEffect, useCallback, ReactNode,
+  createContext, useContext, useEffect, useCallback, useSyncExternalStore, ReactNode,
 } from "react";
 import {
   isVisible as isVisibleBase,
@@ -10,75 +10,90 @@ import {
 
 const LS_KEY = "kidstore_visibility";
 
+/* ────────────────────────────────────────────────────────────────
+   Store externo (useSyncExternalStore) — evita el desajuste de
+   hidratación y el re-render "sucio" dentro de <Suspense>.
+   - Servidor: snapshot vacío `{}` (no hay localStorage).
+   - Cliente: parte de la cache de localStorage y se refresca con el
+     backend (`/api/site-config`).
+──────────────────────────────────────────────────────────────── */
+const EMPTY: VisibilityOverrides = {};
+
+let current: VisibilityOverrides = EMPTY;
+const listeners = new Set<() => void>();
+
+function readCache(): VisibilityOverrides {
+  if (typeof window === "undefined") return EMPTY;
+  try {
+    const raw = window.localStorage.getItem(LS_KEY);
+    if (!raw) return EMPTY;
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === "object" ? parsed : EMPTY;
+  } catch {
+    return EMPTY;
+  }
+}
+
+// Inicializa desde la cache lo antes posible en el cliente.
+if (typeof window !== "undefined") current = readCache();
+
+function emit() { listeners.forEach(l => l()); }
+
+function setOverrides(next: VisibilityOverrides) {
+  current = next;
+  try { window.localStorage.setItem(LS_KEY, JSON.stringify(next)); } catch { /* no-op */ }
+  emit();
+}
+
+function subscribe(cb: () => void) {
+  listeners.add(cb);
+  const onStorage = (e: StorageEvent) => { if (e.key === LS_KEY) { current = readCache(); cb(); } };
+  window.addEventListener("storage", onStorage);
+  return () => { listeners.delete(cb); window.removeEventListener("storage", onStorage); };
+}
+
+const getSnapshot       = () => current;
+const getServerSnapshot = () => EMPTY;
+
+let inFlight: Promise<void> | null = null;
+function refreshStore(): Promise<void> {
+  if (inFlight) return inFlight;
+  inFlight = (async () => {
+    try {
+      const res  = await fetch("/api/site-config", { cache: "no-store" });
+      const json = await res.json();
+      if (json && json.success && json.config && typeof json.config === "object") {
+        setOverrides(json.config);
+      }
+    } catch {
+      /* backend caído: nos quedamos con la cache / defaults */
+    } finally {
+      inFlight = null;
+    }
+  })();
+  return inFlight;
+}
+
+/* ──────────────────────────────────────────────────────────────── */
+
 interface VisibilityCtx {
-  /** Overrides activos (fusionados sobre los defaults dentro de `isVisible`). */
   overrides: VisibilityOverrides;
-  /** ¿Se debe mostrar esta clave? Reactivo a los overrides. */
   isVisible: (key: string) => boolean;
-  /** true mientras se carga la config del backend por primera vez. */
-  loading: boolean;
-  /** Vuelve a pedir la config al backend. */
   refresh: () => Promise<void>;
-  /** Cambia un override en local (optimista). Lo usa el panel admin. */
   setOverride: (key: string, value: boolean) => void;
 }
 
 const Ctx = createContext<VisibilityCtx>({
-  overrides: {},
+  overrides: EMPTY,
   isVisible: (key) => isVisibleBase(key),
-  loading: true,
   refresh: async () => {},
   setOverride: () => {},
 });
 
-function readCache(): VisibilityOverrides {
-  if (typeof window === "undefined") return {};
-  try {
-    const raw = window.localStorage.getItem(LS_KEY);
-    if (!raw) return {};
-    const parsed = JSON.parse(raw);
-    return parsed && typeof parsed === "object" ? parsed : {};
-  } catch {
-    return {};
-  }
-}
-
-function writeCache(o: VisibilityOverrides) {
-  try {
-    window.localStorage.setItem(LS_KEY, JSON.stringify(o));
-  } catch {
-    /* almacenamiento no disponible: no pasa nada */
-  }
-}
-
 export function VisibilityProvider({ children }: { children: ReactNode }) {
-  // Empezamos vacío (igual en servidor y en cliente → sin error de hidratación).
-  // Justo tras montar cargamos la cache de localStorage y luego el backend.
-  const [overrides, setOverrides] = useState<VisibilityOverrides>({});
-  const [loading, setLoading]     = useState(true);
+  const overrides = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
-  // Cache local: se aplica en el primer efecto, antes de la respuesta del backend.
-  useEffect(() => {
-    const cached = readCache();
-    if (Object.keys(cached).length > 0) setOverrides(cached);
-  }, []);
-
-  const refresh = useCallback(async () => {
-    try {
-      const res = await fetch("/api/site-config", { cache: "no-store" });
-      const json = await res.json();
-      if (json && json.success && json.config && typeof json.config === "object") {
-        setOverrides(json.config);
-        writeCache(json.config);
-      }
-    } catch {
-      /* backend caído: seguimos con lo que haya (cache o defaults) */
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => { refresh(); }, [refresh]);
+  useEffect(() => { refreshStore(); }, []);
 
   const isVisible = useCallback(
     (key: string) => isVisibleBase(key, overrides),
@@ -86,15 +101,13 @@ export function VisibilityProvider({ children }: { children: ReactNode }) {
   );
 
   const setOverride = useCallback((key: string, value: boolean) => {
-    setOverrides(prev => {
-      const next = { ...prev, [key]: value };
-      writeCache(next);
-      return next;
-    });
+    setOverrides({ ...current, [key]: value });
   }, []);
 
+  const refresh = useCallback(() => refreshStore(), []);
+
   return (
-    <Ctx.Provider value={{ overrides, isVisible, loading, refresh, setOverride }}>
+    <Ctx.Provider value={{ overrides, isVisible, refresh, setOverride }}>
       {children}
     </Ctx.Provider>
   );

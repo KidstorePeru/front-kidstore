@@ -176,7 +176,9 @@ function InfoBendicion() {
 }
 
 // ── Inner ──────────────────────────────────────────────────────
-function GenshinPageInner() {
+function GenshinPageInner({ tabDefs, cristales, bendicion }: {
+  tabDefs: typeof TABS_ES; cristales: GenshinProduct[]; bendicion: GenshinProduct[];
+}) {
   const { formatPrice, lang } = usePreferences();
   const t = useT();
   const searchParams = useSearchParams();
@@ -186,8 +188,6 @@ function GenshinPageInner() {
 
   useEffect(() => { if (tabParam) setActiveTab(tabParam); }, [tabParam]);
 
-  const vis      = useGameVisibility(SLUG);
-  const tabDefs  = (lang === "ES" ? TABS_ES : TABS_EN).filter(tb => vis.tabVisible(tb.id));
   const shownTab = tabDefs.some(tb => tb.id === activeTab) ? activeTab : (tabDefs[0]?.id ?? activeTab);
 
   function handleTab(id: string) {
@@ -195,7 +195,7 @@ function GenshinPageInner() {
     router.push(`/games/genshin-impact?tab=${id}`, { scroll: false });
   }
 
-  const products = vis.filterProducts(shownTab === "bendicion" ? BENDICION : CRISTALES);
+  const products = shownTab === "bendicion" ? bendicion : cristales;
 
   return (
     <>
@@ -294,9 +294,16 @@ function GenshinPageInner() {
 }
 
 export default function GenshinImpactPageClient() {
+  const { lang } = usePreferences();
+  const vis      = useGameVisibility(SLUG);
+  const tabDefs  = (lang === "ES" ? TABS_ES : TABS_EN).filter(tb => vis.tabVisible(tb.id));
   return (
     <Suspense fallback={null}>
-      <GenshinPageInner/>
+      <GenshinPageInner
+        tabDefs={tabDefs}
+        cristales={vis.filterProducts(CRISTALES)}
+        bendicion={vis.filterProducts(BENDICION)}
+      />
     </Suspense>
   );
 }

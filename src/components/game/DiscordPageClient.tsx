@@ -215,7 +215,9 @@ function InfoMejoras() {
 }
 
 // ── Inner ─────────────────────────────────────────────────────
-function DiscordPageInner() {
+function DiscordPageInner({ tabDefs, nitro, mejoras, tienda }: {
+  tabDefs: typeof TABS_ES; nitro: DiscordProduct[]; mejoras: DiscordProduct[]; tienda: DiscordProduct[];
+}) {
   const { formatPrice, lang } = usePreferences();
   const t = useT();
   const searchParams = useSearchParams();
@@ -225,8 +227,6 @@ function DiscordPageInner() {
 
   useEffect(() => { if (tabParam) setActiveTab(tabParam); }, [tabParam]);
 
-  const vis     = useGameVisibility(SLUG);
-  const tabDefs = (lang === "ES" ? TABS_ES : TABS_EN).filter(tb => vis.tabVisible(tb.id));
   const shownTab = tabDefs.some(tb => tb.id === activeTab) ? activeTab : (tabDefs[0]?.id ?? activeTab);
 
   function handleTab(id: string) {
@@ -234,11 +234,10 @@ function DiscordPageInner() {
     router.push(`/games/discord?tab=${id}`, { scroll: false });
   }
 
-  const products = vis.filterProducts(
-    shownTab === "mejoras" ? MEJORAS :
-    shownTab === "tienda"  ? TIENDA  :
-    NITRO,
-  );
+  const products =
+    shownTab === "mejoras" ? mejoras :
+    shownTab === "tienda"  ? tienda  :
+    nitro;
 
   return (
     <>
@@ -364,9 +363,17 @@ function DiscordPageInner() {
 }
 
 export default function DiscordPageClient() {
+  const { lang } = usePreferences();
+  const vis      = useGameVisibility(SLUG);
+  const tabDefs  = (lang === "ES" ? TABS_ES : TABS_EN).filter(tb => vis.tabVisible(tb.id));
   return (
     <Suspense fallback={null}>
-      <DiscordPageInner />
+      <DiscordPageInner
+        tabDefs={tabDefs}
+        nitro={vis.filterProducts(NITRO)}
+        mejoras={vis.filterProducts(MEJORAS)}
+        tienda={vis.filterProducts(TIENDA)}
+      />
     </Suspense>
   );
 }

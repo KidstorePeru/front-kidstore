@@ -278,7 +278,9 @@ function TabBar({ activeTab, onTab, tabs }: { activeTab: string; onTab: (id: str
 }
 
 // ── Inner ──────────────────────────────────────────────────────
-function ZZZPageInner() {
+function ZZZPageInner({ tabs, fotogramas, pases }: {
+  tabs: typeof TABS; fotogramas: ZZZProduct[]; pases: ZZZProduct[];
+}) {
   const t = useT();
   const { formatPrice } = usePreferences();
   const searchParams = useSearchParams();
@@ -288,9 +290,7 @@ function ZZZPageInner() {
 
   useEffect(() => { if (tabParam) setActiveTab(tabParam); }, [tabParam]);
 
-  const vis   = useGameVisibility(SLUG);
-  const tabs  = vis.filterTabs(TABS);
-  // Pestaña efectiva: si la activa está oculta, cae a la primera visible (sin efecto → sin parpadeo).
+  // Pestaña efectiva: si la activa está oculta, cae a la primera visible.
   const shownTab = tabs.some(tb => tb.id === activeTab) ? activeTab : (tabs[0]?.id ?? activeTab);
 
   function handleTab(id: string) {
@@ -298,7 +298,7 @@ function ZZZPageInner() {
     router.push(`/games/zenless-zone-zero?tab=${id}`, { scroll: false });
   }
 
-  const products = vis.filterProducts(shownTab === "pases" ? PASES : FOTOGRAMAS);
+  const products = shownTab === "pases" ? pases : fotogramas;
 
   return (
     <>
@@ -403,9 +403,16 @@ function ZZZPageInner() {
 }
 
 export default function ZenlessZoneZeroPageClient() {
+  // La visibilidad se resuelve FUERA del <Suspense>: así el cambio de estado
+  // tras cargar la config es una actualización normal (React reconcilia bien)
+  // y no un re-render "sucio" del subárbol suspendido.
+  const vis        = useGameVisibility(SLUG);
+  const tabs       = vis.filterTabs(TABS);
+  const fotogramas = vis.filterProducts(FOTOGRAMAS);
+  const pases      = vis.filterProducts(PASES);
   return (
     <Suspense fallback={null}>
-      <ZZZPageInner/>
+      <ZZZPageInner tabs={tabs} fotogramas={fotogramas} pases={pases}/>
     </Suspense>
   );
 }

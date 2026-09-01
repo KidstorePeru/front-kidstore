@@ -217,7 +217,9 @@ function InfoBundles() {
 }
 
 // ── Inner component ───────────────────────────────────────────
-function WildRiftPageInner() {
+function WildRiftPageInner({ tabs, cores, bundles }: {
+  tabs: typeof TABS; cores: WildRiftProduct[]; bundles: WildRiftProduct[];
+}) {
   const t = useT();
   const { formatPrice } = usePreferences();
   const searchParams = useSearchParams();
@@ -227,8 +229,6 @@ function WildRiftPageInner() {
 
   useEffect(() => { if (tabParam) setActiveTab(tabParam); }, [tabParam]);
 
-  const vis  = useGameVisibility(SLUG);
-  const tabs = vis.filterTabs(TABS);
   const shownTab = tabs.some(tb => tb.id === activeTab) ? activeTab : (tabs[0]?.id ?? activeTab);
 
   function handleTab(id: string) {
@@ -236,7 +236,7 @@ function WildRiftPageInner() {
     router.push(`/games/wild-rift?tab=${id}`, { scroll: false });
   }
 
-  const products = vis.filterProducts(shownTab === "bundles" ? BUNDLES : WILD_CORES);
+  const products = shownTab === "bundles" ? bundles : cores;
 
   return (
     <>
@@ -368,9 +368,15 @@ function WildRiftPageInner() {
 }
 
 export default function WildRiftPageClient() {
+  const vis  = useGameVisibility(SLUG);
+  const tabs = vis.filterTabs(TABS);
   return (
     <Suspense fallback={null}>
-      <WildRiftPageInner/>
+      <WildRiftPageInner
+        tabs={tabs}
+        cores={vis.filterProducts(WILD_CORES)}
+        bundles={vis.filterProducts(BUNDLES)}
+      />
     </Suspense>
   );
 }

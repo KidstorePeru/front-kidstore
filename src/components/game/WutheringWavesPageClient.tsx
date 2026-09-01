@@ -336,7 +336,9 @@ function InfoPase() {
 }
 
 // ── Inner ──────────────────────────────────────────────────────
-function WWPageInner() {
+function WWPageInner({ tabs, lunita, pases }: {
+  tabs: typeof TABS; lunita: WWProduct[]; pases: WWProduct[];
+}) {
   const t = useT();
   const { formatPrice } = usePreferences();
   const searchParams = useSearchParams();
@@ -346,8 +348,6 @@ function WWPageInner() {
 
   useEffect(() => { if (tabParam) setActiveTab(tabParam); }, [tabParam]);
 
-  const vis  = useGameVisibility(SLUG);
-  const tabs = vis.filterTabs(TABS);
   const shownTab = tabs.some(tb => tb.id === activeTab) ? activeTab : (tabs[0]?.id ?? activeTab);
 
   function handleTab(id: string) {
@@ -355,7 +355,7 @@ function WWPageInner() {
     router.push(`/games/wuthering-waves?tab=${id}`, { scroll:false });
   }
 
-  const products = vis.filterProducts(shownTab === "pases" ? PASES : LUNITA);
+  const products = shownTab === "pases" ? pases : lunita;
 
   return (
     <>
@@ -520,9 +520,15 @@ function WWPageInner() {
 }
 
 export default function WutheringWavesPageClient() {
+  const vis  = useGameVisibility(SLUG);
+  const tabs = vis.filterTabs(TABS);
   return (
     <Suspense fallback={null}>
-      <WWPageInner/>
+      <WWPageInner
+        tabs={tabs}
+        lunita={vis.filterProducts(LUNITA)}
+        pases={vis.filterProducts(PASES)}
+      />
     </Suspense>
   );
 }

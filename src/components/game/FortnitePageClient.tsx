@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import { PAVOS, PAQUETES, CLUB, BATTLE_PASSES } from "@/data/fortnite";
+import { PAVOS, PAQUETES, CLUB, BATTLE_PASSES, FortniteProduct } from "@/data/fortnite";
 import FortniteShopTab from "@/components/game/FortniteShopTab";
 import { usePreferences } from "@/context/PreferencesContext";
 import { useGameVisibility } from "@/hooks/useGameVisibility";
@@ -169,9 +169,8 @@ function TabBots() {
 }
 
 // ─── PAVOS ────────────────────────────────────────────────
-function TabPavos() {
+function TabPavos({ products }: { products: FortniteProduct[] }) {
   const { lang } = usePreferences();
-  const products = useGameVisibility(SLUG).filterProducts(PAVOS);
   return (
     <div>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
@@ -269,9 +268,8 @@ function TabPavos() {
 }
 
 // ─── PAQUETES ─────────────────────────────────────────────
-function TabPaquetes() {
+function TabPaquetes({ products }: { products: FortniteProduct[] }) {
   const { lang } = usePreferences();
-  const products = useGameVisibility(SLUG).filterProducts(PAQUETES);
   return (
     <div>
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-10">
@@ -322,11 +320,8 @@ function TabPaquetes() {
 }
 
 // ─── PASES ────────────────────────────────────────────────
-function TabPases() {
+function TabPases({ club, bp }: { club: FortniteProduct[]; bp: FortniteProduct[] }) {
   const { lang } = usePreferences();
-  const vis  = useGameVisibility(SLUG);
-  const club = vis.filterProducts(CLUB);
-  const bp   = vis.filterProducts(BATTLE_PASSES);
   return (
     <div>
       {club.length > 0 && (
@@ -440,11 +435,12 @@ function TabPases() {
 }
 
 // ─── INNER ────────────────────────────────────────────────
-function FortnitePageInner() {
+function FortnitePageInner({ TABS, pavos, paquetes, club, battlePasses }: {
+  TABS: { id: string; label: string }[];
+  pavos: FortniteProduct[]; paquetes: FortniteProduct[]; club: FortniteProduct[]; battlePasses: FortniteProduct[];
+}) {
   const { lang } = usePreferences();
   const t = useT();
-  const vis  = useGameVisibility(SLUG);
-  const TABS = getTabs(lang, vis.tabVisible);
   const searchParams = useSearchParams();
   const router       = useRouter();
   const tabParam     = searchParams.get("tab");
@@ -539,9 +535,9 @@ function FortnitePageInner() {
         <div className="max-w-[1400px] mx-auto px-4 lg:px-8 py-8">
           {shownTab === "tienda"   && <FortniteShopTab />}
           {shownTab === "bots"     && <TabBots />}
-          {shownTab === "pavos"    && <TabPavos />}
-          {shownTab === "paquetes" && <TabPaquetes />}
-          {shownTab === "pases"    && <TabPases />}
+          {shownTab === "pavos"    && <TabPavos products={pavos} />}
+          {shownTab === "paquetes" && <TabPaquetes products={paquetes} />}
+          {shownTab === "pases"    && <TabPases club={club} bp={battlePasses} />}
         </div>
       </main>
       <Footer />
@@ -550,9 +546,18 @@ function FortnitePageInner() {
 }
 
 export default function FortnitePageClient() {
+  const { lang } = usePreferences();
+  const vis  = useGameVisibility(SLUG);
+  const TABS = getTabs(lang, vis.tabVisible);
   return (
     <Suspense fallback={null}>
-      <FortnitePageInner />
+      <FortnitePageInner
+        TABS={TABS}
+        pavos={vis.filterProducts(PAVOS)}
+        paquetes={vis.filterProducts(PAQUETES)}
+        club={vis.filterProducts(CLUB)}
+        battlePasses={vis.filterProducts(BATTLE_PASSES)}
+      />
     </Suspense>
   );
 }

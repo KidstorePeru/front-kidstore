@@ -197,10 +197,9 @@ function InfoSection() {
 }
 
 // ── Main ───────────────────────────────────────────────────────
-function HOKPageInner() {
+function HOKPageInner({ tokens }: { tokens: HOKProduct[] }) {
   const { formatPrice, lang } = usePreferences();
   const t = useT();
-  const tokens = useGameVisibility("honor-of-kings").filterProducts(TOKENS);
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: HOK_STYLE }}/>
@@ -292,9 +291,10 @@ function HOKPageInner() {
 }
 
 export default function HonorOfKingsPageClient() {
+  const tokens = useGameVisibility("honor-of-kings").filterProducts(TOKENS);
   return (
     <Suspense fallback={null}>
-      <HOKPageInner/>
+      <HOKPageInner tokens={tokens}/>
     </Suspense>
   );
 }

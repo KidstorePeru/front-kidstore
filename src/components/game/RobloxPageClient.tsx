@@ -129,9 +129,8 @@ function ProductCard({ p }: { p: RobloxProduct }) {
 }
 
 // ── Tab Cuenta ─────────────────────────────────────────────────
-function TabCuenta() {
+function TabCuenta({ products }: { products: RobloxProduct[] }) {
   const t = useT();
-  const products = useGameVisibility(SLUG).filterProducts(VIA_CUENTA);
 
   return (
     <div className="space-y-8">
@@ -195,10 +194,9 @@ function TabCuenta() {
 }
 
 // ── Tab Roblox Plus ────────────────────────────────────────────
-function TabPlus() {
+function TabPlus({ products }: { products: RobloxProduct[] }) {
   const { lang } = usePreferences();
   const why = lang === "EN" ? PLUS_WHY_JOIN.en : PLUS_WHY_JOIN.es;
-  const products = useGameVisibility(SLUG).filterProducts(ROBLOX_PLUS);
 
   return (
     <div className="space-y-8">
@@ -250,9 +248,8 @@ function TabPlus() {
 }
 
 // ── Tab Grupo ──────────────────────────────────────────────────
-function TabGrupo() {
+function TabGrupo({ products }: { products: RobloxProduct[] }) {
   const t = useT();
-  const products = useGameVisibility(SLUG).filterProducts(VIA_GRUPO);
 
   return (
     <div className="space-y-6">
@@ -820,11 +817,12 @@ function TabGamePass() {
 }
 
 // ── MAIN ──────────────────────────────────────────────────────
-function RobloxPageInner() {
+function RobloxPageInner({ TABS, cuenta, plus, grupo }: {
+  TABS: { id: string; label: string }[];
+  cuenta: RobloxProduct[]; plus: RobloxProduct[]; grupo: RobloxProduct[];
+}) {
   const t = useT();
   const { formatPrice, lang } = usePreferences();
-  const vis  = useGameVisibility(SLUG);
-  const TABS = getTabs(lang, vis.tabVisible);
   const searchParams = useSearchParams();
   const router       = useRouter();
   const tabParam     = searchParams.get("tab");
@@ -947,9 +945,9 @@ function RobloxPageInner() {
 
         {/* ── CONTENT ── (activeTab ya está validado contra getTabs → una pestaña oculta no entra) */}
         <div className="max-w-[1400px] mx-auto px-4 lg:px-8 py-10">
-          {shownTab === "cuenta"   && <TabCuenta/>}
-          {shownTab === "plus"     && <TabPlus/>}
-          {shownTab === "grupo"    && <TabGrupo/>}
+          {shownTab === "cuenta"   && <TabCuenta products={cuenta}/>}
+          {shownTab === "plus"     && <TabPlus products={plus}/>}
+          {shownTab === "grupo"    && <TabGrupo products={grupo}/>}
           {shownTab === "gamepass" && <TabGamePass/>}
         </div>
       </main>
@@ -959,9 +957,17 @@ function RobloxPageInner() {
 }
 
 export default function RobloxPageClient() {
+  const { lang } = usePreferences();
+  const vis  = useGameVisibility(SLUG);
+  const TABS = getTabs(lang, vis.tabVisible);
   return (
     <Suspense fallback={null}>
-      <RobloxPageInner/>
+      <RobloxPageInner
+        TABS={TABS}
+        cuenta={vis.filterProducts(VIA_CUENTA)}
+        plus={vis.filterProducts(ROBLOX_PLUS)}
+        grupo={vis.filterProducts(VIA_GRUPO)}
+      />
     </Suspense>
   );
 }
