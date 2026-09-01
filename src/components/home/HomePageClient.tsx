@@ -7,6 +7,7 @@ import TrustBar from "@/components/home/TrustBar";
 import HeroBanner from "@/components/home/HeroBanner";
 import OffersSection from "@/components/home/OffersSection";
 import GameCard from "@/components/ui/GameCard";
+import Reveal from "@/components/ui/Reveal";
 import { games, categories } from "@/data";
 import { usePreferences } from "@/context/PreferencesContext";
 import { useT } from "@/i18n";
@@ -30,60 +31,72 @@ export default function HomePageClient() {
         <div className="max-w-[1400px] mx-auto px-4 lg:px-6 pb-16">
 
           {/* ── Ofertas destacadas ── */}
-          <OffersSection />
+          <Reveal>
+            <OffersSection />
+          </Reveal>
 
           {/* ── Categorías ── */}
           <section className="py-8">
-            <h2 className="section-title mb-5">{t.home.categories}</h2>
+            <Reveal as="h2" className="section-title mb-5">
+              {t.home.categories}
+            </Reveal>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-              {categories.map((cat) => (
-                <Link
-                  key={cat.id}
-                  href={`/category/${cat.slug}`}
-                  className="flex flex-col items-center justify-center gap-2 rounded-2xl px-3 py-5 text-center transition-all duration-200 hover:-translate-y-1"
-                  style={{ background: "var(--card)", border: "1px solid var(--border)" }}
-                >
-                  <span className="text-2xl">{cat.icon}</span>
-                  <span className="text-xs font-semibold" style={{ color: "var(--text-muted)" }}>
-                    {lang === "EN" ? cat.nameEN : cat.name}
-                  </span>
-                </Link>
+              {categories.map((cat, i) => (
+                <Reveal key={cat.id} delay={i * 45}>
+                  <Link
+                    href={`/category/${cat.slug}`}
+                    className="group lift flex flex-col items-center justify-center gap-2 rounded-2xl px-3 py-5 text-center h-full"
+                    style={{ background: "var(--card)", border: "1px solid var(--border)" }}
+                  >
+                    <span className="text-2xl transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-6">
+                      {cat.icon}
+                    </span>
+                    <span className="text-xs font-semibold" style={{ color: "var(--text-muted)" }}>
+                      {lang === "EN" ? cat.nameEN : cat.name}
+                    </span>
+                  </Link>
+                </Reveal>
               ))}
             </div>
           </section>
 
           {/* ── Más populares ── */}
           <section className="py-8">
-            <div className="flex items-center justify-between mb-5">
+            <Reveal className="flex items-center justify-between mb-5">
               <h2 className="section-title">{t.home.mostPopular}</h2>
               <Link
                 href="/games"
-                className="text-xs font-semibold transition-colors hover:opacity-80"
+                className="arrow-link text-xs font-semibold transition-colors hover:opacity-80"
                 style={{ color: "var(--brand)" }}
               >
-                {t.home.viewAll}
+                {t.home.viewAll.replace("→", "")}
+                <span>→</span>
               </Link>
-            </div>
+            </Reveal>
             <div className={GRID}>
               {popular.map((game, i) => (
-                <GameCard key={game.id} game={game} index={i} />
+                <Reveal key={game.id} delay={i * 55}>
+                  <GameCard game={game} />
+                </Reveal>
               ))}
             </div>
           </section>
 
           {/* ── Todos los juegos ── */}
           <section className="py-8">
-            <div className="flex items-center justify-between mb-5">
+            <Reveal className="flex items-center justify-between mb-5">
               <h2 className="section-title">
                 {t.home.allGames}
                 <span className="text-xs font-normal" style={{ color: "var(--text-subtle)" }}>
                   ({games.length} {t.home.available})
                 </span>
               </h2>
-            </div>
+            </Reveal>
             <div className={GRID}>
               {games.map((game, i) => (
-                <GameCard key={game.id} game={game} index={i} />
+                <Reveal key={game.id} delay={(i % 6) * 55}>
+                  <GameCard game={game} />
+                </Reveal>
               ))}
             </div>
           </section>

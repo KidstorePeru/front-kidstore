@@ -102,7 +102,7 @@ export default function HeroBanner() {
           src={s.image}
           alt={s.game}
           fill
-          className="object-cover object-center"
+          className="object-cover object-center kenburns"
           priority
           sizes="100vw"
         />
@@ -201,13 +201,24 @@ export default function HeroBanner() {
             role="tab"
             aria-selected={i === current}
             aria-label={`Slide ${i + 1}`}
-            className="rounded-full transition-all duration-300"
+            className="rounded-full transition-all duration-300 overflow-hidden relative"
             style={{
               width: "3px",
               height: i === current ? "32px" : "8px",
-              background: i === current ? s.accent : "rgba(255,255,255,0.25)",
+              background: "rgba(255,255,255,0.25)",
             }}
-          />
+          >
+            {i === current && (
+              <span
+                key={animKey}
+                className="absolute inset-x-0 top-0 rounded-full"
+                style={{
+                  background: s.accent,
+                  animation: "heroProgress 5.5s linear forwards",
+                }}
+              />
+            )}
+          </button>
         ))}
       </div>
 

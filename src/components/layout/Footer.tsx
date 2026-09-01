@@ -18,7 +18,7 @@ const PAYMENTS = [
   { name: "PayPal",    img: "/paypal.png"     },
   { name: "Binance",   img: "/binance.png"    },
   { name: "Bizum",     img: "/bizum.png"      },
-  { name: "Plin",      img: "/plin.png"       },
+  { name: "Plin",      img: "/plin.webp"      },
 ];
 
 /* ── Payment methods grid (no marquee to avoid layout bugs) ── */

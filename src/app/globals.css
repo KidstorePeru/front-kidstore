@@ -209,4 +209,57 @@
     0%   { transform: translateX(0); }
     100% { transform: translateX(-50%); }
   }
+
+  /* Relleno del indicador activo del hero, sincronizado con el autoplay */
+  @keyframes heroProgress {
+    from { height: 0%;   }
+    to   { height: 100%; }
+  }
+
+  /* Zoom lento tipo "Ken Burns" para fondos de hero */
+  @keyframes kenburns {
+    from { transform: scale(1);    }
+    to   { transform: scale(1.08); }
+  }
+  .kenburns {
+    animation: kenburns 12s ease-out forwards;
+  }
+
+  /* Enlace con flecha que se desliza al hover: <a class="arrow-link">Ver todas <span>→</span></a> */
+  .arrow-link span {
+    display: inline-block;
+    transition: transform 0.2s ease;
+  }
+  .arrow-link:hover span {
+    transform: translateX(3px);
+  }
+
+  /* Realce de tarjeta: leve elevación + sombra de marca */
+  .lift {
+    transition: transform 0.25s cubic-bezier(0.16,1,0.3,1), box-shadow 0.25s ease;
+  }
+  .lift:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 14px 40px rgba(124,58,237,0.16);
+  }
+  .lift:active {
+    transform: translateY(-1px) scale(0.99);
+  }
+}
+
+/* ══════════════════════════════════════
+   ACCESIBILIDAD — respeta reduce motion
+══════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  /* El contenido con reveal siempre visible, sin depender del observer */
+  [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+  }
 }

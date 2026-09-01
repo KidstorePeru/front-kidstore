@@ -22,15 +22,16 @@ export default function OffersSection() {
         </h2>
         <Link
           href="/games"
-          className="text-xs font-semibold transition-colors hover:opacity-80"
+          className="arrow-link text-xs font-semibold transition-colors hover:opacity-80"
           style={{ color: "var(--brand)" }}
         >
-          {t.home.viewAll}
+          {t.home.viewAll.replace("→", "")}
+          <span>→</span>
         </Link>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {offerGames.map((game, i) => {
+        {offerGames.map((game) => {
           const minPrice = Math.min(...game.products.map((p) => p.price));
           const discounted = game.products.find((p) => p.discount);
 

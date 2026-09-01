@@ -9,7 +9,6 @@ import { useT } from "@/i18n";
 
 interface GameCardProps {
   game: Game;
-  index?: number;
 }
 
 const tagStyles: Record<string, string> = {
@@ -23,7 +22,7 @@ const tagStyles: Record<string, string> = {
   "Suscripcion":   "badge-nuevo",
 };
 
-export default function GameCard({ game, index = 0 }: GameCardProps) {
+export default function GameCard({ game }: GameCardProps) {
   const { formatPrice, lang } = usePreferences();
   const t = useT();
   const minPrice = useMemo(() => Math.min(...game.products.map((p) => p.price)), [game.products]);
@@ -32,7 +31,7 @@ export default function GameCard({ game, index = 0 }: GameCardProps) {
   return (
     <Link
       href={`/games/${game.slug}`}
-      className="group block"
+      className="group block transition-transform duration-200 active:scale-[0.98]"
     >
       <div className="game-card h-full">
 

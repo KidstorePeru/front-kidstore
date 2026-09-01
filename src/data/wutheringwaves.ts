@@ -40,7 +40,7 @@ export const LUNITA: WWProduct[] = [
 ];
 
 export const PASES: WWProduct[] = [
-  { id:"wwp1", name:"Suscripción Mensual", nameEN:"Monthly Subscription", subtitle:"30 días · Lunita + Astrita diaria", subtitleEN:"30 days · Lunite + daily Astrite", priceCuenta:18.99, priceOldCuenta:22.90, priceUID:19.99, priceOldUID:22.90, badge:"Popular", img:"/wuthering-waves/suscripcion.lunita.png", description:"La suscripción más rentable de WW. Lunita al activar y Astrita diaria durante 30 días.", descriptionEN:"The most cost-effective WW subscription. Lunite on activation and daily Astrite for 30 days.", slug:"pase-mensual", format:"Digital", region:"Global", tab:"pases", tabLabel:"Pase Mensual", tabLabelEN:"Monthly Pass", productType:"pase" },
+  { id:"wwp1", name:"Suscripción Mensual", nameEN:"Monthly Subscription", subtitle:"30 días · Lunita + Astrita diaria", subtitleEN:"30 days · Lunite + daily Astrite", priceCuenta:18.99, priceOldCuenta:22.90, priceUID:19.99, priceOldUID:22.90, badge:"Popular", img:"/wuthering-waves/suscripcion-lunita.png", description:"La suscripción más rentable de WW. Lunita al activar y Astrita diaria durante 30 días.", descriptionEN:"The most cost-effective WW subscription. Lunite on activation and daily Astrite for 30 days.", slug:"pase-mensual", format:"Digital", region:"Global", tab:"pases", tabLabel:"Pase Mensual", tabLabelEN:"Monthly Pass", productType:"pase" },
 ];
 
 export const ALL_WW_PRODUCTS: WWProduct[] = [...LUNITA, ...PASES];
