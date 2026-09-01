@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
-  ChevronRight, ShoppingCart, AlertTriangle, Info,
+  ChevronRight, ShoppingCart, Info,
   Shield, Zap, MessageCircle,
   Check, Heart, Sparkles, Hash, User,
 } from "lucide-react";
@@ -447,10 +447,10 @@ export default function WutheringWavesProductClient({ slug }: { slug: string }) 
               {/* Contextual notice */}
               {isCuenta ? (
                 <div className="rounded-xl p-4 flex gap-3"
-                  style={{ background:"rgba(239,68,68,0.07)", border:"1px solid rgba(239,68,68,0.2)" }}>
-                  <AlertTriangle size={15} className="text-red-400 flex-shrink-0 mt-0.5"/>
+                  style={{ background:"rgba(59,130,246,0.07)", border:"1px solid rgba(59,130,246,0.2)" }}>
+                  <Shield size={15} className="text-blue-400 flex-shrink-0 mt-0.5"/>
                   <p className="text-xs" style={{ color:"var(--text-muted)" }}>
-                    <strong className="text-red-400">{t.ww.accountNotice}</strong>{" "}
+                    <strong style={{ color:"#60A5FA" }}>{t.ww.accountNotice}</strong>{" "}
                     {t.ww.accountNoticeDesc}
                   </p>
                 </div>

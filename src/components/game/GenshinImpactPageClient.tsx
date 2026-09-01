@@ -265,7 +265,7 @@ function GenshinPageInner() {
             <span className="text-base flex-shrink-0">🔑</span>
             <p className="text-xs" style={{ color:"var(--text-muted)" }}>
               <strong style={{ color:BRAND_LIGHT }}>{lang === "ES" ? "Requiere acceso a cuenta HoYoverse." : "Requires HoYoverse account access."}</strong>{" "}
-              {lang === "ES" ? "Necesitaremos el usuario y contraseña de tu cuenta HoYoverse para completar la compra de forma segura dentro del juego." : "We will need your HoYoverse account username and password to complete the purchase securely within the game."}
+              {lang === "ES" ? "Coordinamos el acceso contigo por WhatsApp al procesar tu pedido. Nunca pedimos tu contraseña en la web." : "We coordinate access with you on WhatsApp when processing your order. We never ask for your password on the website."}
             </p>
           </div>
 

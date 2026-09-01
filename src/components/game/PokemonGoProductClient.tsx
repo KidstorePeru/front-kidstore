@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
-  ChevronRight, ShoppingCart, AlertTriangle,
+  ChevronRight, ShoppingCart,
   Shield, Zap, MessageCircle,
   Check, Heart,
 } from "lucide-react";
@@ -65,11 +65,11 @@ function PGODescription({ productType }: { productType: string }) {
       <div className="rounded-xl p-4 space-y-2" style={{ background:"var(--surface)", border:"1px solid var(--border)" }}>
         <p className="text-xs font-bold mb-1" style={{ color:"var(--text)" }}>{lang === "ES" ? "❓ ¿Qué necesitamos?" : "❓ What do we need?"}</p>
         {(lang === "ES" ? [
-          "Los datos de acceso a tu cuenta de Pokémon GO.",
-          "Usuario y contraseña del método de inicio de sesión (Pokémon Trainer Club o Facebook).",
+          "Tu nombre de entrenador y el método de inicio de sesión (Pokémon Trainer Club o Facebook).",
+          "La contraseña se coordina por WhatsApp al procesar el pedido — nunca se pide en la web.",
         ] : [
-          "Your Pokémon GO account login details.",
-          "Username and password of the login method (Pokémon Trainer Club or Facebook).",
+          "Your trainer name and login method (Pokémon Trainer Club or Facebook).",
+          "The password is coordinated on WhatsApp when processing the order — never asked for on the website.",
         ]).map((t,i) => (
           <p key={i} className="text-xs flex gap-2" style={{ color:"var(--text-muted)" }}>
             <span>•</span><span>{t}</span>
@@ -96,7 +96,7 @@ function PGODescription({ productType }: { productType: string }) {
         {[
           { icon:"⚡", text: lang === "ES" ? "Entrega en minutos directamente en tu cuenta." : "Delivery in minutes directly to your account." },
           { icon:"✅", text: lang === "ES" ? "100% garantizado. Si no se puede entregar, te devolvemos el dinero." : "100% guaranteed. If we can't deliver, we refund your money." },
-          { icon:"🛡️", text: lang === "ES" ? "Tus datos solo se usan para la recarga y no son almacenados." : "Your data is only used for the recharge and is not stored." },
+          { icon:"🛡️", text: lang === "ES" ? "Nunca pedimos tu contraseña en la web. El acceso se coordina por WhatsApp." : "We never ask for your password on the website. Access is coordinated on WhatsApp." },
           { icon:"🌐", text: lang === "ES" ? "Disponible para cuentas de cualquier región (Global)." : "Available for accounts from any region (Global)." },
           { icon:"💬", text: lang === "ES" ? "Soporte disponible por WhatsApp o Messenger." : "Support available via WhatsApp or Messenger." },
         ].map((item,i) => (
@@ -118,7 +118,7 @@ export default function PokemonGoProductClient({ slug }: { slug: string }) {
   const t = useT();
   const badge = useBadge();
   const p           = product;
-  const discountPct = Math.round((1 - p.price / p.priceOld) * 100);
+  const discountPct = p.priceOld > p.price ? Math.round((1 - p.price / p.priceOld) * 100) : 0;
 
   const [platform,    setPlatform]    = useState<string | null>(null);
   const [whatsapp,    setWhatsapp]    = useState(false);
@@ -225,7 +225,7 @@ export default function PokemonGoProductClient({ slug }: { slug: string }) {
             <ChevronRight size={11}/>
             <Link href="/games/pokemon-go" className="hover:opacity-80">Pokémon GO</Link>
             <ChevronRight size={11}/>
-            <Link href={`/games/pokemon-go?tab=${p.tab}`} className="hover:opacity-80">{p.tabLabel}</Link>
+            <Link href={`/games/pokemon-go?tab=${p.tab}`} className="hover:opacity-80">{lang==="EN" ? p.tabLabelEN || p.tabLabel : p.tabLabel}</Link>
             <ChevronRight size={11}/>
             <span style={{ color:"var(--text)" }}>{lang==="EN" ? p.nameEN || p.name : p.name}</span>
           </nav>
@@ -288,13 +288,13 @@ export default function PokemonGoProductClient({ slug }: { slug: string }) {
                 ))}
               </div>
 
-              {/* Aviso seguridad */}
+              {/* Cómo funciona la entrega */}
               <div className="rounded-xl p-4 flex gap-3"
-                style={{ background:"rgba(239,68,68,0.07)", border:"1px solid rgba(239,68,68,0.2)" }}>
-                <AlertTriangle size={15} className="text-red-400 flex-shrink-0 mt-0.5"/>
+                style={{ background:"rgba(59,130,246,0.07)", border:"1px solid rgba(59,130,246,0.2)" }}>
+                <Shield size={15} className="text-blue-400 flex-shrink-0 mt-0.5"/>
                 <div className="text-xs" style={{ color:"var(--text-muted)" }}>
-                  <p className="font-semibold text-red-400 mb-0.5">{lang === "ES" ? "Aviso importante" : "Important notice"}</p>
-                  <p>{lang === "ES" ? "Necesitaremos acceder a tu cuenta para realizar la recarga. Tus datos solo se utilizan para completar la compra dentro del juego." : "We will need to access your account to complete the recharge. Your data is only used to complete the in-game purchase."}</p>
+                  <p className="font-semibold mb-0.5" style={{ color:"#60A5FA" }}>{lang === "ES" ? "Cómo funciona la entrega" : "How the delivery works"}</p>
+                  <p>{lang === "ES" ? "Es con acceso a cuenta. Coordinamos el acceso contigo por WhatsApp al procesar tu pedido y nunca te pedimos tu contraseña en la web." : "This is via account access. We coordinate access with you on WhatsApp when processing your order and never ask for your password on the website."}</p>
                 </div>
               </div>
 

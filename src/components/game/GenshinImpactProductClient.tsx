@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
-  ChevronRight, ShoppingCart, AlertTriangle,
+  ChevronRight, ShoppingCart,
   Shield, Zap, MessageCircle,
   Check, Heart, Sparkles,
 } from "lucide-react";
@@ -58,11 +58,11 @@ function GenshinDescription({ productType, bonus }: { productType: string; bonus
       <div className="rounded-xl p-4 space-y-2" style={{ background:"var(--surface)", border:"1px solid var(--border)" }}>
         <p className="text-xs font-bold mb-1" style={{ color:"var(--text)" }}>❓ {lang === "ES" ? "¿Qué necesitamos?" : "What do we need?"}</p>
         {(lang === "ES" ? [
-          "Usuario y contraseña de tu cuenta HoYoverse.",
-          "Si tienes verificación en dos pasos activada, necesitaremos acceso temporal al correo.",
+          "Tu usuario o correo de la cuenta HoYoverse.",
+          "El servidor de tu cuenta y tu nombre de viajero en el juego.",
         ] : [
-          "Username and password for your HoYoverse account.",
-          "If you have two-step verification enabled, we will need temporary access to your email.",
+          "Your HoYoverse account username or email.",
+          "Your account server and your traveler name in game.",
         ]).map((t,i) => (
           <p key={i} className="text-xs flex gap-2" style={{ color:"var(--text-muted)" }}>
             <span>•</span><span>{t}</span>
@@ -126,13 +126,13 @@ function GenshinDescription({ productType, bonus }: { productType: string; bonus
         {(lang === "ES" ? [
           { icon:"⚡", text:"Entrega en 5-10 minutos." },
           { icon:"✅", text:"100% garantizado. Si no se puede entregar, te devolvemos el dinero." },
-          { icon:"🛡️", text:"Tus datos solo se usan para la recarga y no son almacenados." },
+          { icon:"🛡️", text:"Nunca pedimos tu contraseña en la web. El acceso se coordina por WhatsApp." },
           { icon:"🌐", text:"Disponible para cuentas de cualquier servidor (Global)." },
           { icon:"💬", text:"Soporte disponible por WhatsApp o Messenger." },
         ] : [
           { icon:"⚡", text:"Delivery in 5-10 minutes." },
           { icon:"✅", text:"100% guaranteed. If we can't deliver, you get a full refund." },
-          { icon:"🛡️", text:"Your data is only used for the top-up and is not stored." },
+          { icon:"🛡️", text:"We never ask for your password on the website. Access is coordinated on WhatsApp." },
           { icon:"🌐", text:"Available for accounts on any server (Global)." },
           { icon:"💬", text:"Support available via WhatsApp or Messenger." },
         ]).map((item,i) => (
@@ -154,7 +154,7 @@ export default function GenshinImpactProductClient({ slug }: { slug: string }) {
   const t = useT();
   const badge = useBadge();
   const p           = product;
-  const discountPct = Math.round((1 - p.price / p.priceOld) * 100);
+  const discountPct = p.priceOld > p.price ? Math.round((1 - p.price / p.priceOld) * 100) : 0;
 
   const [whatsapp,   setWhatsapp]   = useState(false);
   const [addedCart,  setAddedCart]  = useState(false);
@@ -264,7 +264,7 @@ export default function GenshinImpactProductClient({ slug }: { slug: string }) {
             <ChevronRight size={11}/>
             <Link href="/games/genshin-impact" className="hover:opacity-80">Genshin Impact</Link>
             <ChevronRight size={11}/>
-            <Link href={`/games/genshin-impact?tab=${p.tab}`} className="hover:opacity-80">{p.tabLabel}</Link>
+            <Link href={`/games/genshin-impact?tab=${p.tab}`} className="hover:opacity-80">{lang==="EN" ? p.tabLabelEN || p.tabLabel : p.tabLabel}</Link>
             <ChevronRight size={11}/>
             <span style={{ color:"var(--text)" }}>{lang==="EN" ? p.nameEN || p.name : p.name}</span>
           </nav>
@@ -338,13 +338,13 @@ export default function GenshinImpactProductClient({ slug }: { slug: string }) {
                 ))}
               </div>
 
-              {/* Aviso HoYoverse */}
+              {/* Cómo funciona la entrega */}
               <div className="rounded-xl p-4 flex gap-3"
-                style={{ background:"rgba(239,68,68,0.07)", border:"1px solid rgba(239,68,68,0.2)" }}>
-                <AlertTriangle size={15} className="text-red-400 flex-shrink-0 mt-0.5"/>
+                style={{ background:"rgba(59,130,246,0.07)", border:"1px solid rgba(59,130,246,0.2)" }}>
+                <Shield size={15} className="text-blue-400 flex-shrink-0 mt-0.5"/>
                 <div className="text-xs" style={{ color:"var(--text-muted)" }}>
-                  <p className="font-semibold text-red-400 mb-0.5">{lang === "ES" ? "Aviso importante" : "Important notice"}</p>
-                  <p>{lang === "ES" ? "Necesitaremos acceder a tu cuenta HoYoverse para realizar la recarga. Tus datos solo se utilizan para completar la compra dentro del juego." : "We will need to access your HoYoverse account to complete the top-up. Your data is only used to complete the purchase within the game."}</p>
+                  <p className="font-semibold mb-0.5" style={{ color:"#60A5FA" }}>{lang === "ES" ? "Cómo funciona la entrega" : "How the delivery works"}</p>
+                  <p>{lang === "ES" ? "Es con acceso a cuenta HoYoverse. Coordinamos el acceso contigo por WhatsApp al procesar tu pedido y nunca te pedimos tu contraseña en la web." : "This is via HoYoverse account access. We coordinate access with you on WhatsApp when processing your order and never ask for your password on the website."}</p>
                 </div>
               </div>
 

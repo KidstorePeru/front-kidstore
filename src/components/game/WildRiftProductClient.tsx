@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
-  ChevronRight, ShoppingCart, AlertTriangle,
+  ChevronRight, ShoppingCart,
   Shield, Zap, Info, MessageCircle,
   Check, Heart,
 } from "lucide-react";
@@ -280,12 +280,12 @@ export default function WildRiftProductClient({ slug }: { slug: string }) {
                 ))}
               </div>
 
-              {/* Important notice */}
+              {/* Cómo funciona la entrega */}
               <div className="rounded-xl p-4 flex gap-3"
-                style={{ background:"rgba(239,68,68,0.07)", border:"1px solid rgba(239,68,68,0.2)" }}>
-                <AlertTriangle size={15} className="text-red-400 flex-shrink-0 mt-0.5"/>
+                style={{ background:"rgba(59,130,246,0.07)", border:"1px solid rgba(59,130,246,0.2)" }}>
+                <Shield size={15} className="text-blue-400 flex-shrink-0 mt-0.5"/>
                 <div className="text-xs" style={{ color:"var(--text-muted)" }}>
-                  <p className="font-semibold text-red-400 mb-0.5">{t.roblox.importantNotice}</p>
+                  <p className="font-semibold mb-0.5" style={{ color:"#60A5FA" }}>{t.product.deliveryNoticeTitle}</p>
                   <p>{t.tft.importantNoticeDesc}</p>
                 </div>
               </div>
