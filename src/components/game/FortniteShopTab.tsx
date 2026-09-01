@@ -462,32 +462,45 @@ function ShopModal({ entry, onClose, vbucksToSoles, vbucksToPen, sym, formatPric
   }
 
   return (
-    /* Overlay sin blur — solo fondo semitransparente suave */
+    /* Overlay con leve blur */
     <div
-      style={{ position:"fixed", inset:0, zIndex:1000, background:"rgba(0,0,0,.38)", display:"flex", alignItems:"center", justifyContent:"center", padding:16 }}
+      className="fn-modal-overlay"
+      style={{ position:"fixed", inset:0, zIndex:1000, background:"rgba(8,6,18,.55)", backdropFilter:"blur(3px)", WebkitBackdropFilter:"blur(3px)", display:"flex", alignItems:"center", justifyContent:"center", padding:16 }}
       onClick={e=>{ if(e.target===e.currentTarget) onClose(); }}
     >
-      <div style={{
-        position:"relative", width:"100%", maxWidth:900, maxHeight:"92vh",
-        borderRadius:20, overflow:"hidden",
+      <style>{`
+        @keyframes fn-ovIn   { from { opacity:0 } to { opacity:1 } }
+        @keyframes fn-cardIn { from { opacity:0; transform:translateY(14px) scale(.975) } to { opacity:1; transform:none } }
+        .fn-modal-overlay { animation: fn-ovIn .2s ease both; }
+        .fn-modal-card    { animation: fn-cardIn .3s cubic-bezier(.16,1,.3,1) both; }
+        .fn-btn  { transition: transform .15s ease, filter .2s ease, background .2s ease; }
+        @media (hover:hover) { .fn-btn:hover { transform: translateY(-2px); filter: brightness(1.07); } }
+        .fn-btn:active { transform: translateY(0) scale(.99); }
+      `}</style>
+
+      <div className="fn-modal-wrap fn-modal-card" style={{
+        position:"relative", width:"100%", maxWidth:880, maxHeight:"92vh",
+        borderRadius:22, overflow:"hidden",
         background:"var(--card)", border:"1px solid var(--border)",
-        boxShadow:"0 20px 60px rgba(0,0,0,.2)",
+        boxShadow:"0 24px 70px rgba(0,0,0,.35)",
         display:"flex", flexDirection:"column",
-      }} className="fn-modal-wrap">
+      }}>
         {/* Header */}
-        <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"14px 20px", borderBottom:"1px solid var(--border)", flexShrink:0 }}>
-          <div style={{ display:"flex", alignItems:"center", gap:10 }}>
-            <div style={{ width:9, height:9, borderRadius:"50%", background:color, boxShadow:`0 0 8px ${color}`, flexShrink:0 }}/>
-            <div>
-              <p style={{ fontFamily:"'Manrope', sans-serif", fontSize:10, fontWeight:600, letterSpacing:"1.2px", textTransform:"uppercase" as const, color:"var(--text-subtle)", margin:0 }}>
+        <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"15px 20px", borderBottom:"1px solid var(--border)", flexShrink:0, background:`linear-gradient(90deg, ${color}14, transparent 55%)` }}>
+          <div style={{ display:"flex", alignItems:"center", gap:11, minWidth:0 }}>
+            <div style={{ width:10, height:10, borderRadius:"50%", background:color, boxShadow:`0 0 10px ${color}`, flexShrink:0 }}/>
+            <div style={{ minWidth:0 }}>
+              <p style={{ fontFamily:"'Manrope', sans-serif", fontSize:10, fontWeight:700, letterSpacing:"1.3px", textTransform:"uppercase" as const, color:"var(--text-subtle)", margin:0 }}>
                 {type||rarityLabel}
               </p>
-              <h2 style={{ fontFamily:"'Readex Pro', sans-serif", fontSize:20, fontWeight:700, color:"var(--text)", margin:0, lineHeight:1.15 }}>
+              <h2 style={{ fontFamily:"'Readex Pro', sans-serif", fontSize:20, fontWeight:700, color:"var(--text)", margin:0, lineHeight:1.15, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>
                 {name}
               </h2>
             </div>
           </div>
-          <button onClick={onClose} style={{ width:32, height:32, borderRadius:10, border:"1px solid var(--border)", background:"var(--surface)", color:"var(--text-muted)", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, fontSize:14 }}>✕</button>
+          <button onClick={onClose} aria-label={lang === "EN" ? "Close" : "Cerrar"} style={{ width:34, height:34, borderRadius:10, border:"1px solid var(--border)", background:"var(--surface)", color:"var(--text-muted)", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+            <X size={16}/>
+          </button>
         </div>
 
         {/* Body */}
@@ -495,22 +508,24 @@ function ShopModal({ entry, onClose, vbucksToSoles, vbucksToPen, sym, formatPric
 
           {/* Imagen — panel grande, imagen completa sin recortar */}
           <div className="fn-modal-img" style={{
-            width: 300, minWidth: 300, flexShrink: 0,
+            width: 320, minWidth: 320, flexShrink: 0,
             position: "relative", backgroundImage: gradient,
             display: "flex", alignItems: "center", justifyContent: "center",
             overflow: "hidden",
           }}>
+            {/* Glow radial de la rareza */}
+            <div style={{ position:"absolute", inset:0, zIndex:1, background:`radial-gradient(circle at 50% 40%, ${color}40, transparent 62%)` }}/>
+            {/* Patrón de puntos */}
+            <div style={{ position:"absolute", inset:0, zIndex:1, backgroundImage:"radial-gradient(rgba(255,255,255,.08) 1px, transparent 1px)", backgroundSize:"18px 18px" }}/>
             <img src={img} alt={name} style={{
               position: "relative", zIndex: 2,
               width: "100%", height: "100%",
               objectFit: "contain",
               objectPosition: "center center",
-              filter: "drop-shadow(0 8px 32px rgba(0,0,0,.6))",
-              padding: "12px",
+              filter: "drop-shadow(0 12px 36px rgba(0,0,0,.55))",
+              padding: "14px",
             }} onError={e=>{ (e.target as HTMLImageElement).src=VBUCK_IMG; }}/>
-            {/* Fade hacia var(--card) — sin negro */}
-            {/* Fade lateral quitado — sin difuminado */}
-            <div style={{ position:"absolute", top:12, left:12, zIndex:5, fontFamily:"'Manrope', sans-serif", fontSize:9, fontWeight:700, letterSpacing:"1px", textTransform:"uppercase" as const, padding:"3px 10px", borderRadius:20, background:`${color}22`, border:`1px solid ${color}66`, color }}>{series||rarityLabel}</div>
+            <div style={{ position:"absolute", top:12, left:12, zIndex:5, fontFamily:"'Manrope', sans-serif", fontSize:9, fontWeight:700, letterSpacing:"1px", textTransform:"uppercase" as const, padding:"3px 10px", borderRadius:20, background:`${color}22`, border:`1px solid ${color}66`, color, backdropFilter:"blur(4px)" }}>{series||rarityLabel}</div>
             {countdown&&(
               <div style={{ position:"absolute", bottom:12, left:12, zIndex:5, display:"flex", alignItems:"center", gap:4, fontFamily:"'Manrope', sans-serif", fontSize:10, fontWeight:700, color:"#fff", background:"rgba(0,0,0,.5)", backdropFilter:"blur(6px)", padding:"4px 10px", borderRadius:20, border:"1px solid rgba(255,255,255,.15)" }}>
                 <Clock size={9}/> {countdown}
@@ -519,30 +534,46 @@ function ShopModal({ entry, onClose, vbucksToSoles, vbucksToPen, sym, formatPric
           </div>
 
           {/* Info */}
-          <div style={{ flex:1, padding:"18px 20px 18px 14px", display:"flex", flexDirection:"column", gap:10, overflowY:"auto" }}>
+          <div className="fn-modal-info" style={{ flex:1, padding:"18px 20px", display:"flex", flexDirection:"column", gap:12, overflowY:"auto", minWidth:0 }}>
 
             {desc&&<p style={{ fontFamily:"'Manrope', sans-serif", fontSize:13, color:"var(--text-muted)", lineHeight:1.6, margin:0 }}>{desc}</p>}
 
             {bundle&&(entry.brItems?.length??0)>1&&(
               <div>
-                <p style={{ fontFamily:"'Manrope', sans-serif", fontSize:10, fontWeight:700, letterSpacing:"1px", textTransform:"uppercase" as const, color:"var(--text-subtle)", margin:"0 0 6px" }}>{lang === "EN" ? "Bundle contents" : "Contenido del lote"}</p>
-                <div style={{ display:"flex", flexWrap:"wrap", gap:5 }}>
+                <p style={{ fontFamily:"'Manrope', sans-serif", fontSize:10, fontWeight:700, letterSpacing:"1px", textTransform:"uppercase" as const, color:"var(--text-subtle)", margin:"0 0 7px" }}>{lang === "EN" ? "Bundle contents" : "Contenido del lote"}</p>
+                <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(118px, 1fr))", gap:6 }}>
                   {entry.brItems!.map(it=>(
-                    <div key={it.id} style={{ background:"var(--surface)", border:"1px solid var(--border)", padding:"4px 10px", borderRadius:8 }}>
-                      <div style={{ fontFamily:"'Readex Pro', sans-serif", fontSize:11, fontWeight:700, color:"var(--text)" }}>{it.name}</div>
-                      <div style={{ fontFamily:"'Manrope', sans-serif", fontSize:9, color:"var(--text-subtle)", textTransform:"uppercase" as const, letterSpacing:".5px" }}>{it.type?.displayValue||""}</div>
+                    <div key={it.id} style={{ background:"var(--surface)", border:"1px solid var(--border)", padding:"6px 10px", borderRadius:9 }}>
+                      <div style={{ fontFamily:"'Readex Pro', sans-serif", fontSize:11, fontWeight:700, color:"var(--text)", lineHeight:1.25 }}>{it.name}</div>
+                      <div style={{ fontFamily:"'Manrope', sans-serif", fontSize:9, color:"var(--text-subtle)", textTransform:"uppercase" as const, letterSpacing:".5px", marginTop:1 }}>{it.type?.displayValue||""}</div>
                     </div>
                   ))}
                 </div>
               </div>
             )}
 
-            <div style={{ display:"flex", flexWrap:"wrap", gap:5 }}>
-              {entry.giftable&&<span style={{ fontFamily:"'Manrope', sans-serif", fontSize:11, fontWeight:600, padding:"3px 10px", borderRadius:20, background:"rgba(0,210,100,.1)", color:"#10b981", border:"1px solid rgba(0,210,100,.2)" }}>{lang === "EN" ? "🎁 Giftable" : "🎁 Regalable"}</span>}
-              {hasSale&&entry.banner?.value&&<span style={{ fontFamily:"'Manrope', sans-serif", fontSize:11, fontWeight:600, padding:"3px 10px", borderRadius:20, background:"rgba(255,200,0,.1)", color:"#f59e0b", border:"1px solid rgba(255,200,0,.2)" }}>🏷 {entry.banner.value}</span>}
+            <div style={{ display:"flex", flexWrap:"wrap", gap:6 }}>
+              {entry.giftable&&<span style={{ fontFamily:"'Manrope', sans-serif", fontSize:11, fontWeight:600, padding:"3px 10px", borderRadius:20, background:"rgba(16,185,129,.1)", color:"#10b981", border:"1px solid rgba(16,185,129,.25)" }}>{lang === "EN" ? "🎁 Giftable" : "🎁 Regalable"}</span>}
+              {hasSale&&entry.banner?.value&&<span style={{ fontFamily:"'Manrope', sans-serif", fontSize:11, fontWeight:600, padding:"3px 10px", borderRadius:20, background:"rgba(245,158,11,.1)", color:"#f59e0b", border:"1px solid rgba(245,158,11,.25)" }}>🏷 {entry.banner.value}</span>}
+              {bundle&&<span style={{ fontFamily:"'Manrope', sans-serif", fontSize:11, fontWeight:600, padding:"3px 10px", borderRadius:20, background:`${color}18`, color, border:`1px solid ${color}45` }}>{lang === "EN" ? "📦 Bundle" : "📦 Lote"}</span>}
             </div>
 
-            <div style={{ flex:1 }}/>
+            {/* Aviso solo para LOTES — Epic no permite regalar el lote si ya tienes algo */}
+            {bundle&&(
+              <div style={{
+                display:"flex", gap:10, padding:"11px 13px", borderRadius:12,
+                background:"rgba(245,158,11,.09)", border:"1px solid rgba(245,158,11,.3)",
+              }}>
+                <span style={{ fontSize:15, lineHeight:1.35, flexShrink:0 }}>⚠️</span>
+                <p style={{ fontFamily:"'Manrope', sans-serif", fontSize:12, lineHeight:1.5, color:"var(--text-muted)", margin:0 }}>
+                  {lang === "EN"
+                    ? <>Bundles are gifted <b>complete</b>. If you already own <b>any</b> of these items on your account, Epic Games won&rsquo;t let us send you the full bundle — in that case, <b>message us on WhatsApp</b> and we&rsquo;ll send only what you&rsquo;re missing.</>
+                    : <>Los lotes se regalan <b>completos</b>. Si ya tienes <b>alguno</b> de estos objetos en tu cuenta, Epic Games no permite enviarte el lote entero — en ese caso, <b>escríbenos por WhatsApp</b> y te enviamos solo lo que te falta.</>}
+                </p>
+              </div>
+            )}
+
+            <div style={{ flex:1, minHeight:4 }}/>
 
             {/* Precio */}
             <div style={{ background:"var(--surface)", border:"1px solid var(--border)", borderRadius:14, padding:"12px 16px" }}>
@@ -589,48 +620,47 @@ function ShopModal({ entry, onClose, vbucksToSoles, vbucksToPen, sym, formatPric
               </p>
             </div>
 
-            {/* 3 BOTONES */}
+            {/* BOTONES */}
             <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
 
-              {/* 1. Añadir al carrito */}
-              <button onClick={handleAddCart} style={{
+              {/* 1. Añadir al carrito — acción primaria */}
+              <button className="fn-btn" onClick={handleAddCart} style={{
                 display:"flex", alignItems:"center", justifyContent:"center", gap:8,
-                height:46, borderRadius:12, border:"none", cursor:"pointer", width:"100%",
+                height:48, borderRadius:12, border:"none", cursor:"pointer", width:"100%",
                 fontFamily:"'Manrope', sans-serif", fontWeight:700, fontSize:14,
                 background:cartAdded?"linear-gradient(135deg,#059669,#10b981)":"linear-gradient(135deg,#7C3AED,#5B21B6)",
                 color:"#fff",
-                boxShadow:cartAdded?"0 4px 16px rgba(16,185,129,.3)":"0 4px 16px rgba(124,58,237,.35)",
-                transition:"all .2s",
+                boxShadow:cartAdded?"0 6px 20px rgba(16,185,129,.35)":"0 6px 20px rgba(124,58,237,.4)",
               }}>
                 {cartAdded?<Check size={16}/>:<ShoppingCart size={16}/>}
                 {cartAdded ? (lang === "EN" ? "Added to cart!" : "¡Añadido al carrito!") : (lang === "EN" ? "Add to cart" : "Agregar al carrito")}
               </button>
 
-              {/* 2. Comprar ahora */}
-              <button onClick={handleBuyNow} style={{
-                display:"flex", alignItems:"center", justifyContent:"center", gap:8,
-                height:46, borderRadius:12, border:"none", cursor:"pointer", width:"100%",
-                fontFamily:"'Manrope', sans-serif", fontWeight:700, fontSize:14,
-                background:"linear-gradient(135deg,#ffe600,#ffa800)",
-                color:"#000", boxShadow:"0 4px 16px rgba(255,200,0,.3)",
-                transition:"all .2s",
-              }}>
-                <Zap size={16}/>
-                {lang === "EN" ? "Buy now" : "Comprar ahora"}
-              </button>
-
-              {/* 3. Comprar por WhatsApp */}
-              <a href={`https://wa.me/${WA_NUMBER}?text=${waMsg}`} target="_blank" rel="noopener noreferrer"
-                style={{
-                  display:"flex", alignItems:"center", justifyContent:"center", gap:8,
-                  height:46, borderRadius:12, textDecoration:"none", width:"100%",
-                  fontFamily:"'Manrope', sans-serif", fontWeight:700, fontSize:14,
-                  background:"linear-gradient(135deg,#25D366,#128C7E)",
-                  color:"#fff", boxShadow:"0 4px 16px rgba(37,211,102,.2)",
+              {/* 2. Comprar ahora + 3. WhatsApp */}
+              <div className="fn-modal-btnrow" style={{ display:"flex", gap:8 }}>
+                <button className="fn-btn" onClick={handleBuyNow} style={{
+                  flex:1, display:"flex", alignItems:"center", justifyContent:"center", gap:7,
+                  height:44, borderRadius:12, border:"none", cursor:"pointer",
+                  fontFamily:"'Manrope', sans-serif", fontWeight:700, fontSize:13.5,
+                  background:"linear-gradient(135deg,#ffe600,#ffa800)",
+                  color:"#000", boxShadow:"0 4px 14px rgba(255,180,0,.3)",
                 }}>
-                <MessageCircle size={16}/>
-                {lang === "EN" ? "Buy via WhatsApp" : "Comprar por WhatsApp"}
-              </a>
+                  <Zap size={15}/>
+                  {lang === "EN" ? "Buy now" : "Comprar ahora"}
+                </button>
+
+                <a className="fn-btn" href={`https://wa.me/${WA_NUMBER}?text=${waMsg}`} target="_blank" rel="noopener noreferrer"
+                  style={{
+                    flex:1, display:"flex", alignItems:"center", justifyContent:"center", gap:7,
+                    height:44, borderRadius:12, textDecoration:"none",
+                    fontFamily:"'Manrope', sans-serif", fontWeight:700, fontSize:13.5,
+                    background:"linear-gradient(135deg,#25D366,#128C7E)", color:"#fff",
+                    boxShadow:"0 4px 14px rgba(37,211,102,.28)",
+                  }}>
+                  <MessageCircle size={15}/>
+                  WhatsApp
+                </a>
+              </div>
             </div>
 
           
@@ -845,10 +875,11 @@ export default function FortniteShopTab() {
           .fn-search-wrap { max-width:100% !important; }
         }
         @media (max-width:640px) {
-          .fn-modal-body  { flex-direction:column !important; overflow-y:auto !important; }
-          .fn-modal-img   { width:100% !important; min-width:unset !important; height:200px !important; flex-shrink:0 !important; }
-          .fn-modal-info  { padding:12px 14px 14px !important; }
-          .fn-modal-wrap  { max-height:96vh !important; border-radius:14px !important; }
+          .fn-modal-body    { flex-direction:column !important; overflow-y:auto !important; }
+          .fn-modal-img     { width:100% !important; min-width:unset !important; height:210px !important; flex-shrink:0 !important; }
+          .fn-modal-info    { padding:14px 16px 16px !important; }
+          .fn-modal-wrap    { max-height:96vh !important; border-radius:16px !important; }
+          .fn-modal-btnrow  { flex-direction:column !important; }
         }
       `}</style>
 
