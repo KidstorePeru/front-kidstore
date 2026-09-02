@@ -117,9 +117,10 @@ function waLink(phone: string | undefined, message: string): string | null {
 }
 
 const FORM_LABELS: Record<string, string> = {
-  epicUser: "Usuario Epic", gameName: "Nombre en juego", platform: "Plataforma",
+  epicUser: "Usuario Epic Games", gameAccount: "Cuenta / correo del juego",
+  gameName: "Nombre en el juego", platform: "Plataforma",
   riotId: "Riot ID", uid: "UID", server: "Servidor", user: "Cuenta / correo",
-  trainerCode: "Código entrenador", discordTag: "Discord", notes: "Notas",
+  trainerCode: "Código de entrenador", discordTag: "Discord", notes: "Notas",
 };
 function formLabel(k: string) { return FORM_LABELS[k] || k.replace(/([A-Z])/g, " $1").replace(/^./, c => c.toUpperCase()); }
 
@@ -220,7 +221,7 @@ async function fetchClientes(orders: Order[]): Promise<Cliente[]> {
     const email = (u.email || "").toLowerCase();
     if (!email) continue;
     map.set(email, {
-      email, name: u.username || email.split("@")[0],
+      email, name: u.fullName || u.username || email.split("@")[0],
       phone: u.phone || undefined, createdAt: u.createdAt, registered: true,
     });
   }

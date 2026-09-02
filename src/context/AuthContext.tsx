@@ -7,6 +7,7 @@ export interface User {
   id:        string | number;
   username:  string;
   email:     string;
+  fullName?: string;
   avatar?:   string;
   phone?:    string;
   createdAt?: string;
@@ -16,11 +17,12 @@ interface AuthContextType {
   user:           User | null;
   loading:        boolean;
   login:          (identifier: string, password: string) => Promise<void>;
-  register:       (username: string, email: string, password: string) => Promise<void>;
+  register:       (username: string, email: string, password: string, fullName?: string) => Promise<void>;
   logout:         () => void;
+  requestEmailCode: (email: string, username?: string, lang?: string) => Promise<void>;
   forgotPassword: (email: string) => Promise<void>;
   verifyCode:     (email: string, code: string) => Promise<{ username: string }>;
-  updateProfile:  (data: Partial<User>) => Promise<void>;
+  updateProfile:  (data: Partial<User> & { newEmail?: string }) => Promise<void>;
   changePassword: (currentPassword: string, newPassword: string) => Promise<void>;
 }
 
@@ -65,13 +67,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  // ── Register ──
-  async function register(username: string, email: string, password: string) {
+  // ── Register (después de verificar el correo con código) ──
+  async function register(username: string, email: string, password: string, fullName?: string) {
     setLoading(true);
     try {
       const { data, error } = await api<{ success: boolean; user: User }>("/auth/register", {
         method: "POST",
-        body: JSON.stringify({ username, email, password }),
+        body: JSON.stringify({ username, email, password, fullName }),
       });
 
       if (error || !data?.success) throw new Error(error ?? "Registration failed");
@@ -81,6 +83,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } finally {
       setLoading(false);
     }
+  }
+
+  // ── Enviar código de verificación al correo (registro / cambio de correo) ──
+  async function requestEmailCode(email: string, username?: string, lang?: string) {
+    const { error } = await api("/send-verification", {
+      method: "POST",
+      body: JSON.stringify({ email, username: username || email.split("@")[0], lang }),
+    });
+    if (error) throw new Error(error);
   }
 
   // ── Logout ──
@@ -136,20 +147,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   // ── Update profile ──
-  async function updateProfile(data: Partial<User>) {
+  // `avatar` es solo local (no hay columna en el backend). `newEmail` cambia el
+  // correo de la cuenta y requiere haber verificado ese correo con un código.
+  async function updateProfile(data: Partial<User> & { newEmail?: string }) {
     if (!user) return;
     setLoading(true);
     try {
-      const { error } = await api("/auth/update-profile", {
-        method: "PUT",
-        body: JSON.stringify({
-          email: user.email,
-          username: data.username ?? user.username,
-          phone: data.phone ?? user.phone,
-        }),
-      });
+      const body: Record<string, unknown> = { email: user.email };
+      if (data.username !== undefined) body.username = data.username;
+      if (data.phone    !== undefined) body.phone    = data.phone;
+      if (data.fullName !== undefined) body.fullName = data.fullName;
+      if (data.newEmail) body.newEmail = data.newEmail;
 
-      if (error) throw new Error(error);
+      // Si solo se cambia el avatar (local), no llamamos al backend.
+      const touchesBackend = Object.keys(body).length > 1;
+      if (touchesBackend) {
+        const { data: res, error } = await api<{ user?: User }>("/auth/update-profile", {
+          method: "PUT",
+          body: JSON.stringify(body),
+        });
+        if (error) throw new Error(error);
+        // El backend devuelve el usuario actualizado (incl. email nuevo).
+        const merged = { ...user, ...data, ...(res?.user ?? {}) };
+        delete (merged as { newEmail?: string }).newEmail;
+        setUser(merged);
+        saveSession(merged);
+        return;
+      }
 
       const updatedUser = { ...user, ...data };
       setUser(updatedUser);
@@ -162,7 +186,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   return (
     <AuthContext.Provider value={{
       user, loading, login, register, logout,
-      forgotPassword, verifyCode, updateProfile, changePassword,
+      requestEmailCode, forgotPassword, verifyCode, updateProfile, changePassword,
     }}>
       {children}
     </AuthContext.Provider>

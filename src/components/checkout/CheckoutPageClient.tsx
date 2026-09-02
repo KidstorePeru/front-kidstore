@@ -424,31 +424,45 @@ function SuccessScreen({ total, paymentMethod, items, contact, orderNumber, curr
   const now = new Date();
   const fecha = `${String(now.getDate()).padStart(2,"0")}/${String(now.getMonth()+1).padStart(2,"0")}/${now.getFullYear()}, ${String(now.getHours()).padStart(2,"0")}:${String(now.getMinutes()).padStart(2,"0")}:${String(now.getSeconds()).padStart(2,"0")}`;
 
+  const isEN = lang === "EN";
+  const L = isEN ? {
+    title: "NEW ORDER - KIDSTORE", order: "Order No.", client: "Customer", email: "Email",
+    phone: "Phone", products: "Products", epic: "Epic Games username", account: "Account",
+    ign: "In-game name", platform: "Platform", duration: "Duration",
+    month: "month", months: "months", method: "Payment method", total: "Total", date: "Date",
+  } : {
+    title: "NUEVO PEDIDO - KIDSTORE", order: "Pedido N\u00B0", client: "Cliente", email: "Email",
+    phone: "Tel\u00E9fono", products: "Productos", epic: "Usuario Epic Games", account: "Cuenta",
+    ign: "Nombre en el juego", platform: "Plataforma", duration: "Duraci\u00F3n",
+    month: "mes", months: "meses", method: "M\u00E9todo de pago", total: "Total", date: "Fecha",
+  };
+
   const productoLines = items.map(item => {
     const od = item.orderData;
+    const isShop = item.tabLabel === "Tienda"; // regalo de la tienda de Fortnite
     let line = `\u00B7 ${item.name} x${item.quantity} - S/ ${(item.price * item.quantity).toFixed(2)}`;
-    if (od?.gameName) line += `\n   \uD83D\uDC64 Usuario: ${od.gameName}`;
-    if (od?.user)     line += `\n   \uD83D\uDCE7 Cuenta: ${od.user}`;
-    if (od?.platform) line += `\n   \uD83C\uDFAE Plataforma: ${PLATFORM_LABELS[od.platform] ?? od.platform}`;
-    if (od?.months)   line += `\n   \uD83D\uDCC5 Duraci\u00F3n: ${od.months} ${od.months === 1 ? "mes" : "meses"}`;
+    if (od?.gameName) line += `\n   \uD83D\uDC64 ${L.ign}: ${od.gameName}`;
+    if (od?.user)     line += `\n   \uD83C\uDFAE ${isShop ? L.epic : L.account}: ${od.user}`;
+    if (od?.platform) line += `\n   \uD83D\uDCF1 ${L.platform}: ${PLATFORM_LABELS[od.platform] ?? od.platform}`;
+    if (od?.months)   line += `\n   \uD83D\uDCC5 ${L.duration}: ${od.months} ${od.months === 1 ? L.month : L.months}`;
     return line;
   }).join("\n");
 
   const waMessage = [
-    "\u2756 *NUEVO PEDIDO - KIDSTORE* \u2756",
+    `\u2756 *${L.title}* \u2756`,
     "",
-    `\uD83D\uDCCC Pedido N\u00B0: ${orderNumber}`,
-    `\uD83D\uDC64 Cliente: ${contact.name}`,
-    `\uD83D\uDCE7 Email: ${contact.email}`,
-    `\uD83D\uDCDE Tel\u00E9fono: ${contact.phone}`,
+    `\uD83D\uDCCC ${L.order}: ${orderNumber}`,
+    `\uD83D\uDC64 ${L.client}: ${contact.name}`,
+    `\uD83D\uDCE7 ${L.email}: ${contact.email}`,
+    `\uD83D\uDCDE ${L.phone}: ${contact.phone}`,
     "",
-    `\uD83D\uDED2 Productos:`,
+    `\uD83D\uDED2 ${L.products}:`,
     productoLines,
     "",
-    `\uD83D\uDCB3 M\u00E9todo de pago: ${pm.label}`,
-    `\uD83D\uDCB0 Total: ${displayTotal}`,
+    `\uD83D\uDCB3 ${L.method}: ${pm.label}`,
+    `\uD83D\uDCB0 ${L.total}: ${displayTotal}`,
     "",
-    `\uD83D\uDCC5 Fecha: ${fecha}`,
+    `\uD83D\uDCC5 ${L.date}: ${fecha}`,
   ].join("\n");
 
   const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(waMessage)}`;
@@ -659,9 +673,11 @@ function CheckoutForm({ onOpenModal, onMethodChange }: {
   onOpenModal: (method: PaymentId, contact: ContactData) => void;
   onMethodChange: (method: PaymentId) => void;
 }) {
-  // ── Pre-fill with logged-in user data ──────────────────────
+  // ── Pre-fill con los "Datos de compra" de la cuenta ────────
+  // Nombre completo (fullName), NO el username. Si aún no lo han guardado,
+  // el campo queda vacío para que lo escriban.
   const { user } = useAuth();
-  const [name,   setName]   = useState(user?.username ?? "");
+  const [name,   setName]   = useState(user?.fullName ?? "");
   const [email,  setEmail]  = useState(user?.email    ?? "");
   const [phone,  setPhone]  = useState(user?.phone ?? "");
   const [method, setMethod] = useState<PaymentId>("yape");
@@ -669,12 +685,12 @@ function CheckoutForm({ onOpenModal, onMethodChange }: {
   const { items } = useCart();
   const t = useT();
 
-  // Sync if user logs in after mount
+  // Sync if user logs in / updates their data after mount
   useEffect(() => {
     if (user) {
-      setName((n: string)  => n  || user.username);
+      setName((n: string)  => n  || (user.fullName ?? ""));
       setEmail((e: string) => e  || user.email);
-      setPhone((p: string) => p  || (user?.phone ?? ""));
+      setPhone((p: string) => p  || (user.phone ?? ""));
     }
   }, [user]);
 
@@ -852,10 +868,16 @@ export default function CheckoutPageClient() {
     const formData: Record<string, string> = {
       name: contact.name, email: contact.email, phone: contact.phone,
     };
-    // Add game-specific data from cart items
+    // Add game-specific data from cart items. Los regalos de la tienda de
+    // Fortnite (tabLabel "Tienda") llevan el usuario de Epic Games; el resto
+    // de juegos usan "gameAccount" (cuenta/correo del juego).
     for (const item of items) {
       const od = item.orderData;
-      if (od?.user && !formData.epicUser)     formData.epicUser = od.user;
+      const isShop = item.tabLabel === "Tienda";
+      if (od?.user) {
+        if (isShop && !formData.epicUser)         formData.epicUser = od.user;
+        else if (!isShop && !formData.gameAccount) formData.gameAccount = od.user;
+      }
       if (od?.gameName && !formData.gameName)  formData.gameName = od.gameName;
       if (od?.platform && !formData.platform)  formData.platform = od.platform;
     }

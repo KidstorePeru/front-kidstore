@@ -97,7 +97,7 @@ function AuthModal({
 }) {
   const overlayRef = useRef<HTMLDivElement>(null);
   const router     = useRouter();
-  const { login, register, forgotPassword, verifyCode, loading } = useAuth();
+  const { login, register, requestEmailCode, forgotPassword, verifyCode, loading } = useAuth();
   const { lang }   = usePreferences();
   const t          = useT();
   const isEN       = lang === "EN";
@@ -125,12 +125,24 @@ function AuthModal({
 
   // ── Estados register ──
   const [username,   setUsername]   = useState("");
+  const [regFullName, setRegFullName] = useState("");
   const [regEmail,   setRegEmail]   = useState("");
   const [regPass,    setRegPass]    = useState("");
   const [regConfirm, setRegConfirm] = useState("");
   const [showReg,    setShowReg]    = useState(false);
   const [regErr,     setRegErr]     = useState("");
   const [regErrs,    setRegErrs]    = useState<Record<string, boolean>>({});
+  const [regStep,    setRegStep]    = useState<"form" | "verify">("form");
+  const [regCode,    setRegCode]    = useState("");
+  const [regSending, setRegSending] = useState(false);
+  const [regResendIn, setRegResendIn] = useState(0);
+
+  // Cuenta atrás para reenviar el código
+  useEffect(() => {
+    if (regResendIn <= 0) return;
+    const id = setInterval(() => setRegResendIn(s => Math.max(0, s - 1)), 1000);
+    return () => clearInterval(id);
+  }, [regResendIn]);
 
   // ── Estados forgot ──
   const [forgotEmail,   setForgotEmail]   = useState("");
@@ -169,26 +181,67 @@ function AuthModal({
     }
   }
 
+  // Paso 1: valida el formulario y envía el código al correo
   async function handleRegister(ev: React.FormEvent) {
     ev.preventDefault();
     const e: Record<string, boolean> = {};
-    if (!username.trim() || username.length < 3)        e.username = true;
+    if (!username.trim() || username.trim().length < 3) e.username = true;
+    if (/[^a-zA-Z0-9_]/.test(username.trim()))          e.username = true;
     if (!regEmail.trim() || !regEmail.includes("@"))    e.email    = true;
     if (regPass.length < 8)                             e.password = true;
     if (regPass !== regConfirm)                         e.confirm  = true;
     setRegErrs(e);
     if (Object.keys(e).length) return;
     setRegErr("");
+    setRegSending(true);
     try {
-      await register(username, regEmail, regPass);
+      await requestEmailCode(regEmail.trim(), username.trim(), lang);
+      setRegStep("verify");
+      setRegCode("");
+      setRegResendIn(60);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "";
+      setRegErr(msg || (isEN ? "Could not send the code. Try again." : "No se pudo enviar el código. Intenta de nuevo."));
+    } finally {
+      setRegSending(false);
+    }
+  }
+
+  // Paso 2: verifica el código y crea la cuenta
+  async function handleVerifyRegister(ev: React.FormEvent) {
+    ev.preventDefault();
+    setRegErr("");
+    try {
+      await verifyCode(regEmail.trim(), regCode.trim());
+    } catch {
+      setRegErr(t.auth.codeWrong);
+      return;
+    }
+    try {
+      await register(username.trim(), regEmail.trim(), regPass, regFullName.trim() || undefined);
       onClose();
     } catch (err) {
       const msg = err instanceof Error ? err.message : "";
-      if (msg.includes("ya existe") || msg.includes("already")) {
+      if (msg.includes("ya existe") || msg.includes("already") || msg.includes("en uso")) {
         setRegErr(isEN ? "Username or email already exists." : "El usuario o correo ya existe.");
+        setRegStep("form");
       } else {
         setRegErr(msg || t.auth.registerError);
       }
+    }
+  }
+
+  async function handleResendRegisterCode() {
+    if (regResendIn > 0 || regSending) return;
+    setRegErr("");
+    setRegSending(true);
+    try {
+      await requestEmailCode(regEmail.trim(), username.trim(), lang);
+      setRegResendIn(60);
+    } catch {
+      setRegErr(isEN ? "Could not resend the code." : "No se pudo reenviar el código.");
+    } finally {
+      setRegSending(false);
     }
   }
 
@@ -458,6 +511,45 @@ function AuthModal({
                   </div>
                 )}
 
+                {regStep === "verify" ? (
+                  <form onSubmit={handleVerifyRegister} className="space-y-4 py-1">
+                    <div className="text-center">
+                      <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-3"
+                        style={{ background:"rgba(124,58,237,0.1)", border:"1px solid rgba(124,58,237,0.2)" }}>
+                        <Shield size={24} style={{ color:"var(--brand-light)" }}/>
+                      </div>
+                      <h2 className="text-lg font-black mb-1" style={{ color:"var(--text)" }}>{t.auth.verifyEmailTitle}</h2>
+                      <p className="text-xs" style={{ color:"var(--text-muted)" }}>
+                        {t.auth.verifyEmailDesc} <strong style={{ color:"var(--text)" }}>{regEmail}</strong>
+                      </p>
+                    </div>
+                    <input type="text" inputMode="numeric" maxLength={6} placeholder="000000" value={regCode}
+                      onChange={e => { setRegCode(e.target.value.replace(/\D/g, "")); setRegErr(""); }}
+                      className="w-full px-4 py-4 rounded-xl text-2xl font-black text-center tracking-[0.4em] outline-none"
+                      style={{ background:"var(--surface)", border:"1.5px solid var(--border)", color:"var(--text)" }}/>
+                    <button type="submit" disabled={regCode.length < 6 || loading}
+                      className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl text-sm font-bold text-white transition-all hover:opacity-90 disabled:opacity-50"
+                      style={{ background:"linear-gradient(135deg,#1E3A8A,#EA580C)", boxShadow:"0 4px 16px rgba(234,88,12,0.25)" }}>
+                      {loading
+                        ? <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"/>
+                        : <>{t.auth.verifyAndCreate} <ArrowRight size={15}/></>}
+                    </button>
+                    <div className="flex items-center justify-between text-xs">
+                      <button type="button" onClick={() => { setRegStep("form"); setRegErr(""); }}
+                        className="font-semibold hover:opacity-70" style={{ color:"var(--text-muted)" }}>
+                        ← {t.auth.back}
+                      </button>
+                      <span style={{ color:"var(--text-subtle)" }}>
+                        {t.auth.didntGetCode}{" "}
+                        {regResendIn > 0
+                          ? <span>{t.auth.resendIn} {regResendIn}s</span>
+                          : <button type="button" onClick={handleResendRegisterCode} disabled={regSending}
+                              className="font-semibold" style={{ color:"var(--brand-light)" }}>{t.auth.resend}</button>}
+                      </span>
+                    </div>
+                  </form>
+                ) : (
+                <>
                 <form onSubmit={handleRegister} className="space-y-3.5">
                   {/* Username */}
                   <div>
@@ -472,6 +564,18 @@ function AuthModal({
                       style={inp(regErrs.username)}
                       onFocus={e => (e.currentTarget.style.borderColor = regErrs.username ? "#EF4444" : "#1E3A8A")}
                       onBlur={e  => (e.currentTarget.style.borderColor = regErrs.username ? "#EF4444" : "var(--border)")}
+                    />
+                  </div>
+                  {/* Nombre completo (opcional) */}
+                  <div>
+                    <label className="text-[10px] font-bold uppercase tracking-wider mb-1.5 block" style={{ color:"var(--text-subtle)" }}>
+                      {t.auth.fullName} <span className="normal-case font-normal opacity-70">— {t.auth.optional}</span>
+                    </label>
+                    <input type="text" placeholder={t.auth.fullNamePlaceholder}
+                      value={regFullName} onChange={e => setRegFullName(e.target.value)}
+                      className="w-full px-4 py-3 rounded-xl text-sm" style={inp(false)}
+                      onFocus={e => (e.currentTarget.style.borderColor = "#1E3A8A")}
+                      onBlur={e  => (e.currentTarget.style.borderColor = "var(--border)")}
                     />
                   </div>
                   {/* Email */}
@@ -538,13 +642,16 @@ function AuthModal({
                     />
                   </div>
 
-                  <button type="submit" disabled={loading}
+                  <button type="submit" disabled={regSending}
                     className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl text-sm font-bold text-white transition-all hover:opacity-90 disabled:opacity-60"
                     style={{ background:"linear-gradient(135deg,#1E3A8A,#EA580C)", boxShadow:"0 4px 20px rgba(234,88,12,0.3)" }}>
-                    {loading
-                      ? <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"/>
-                      : <>{t.auth.registerBtn} <ArrowRight size={15}/></>}
+                    {regSending
+                      ? <>{t.auth.sendingCode} <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"/></>
+                      : <>{t.auth.continueBtn} <ArrowRight size={15}/></>}
                   </button>
+                  <p className="text-[10px] text-center" style={{ color:"var(--text-subtle)" }}>
+                    {isEN ? "We'll email you a 6-digit code to confirm your account." : "Te enviaremos un código de 6 dígitos por correo para confirmar tu cuenta."}
+                  </p>
                 </form>
 
                 <div className="flex items-center gap-3">
@@ -557,6 +664,8 @@ function AuthModal({
                   style={{ border:"1.5px solid var(--border)", background:"var(--surface)", color:"var(--text)" }}>
                   {t.auth.loginLink} →
                 </button>
+                </>
+                )}
               </div>
             )}
 

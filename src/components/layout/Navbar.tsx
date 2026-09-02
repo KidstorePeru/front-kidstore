@@ -13,6 +13,24 @@ import { useWishlist } from "@/context/WishlistContext";
 import SearchBar from "@/components/ui/SearchBar";
 import CartDrawer from "@/components/ui/CartDrawer";
 
+/** Avatar del usuario: foto si la tiene, si no la inicial. */
+function UserAvatar({ user, size, radius }: { user: { username: string; avatar?: string }; size: number; radius: number }) {
+  return (
+    <div
+      className="flex items-center justify-center font-black text-white flex-shrink-0 overflow-hidden"
+      style={{
+        width: size, height: size, borderRadius: radius,
+        fontSize: size <= 28 ? 12 : 14,
+        background: user.avatar ? "var(--surface)" : "linear-gradient(135deg,#1E3A8A,#EA580C)",
+      }}
+    >
+      {user.avatar
+        ? <img src={user.avatar} alt={user.username} className="w-full h-full object-cover" />
+        : user.username[0]?.toUpperCase()}
+    </div>
+  );
+}
+
 function Dropdown<T extends string>({
   value, options, onSelect, label,
 }: {
@@ -205,13 +223,8 @@ export default function Navbar() {
                   className="flex items-center gap-2 px-2.5 h-9 rounded-lg transition-all hover:opacity-80"
                   style={{ background: "var(--card)", border: "1px solid var(--border)" }}
                 >
-                  {/* Avatar inicial */}
-                  <div
-                    className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-black text-white flex-shrink-0"
-                    style={{ background: "linear-gradient(135deg,#1E3A8A,#EA580C)" }}
-                  >
-                    {user.username[0].toUpperCase()}
-                  </div>
+                  {/* Avatar */}
+                  <UserAvatar user={user} size={28} radius={9999} />
                   {/* Nombre */}
                   <p className="text-xs font-bold truncate max-w-[80px] hidden sm:block"
                     style={{ color: "var(--text)" }}>
@@ -237,12 +250,7 @@ export default function Navbar() {
                     {/* Header */}
                     <div className="px-4 py-3" style={{ borderBottom: "1px solid var(--border)" }}>
                       <div className="flex items-center gap-2.5">
-                        <div
-                          className="w-10 h-10 rounded-xl flex items-center justify-center text-sm font-black text-white flex-shrink-0"
-                          style={{ background: "linear-gradient(135deg,#1E3A8A,#EA580C)" }}
-                        >
-                          {user.username[0].toUpperCase()}
-                        </div>
+                        <UserAvatar user={user} size={40} radius={12} />
                         <div className="min-w-0">
                           <p className="text-xs font-bold truncate" style={{ color: "var(--text)" }}>
                             {user.username}
@@ -443,12 +451,7 @@ export default function Navbar() {
               <div className="flex items-center justify-between mb-4 p-3 rounded-xl"
                 style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
                 <div className="flex items-center gap-2.5">
-                  <div
-                    className="w-9 h-9 rounded-xl flex items-center justify-center text-sm font-black text-white"
-                    style={{ background: "linear-gradient(135deg,#1E3A8A,#EA580C)" }}
-                  >
-                    {user.username[0].toUpperCase()}
-                  </div>
+                  <UserAvatar user={user} size={36} radius={12} />
                   <div>
                     <p className="text-xs font-bold" style={{ color: "var(--text)" }}>{user.username}</p>
                     <p className="text-[10px]" style={{ color: "var(--text-subtle)" }}>{user.email}</p>

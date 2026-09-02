@@ -141,6 +141,7 @@ function ProfilePageInner() {
 // ══════════════════════════════════════════════════
 function TabPerfil({ user, updateProfile, loading }: any) {
   const { lang } = usePreferences();
+  const ES = lang === "ES";
   const [username,   setUsername]   = useState(user.username);
   const [saved,      setSaved]      = useState(false);
   const [avatar,     setAvatar]     = useState<string | null>(user.avatar ?? null);
@@ -148,6 +149,32 @@ function TabPerfil({ user, updateProfile, loading }: any) {
   const [avatarSaved,setAvatarSaved]= useState(false);
   const [usernameErr, setUsernameErr] = useState("");
   const fileRef = useRef<HTMLInputElement>(null);
+
+  // ── Datos de compra (autorelleno del checkout) ──
+  const [fullName, setFullName] = useState(user.fullName ?? "");
+  const [phone,    setPhone]    = useState(user.phone ?? "");
+  const [buyErr,   setBuyErr]   = useState("");
+  const [buySaved, setBuySaved] = useState(false);
+  const [buyLoading, setBuyLoading] = useState(false);
+
+  async function handleSaveBuyData(ev: React.FormEvent) {
+    ev.preventDefault();
+    setBuyErr("");
+    if (fullName.trim() && fullName.trim().length < 3) {
+      setBuyErr(ES ? "El nombre completo debe tener al menos 3 caracteres." : "Full name must be at least 3 characters.");
+      return;
+    }
+    setBuyLoading(true);
+    try {
+      await updateProfile({ fullName: fullName.trim(), phone: phone.trim() });
+      setBuySaved(true);
+      setTimeout(() => setBuySaved(false), 2500);
+    } catch (e) {
+      setBuyErr(e instanceof Error ? e.message : (ES ? "No se pudo guardar." : "Could not save."));
+    } finally {
+      setBuyLoading(false);
+    }
+  }
 
   function handleAvatarChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -275,40 +302,102 @@ function TabPerfil({ user, updateProfile, loading }: any) {
         </form>
       </div>
 
+      {/* Datos de compra — autorelleno del checkout */}
+      <div className="rounded-2xl overflow-hidden" style={{ background:"var(--card)", border:"1px solid var(--border)" }}>
+        <div className="px-6 py-4" style={{ borderBottom:"1px solid var(--border)", background:"var(--surface)" }}>
+          <p className="text-sm font-bold" style={{ color:"var(--text)" }}>{ES ? "Datos de compra" : "Purchase details"}</p>
+        </div>
+        <form onSubmit={handleSaveBuyData} className="p-6 space-y-4">
+          <p className="text-xs leading-relaxed" style={{ color:"var(--text-muted)" }}>
+            {ES
+              ? "Se autorellenan al finalizar una compra para que sea más rápido. Puedes editarlos siempre que quieras."
+              : "These auto-fill at checkout so it's faster. You can edit them anytime."}
+          </p>
+
+          {buyErr && (
+            <p className="text-xs font-semibold flex items-center gap-1.5" style={{ color:"#EF4444" }}>
+              <AlertCircle size={12}/> {buyErr}
+            </p>
+          )}
+
+          <div>
+            <label className="text-[10px] font-bold uppercase tracking-wider mb-1.5 block" style={{ color:"var(--text-subtle)" }}>
+              {ES ? "Nombre completo" : "Full name"}
+            </label>
+            <input type="text" value={fullName} onChange={e => { setFullName(e.target.value); setBuyErr(""); }}
+              placeholder={ES ? "Tu nombre y apellido" : "Your first and last name"}
+              className="w-full px-4 py-3 rounded-xl text-sm outline-none transition-all"
+              style={{ background:"var(--surface)", border:"1.5px solid var(--border)", color:"var(--text)" }}
+              onFocus={e => (e.currentTarget.style.borderColor="#1E3A8A")}
+              onBlur={e  => (e.currentTarget.style.borderColor="var(--border)")}/>
+          </div>
+
+          <div>
+            <label className="text-[10px] font-bold uppercase tracking-wider mb-1.5 block" style={{ color:"var(--text-subtle)" }}>
+              {ES ? "Correo electrónico" : "Email"}
+            </label>
+            <div className="w-full px-4 py-3 rounded-xl text-sm flex items-center justify-between gap-2"
+              style={{ background:"var(--surface)", border:"1.5px solid var(--border)", color:"var(--text-muted)" }}>
+              <span className="truncate">{user.email}</span>
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full flex-shrink-0"
+                style={{ color:"#22C55E", background:"rgba(34,197,94,0.1)" }}>{ES ? "Verificado" : "Verified"}</span>
+            </div>
+            <p className="text-[11px] mt-1" style={{ color:"var(--text-subtle)" }}>
+              {ES ? "Con este correo se creó tu cuenta. Para cambiarlo ve a Seguridad." : "Your account was created with this email. To change it, go to Security."}
+            </p>
+          </div>
+
+          <div>
+            <label className="text-[10px] font-bold uppercase tracking-wider mb-1.5 block" style={{ color:"var(--text-subtle)" }}>
+              {ES ? "WhatsApp / Teléfono" : "WhatsApp / Phone"}
+            </label>
+            <input type="tel" value={phone} onChange={e => { setPhone(e.target.value.replace(/[^0-9+ ]/g,"")); setBuyErr(""); }}
+              placeholder="+51 999 999 999"
+              className="w-full px-4 py-3 rounded-xl text-sm outline-none transition-all"
+              style={{ background:"var(--surface)", border:"1.5px solid var(--border)", color:"var(--text)" }}
+              onFocus={e => (e.currentTarget.style.borderColor="#1E3A8A")}
+              onBlur={e  => (e.currentTarget.style.borderColor="var(--border)")}/>
+            <p className="text-[11px] mt-1" style={{ color:"var(--text-subtle)" }}>
+              {ES ? "Te contactamos por aquí para coordinar la entrega." : "We contact you here to coordinate delivery."}
+            </p>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <button type="submit" disabled={buyLoading}
+              className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold text-white hover:opacity-90 disabled:opacity-60"
+              style={{ background:"linear-gradient(135deg,#1E3A8A,#EA580C)", boxShadow:"0 4px 14px rgba(234,88,12,0.25)" }}>
+              {buyLoading ? <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"/> : (ES ? "Guardar" : "Save")}
+            </button>
+            {buySaved && <span className="text-xs font-semibold text-green-400 flex items-center gap-1"><Check size={13}/> {ES ? "¡Guardado!" : "Saved!"}</span>}
+          </div>
+        </form>
+      </div>
+
       {/* Info cuenta */}
       <div className="rounded-2xl overflow-hidden" style={{ background:"var(--card)", border:"1px solid var(--border)" }}>
         <div className="px-6 py-4" style={{ borderBottom:"1px solid var(--border)", background:"var(--surface)" }}>
-          <p className="text-sm font-bold" style={{ color:"var(--text)" }}>{lang === "ES" ? "Información de la cuenta" : "Account information"}</p>
+          <p className="text-sm font-bold" style={{ color:"var(--text)" }}>{ES ? "Información de la cuenta" : "Account information"}</p>
         </div>
         <div className="divide-y" style={{ borderColor:"var(--border)" }}>
           {[
-            { label: lang === "ES" ? "Correo electrónico" : "Email", value:user.email, badge:{ text: lang === "ES" ? "Verificado" : "Verified", color:"#22C55E", bg:"rgba(34,197,94,0.1)" } },
-            { label: lang === "ES" ? "Número de teléfono" : "Phone number", value:user.phone ?? null, action: lang === "ES" ? "Agregar" : "Add" },
-            { label: lang === "ES" ? "ID de usuario" : "User ID",      value:user.id ?? "—" },
-            { label: lang === "ES" ? "Hora de unirse" : "Join date",     value:joinDate },
+            { label: ES ? "Correo electrónico" : "Email", value:user.email, badge:{ text: ES ? "Verificado" : "Verified", color:"#22C55E", bg:"rgba(34,197,94,0.1)" } },
+            { label: ES ? "Número de teléfono" : "Phone number", value: user.phone || (ES ? "No configurado" : "Not configured") },
+            { label: ES ? "ID de usuario" : "User ID",      value:user.id ?? "—" },
+            { label: ES ? "Hora de unirse" : "Join date",     value:joinDate },
           ].map((row, i) => (
             <div key={i} className="px-6 py-4 flex items-center justify-between gap-4">
               <div>
                 <p className="text-[10px] font-bold uppercase tracking-wider mb-0.5" style={{ color:"var(--text-subtle)" }}>{row.label}</p>
-                {row.value
-                  ? <p className="text-sm font-semibold flex items-center gap-2" style={{ color:"var(--text)" }}>
-                      {row.value}
-                      {(row as any).badge && (
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full"
-                          style={{ color:(row as any).badge.color, background:(row as any).badge.bg }}>
-                          {(row as any).badge.text}
-                        </span>
-                      )}
-                    </p>
-                  : <p className="text-xs" style={{ color:"var(--text-subtle)" }}>{lang === "ES" ? "No configurado" : "Not configured"}</p>
-                }
+                <p className="text-sm font-semibold flex items-center gap-2" style={{ color:"var(--text)" }}>
+                  {row.value}
+                  {(row as any).badge && (
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full"
+                      style={{ color:(row as any).badge.color, background:(row as any).badge.bg }}>
+                      {(row as any).badge.text}
+                    </span>
+                  )}
+                </p>
               </div>
-              {(row as any).action && (
-                <button className="text-xs font-bold px-3 py-1.5 rounded-lg hover:opacity-70"
-                  style={{ color:"#1E3A8A", background:"rgba(30,58,138,0.08)", border:"1px solid rgba(30,58,138,0.2)" }}>
-                  {(row as any).action}
-                </button>
-              )}
             </div>
           ))}
         </div>
@@ -317,44 +406,13 @@ function TabPerfil({ user, updateProfile, loading }: any) {
   );
 }
 
-// ── Country codes ─────────────────────────────────────────────
-const COUNTRY_CODES = [
-  { code:"+51",  flag:"🇵🇪", name:"Perú"          },
-  { code:"+54",  flag:"🇦🇷", name:"Argentina"      },
-  { code:"+56",  flag:"🇨🇱", name:"Chile"          },
-  { code:"+57",  flag:"🇨🇴", name:"Colombia"       },
-  { code:"+52",  flag:"🇲🇽", name:"México"         },
-  { code:"+58",  flag:"🇻🇪", name:"Venezuela"      },
-  { code:"+34",  flag:"🇪🇸", name:"España"         },
-  { code:"+1",   flag:"🇺🇸", name:"USA/Canada"     },
-  { code:"+44",  flag:"🇬🇧", name:"Reino Unido"    },
-  { code:"+55",  flag:"🇧🇷", name:"Brasil"         },
-  { code:"+593", flag:"🇪🇨", name:"Ecuador"        },
-  { code:"+591", flag:"🇧🇴", name:"Bolivia"        },
-  { code:"+595", flag:"🇵🇾", name:"Paraguay"       },
-  { code:"+598", flag:"🇺🇾", name:"Uruguay"        },
-  { code:"+507", flag:"🇵🇦", name:"Panamá"         },
-  { code:"+506", flag:"🇨🇷", name:"Costa Rica"     },
-  { code:"+502", flag:"🇬🇹", name:"Guatemala"      },
-  { code:"+503", flag:"🇸🇻", name:"El Salvador"    },
-  { code:"+504", flag:"🇭🇳", name:"Honduras"       },
-  { code:"+505", flag:"🇳🇮", name:"Nicaragua"      },
-  { code:"+49",  flag:"🇩🇪", name:"Alemania"       },
-  { code:"+33",  flag:"🇫🇷", name:"Francia"        },
-  { code:"+39",  flag:"🇮🇹", name:"Italia"         },
-  { code:"+81",  flag:"🇯🇵", name:"Japón"          },
-  { code:"+82",  flag:"🇰🇷", name:"Corea del Sur"  },
-  { code:"+86",  flag:"🇨🇳", name:"China"          },
-  { code:"+91",  flag:"🇮🇳", name:"India"          },
-  { code:"+61",  flag:"🇦🇺", name:"Australia"      },
-];
-
 // ══════════════════════════════════════════════════
 // TAB SEGURIDAD
 // ══════════════════════════════════════════════════
 function TabSeguridad({ user, updateProfile }: any) {
   const { lang } = usePreferences();
-  const { changePassword } = useAuth();
+  const ES = lang === "ES";
+  const { changePassword, requestEmailCode, verifyCode } = useAuth();
   // ── Contraseña ──
   const [currentPass, setCurrentPass] = useState("");
   const [newPass,     setNewPass]     = useState("");
@@ -364,49 +422,66 @@ function TabSeguridad({ user, updateProfile }: any) {
   const [passSaved,   setPassSaved]   = useState(false);
   const [passLoading, setPassLoading] = useState(false);
 
-  // ── Modal teléfono ──
-  const [phoneModal,  setPhoneModal]  = useState(false);
-  const [phoneCountry, setPhoneCountry] = useState("+51");
-  const [phoneStep,   setPhoneStep]   = useState<"input"|"verify">("input");
-  const [phoneNum,    setPhoneNum]    = useState("");
-  const [phoneCode,   setPhoneCode]   = useState("");
-  const [phoneErr,    setPhoneErr]    = useState("");
-  const [phoneSaved,  setPhoneSaved]  = useState(false);
-  // Email change modal
+  // ── Modal cambio de correo (con código real al correo nuevo) ──
   const [emailModal,  setEmailModal]  = useState(false);
   const [emailStep,   setEmailStep]   = useState<"input"|"verify">("input");
   const [newEmail,    setNewEmail]    = useState("");
   const [emailCode,   setEmailCode]   = useState("");
   const [emailErr,    setEmailErr]    = useState("");
   const [emailSaved,  setEmailSaved]  = useState(false);
+  const [emailBusy,   setEmailBusy]   = useState(false);
 
-  function handleEmailSend() {
+  async function handleEmailSend() {
     if (!newEmail.trim() || !newEmail.includes("@")) {
-      setEmailErr(lang === "ES" ? "Ingresa un correo electrónico válido." : "Enter a valid email address.");
+      setEmailErr(ES ? "Ingresa un correo electrónico válido." : "Enter a valid email address.");
       return;
     }
-    if (newEmail.toLowerCase() === user.email.toLowerCase()) {
-      setEmailErr(lang === "ES" ? "El nuevo correo debe ser diferente al actual." : "The new email must be different from the current one.");
+    if (newEmail.trim().toLowerCase() === user.email.toLowerCase()) {
+      setEmailErr(ES ? "El nuevo correo debe ser diferente al actual." : "The new email must be different from the current one.");
       return;
     }
     setEmailErr("");
-    setEmailStep("verify");
+    setEmailBusy(true);
+    try {
+      await requestEmailCode(newEmail.trim(), user.username, lang);
+      setEmailStep("verify");
+      setEmailCode("");
+    } catch (e) {
+      setEmailErr(e instanceof Error ? e.message : (ES ? "No se pudo enviar el código." : "Could not send the code."));
+    } finally {
+      setEmailBusy(false);
+    }
   }
 
   async function handleEmailVerify() {
     if (!emailCode.trim() || emailCode.length < 6) {
-      setEmailErr(lang === "ES" ? "Ingresa el código de verificación." : "Enter the verification code.");
+      setEmailErr(ES ? "Ingresa el código de verificación." : "Enter the verification code.");
       return;
     }
-    await updateProfile({ email: newEmail });
-    setEmailSaved(true);
-    setTimeout(() => {
-      setEmailModal(false);
-      setEmailStep("input");
-      setNewEmail("");
-      setEmailCode("");
-      setEmailSaved(false);
-    }, 2000);
+    setEmailBusy(true);
+    setEmailErr("");
+    try {
+      await verifyCode(newEmail.trim(), emailCode.trim());
+    } catch {
+      setEmailErr(ES ? "Código incorrecto o expirado." : "Incorrect or expired code.");
+      setEmailBusy(false);
+      return;
+    }
+    try {
+      await updateProfile({ newEmail: newEmail.trim() });
+      setEmailSaved(true);
+      setTimeout(() => {
+        setEmailModal(false);
+        setEmailStep("input");
+        setNewEmail("");
+        setEmailCode("");
+        setEmailSaved(false);
+      }, 1800);
+    } catch (e) {
+      setEmailErr(e instanceof Error ? e.message : (ES ? "No se pudo cambiar el correo." : "Could not change the email."));
+    } finally {
+      setEmailBusy(false);
+    }
   }
 
   async function handleChangePassword(ev: React.FormEvent) {
@@ -435,25 +510,6 @@ function TabSeguridad({ user, updateProfile }: any) {
     setPassSaved(true);
     setCurrentPass(""); setNewPass(""); setConfirmPass("");
     setTimeout(() => setPassSaved(false), 3000);
-  }
-
-  function handlePhoneSend() {
-    if (!phoneNum.trim() || phoneNum.replace(/\s/g,"").length < 6) {
-      setPhoneErr(lang === "ES" ? "Ingresa un número válido." : "Enter a valid number.");
-      return;
-    }
-    setPhoneErr("");
-    setPhoneStep("verify");
-  }
-
-  async function handlePhoneVerify() {
-    if (!phoneCode.trim() || phoneCode.length < 6) {
-      setPhoneErr(lang === "ES" ? "Ingresa el código de verificación." : "Enter the verification code.");
-      return;
-    }
-    await updateProfile({ phone: `${phoneCountry} ${phoneNum}` });
-    setPhoneSaved(true);
-    setTimeout(() => { setPhoneModal(false); setPhoneStep("input"); setPhoneNum(""); setPhoneCode(""); setPhoneSaved(false); }, 2000);
   }
 
   return (
@@ -500,45 +556,15 @@ function TabSeguridad({ user, updateProfile }: any) {
         </div>
       </div>
 
-      {/* Teléfono */}
-      <div className="rounded-2xl overflow-hidden" style={{ background:"var(--card)", border:"1px solid var(--border)" }}>
-        <div className="px-6 py-4 flex items-center gap-2"
-          style={{ borderBottom:"1px solid var(--border)", background:"var(--surface)" }}>
-          <Phone size={14} style={{ color:"#F97316" }}/>
-          <p className="text-sm font-bold" style={{ color:"var(--text)" }}>{lang === "ES" ? "Teléfono móvil" : "Mobile phone"}</p>
-        </div>
-        <div className="p-6">
-          {user.phone ? (
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-semibold" style={{ color:"var(--text)" }}>{user.phone}</p>
-                <p className="text-xs mt-0.5 flex items-center gap-1.5" style={{ color:"#22C55E" }}>
-                  <Check size={12}/> {lang === "ES" ? "Número verificado" : "Number verified"}
-                </p>
-              </div>
-              <button onClick={() => { setPhoneModal(true); setPhoneStep("input"); }}
-                className="text-xs font-bold px-3 py-1.5 rounded-lg hover:opacity-70"
-                style={{ color:"#F97316", background:"rgba(249,115,22,0.08)", border:"1px solid rgba(249,115,22,0.2)" }}>
-                {lang === "ES" ? "Cambiar" : "Change"}
-              </button>
-            </div>
-          ) : (
-            <>
-              <p className="text-xs leading-relaxed mb-4" style={{ color:"var(--text-muted)" }}>
-                {lang === "ES" ? "Vincula tu número para prevenir robo de cuenta y recibir códigos de verificación." : "Link your number to prevent account theft and receive verification codes."}
-              </p>
-              <div className="px-4 py-3 rounded-xl mb-4 text-xs"
-                style={{ background:"rgba(245,158,11,0.07)", border:"1px solid rgba(245,158,11,0.2)", color:"var(--text-muted)" }}>
-                {lang === "ES" ? "⚠️ Aún no has vinculado un número de teléfono." : "⚠️ You haven't linked a phone number yet."}
-              </div>
-              <button onClick={() => { setPhoneModal(true); setPhoneStep("input"); }}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold text-white hover:opacity-90"
-                style={{ background:"linear-gradient(135deg,#1E3A8A,#EA580C)" }}>
-                <Phone size={13}/> {lang === "ES" ? "Verificar número de teléfono" : "Verify phone number"}
-              </button>
-            </>
-          )}
-        </div>
+      {/* Teléfono → se gestiona en "Datos de compra" de la pestaña Perfil */}
+      <div className="rounded-2xl px-6 py-4 flex items-center gap-3"
+        style={{ background:"var(--card)", border:"1px solid var(--border)" }}>
+        <Phone size={14} style={{ color:"#F97316", flexShrink:0 }}/>
+        <p className="text-xs" style={{ color:"var(--text-muted)" }}>
+          {ES
+            ? <>Tu teléfono está en <strong style={{ color:"var(--text)" }}>Perfil → Datos de compra</strong>. Se usa para coordinar la entrega por WhatsApp.</>
+            : <>Your phone lives in <strong style={{ color:"var(--text)" }}>Profile → Purchase details</strong>. It's used to coordinate delivery via WhatsApp.</>}
+        </p>
       </div>
 
       {/* Contraseña */}
@@ -646,10 +672,10 @@ function TabSeguridad({ user, updateProfile }: any) {
                       onFocus={e => (e.currentTarget.style.borderColor="#1E3A8A")}
                       onBlur={e  => (e.currentTarget.style.borderColor="var(--border)")}/>
                   </div>
-                  <button onClick={handleEmailSend}
-                    className="w-full py-3 rounded-xl text-sm font-bold text-white hover:opacity-90"
+                  <button onClick={handleEmailSend} disabled={emailBusy}
+                    className="w-full py-3 rounded-xl text-sm font-bold text-white hover:opacity-90 disabled:opacity-60"
                     style={{ background:"linear-gradient(135deg,#1E3A8A,#EA580C)" }}>
-                    {lang === "ES" ? "Enviar código de verificación →" : "Send verification code →"}
+                    {emailBusy ? (ES ? "Enviando…" : "Sending…") : (ES ? "Enviar código de verificación →" : "Send verification code →")}
                   </button>
                 </>
               ) : (
@@ -688,10 +714,10 @@ function TabSeguridad({ user, updateProfile }: any) {
                         style={{ background:"var(--surface)", border:"1px solid var(--border)", color:"var(--text-muted)" }}>
                         {lang === "ES" ? "← Volver" : "← Back"}
                       </button>
-                      <button onClick={handleEmailVerify}
-                        className="flex-1 py-3 rounded-xl text-sm font-bold text-white hover:opacity-90"
+                      <button onClick={handleEmailVerify} disabled={emailBusy || emailCode.length < 6}
+                        className="flex-1 py-3 rounded-xl text-sm font-bold text-white hover:opacity-90 disabled:opacity-50"
                         style={{ background:"linear-gradient(135deg,#1E3A8A,#EA580C)" }}>
-                        {lang === "ES" ? "Verificar" : "Verify"}
+                        {emailBusy ? (ES ? "Verificando…" : "Verifying…") : (ES ? "Verificar" : "Verify")}
                       </button>
                     </div>
                   )}
@@ -702,117 +728,6 @@ function TabSeguridad({ user, updateProfile }: any) {
         </div>
       )}
 
-      {/* Modal teléfono */}
-      {phoneModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4"
-          style={{ background:"rgba(0,0,0,0.6)", backdropFilter:"blur(8px)" }}
-          onClick={() => setPhoneModal(false)}>
-          <div className="w-full max-w-sm rounded-2xl overflow-hidden"
-            style={{ background:"var(--card)", border:"1px solid var(--border)" }}
-            onClick={e => e.stopPropagation()}>
-
-            {/* Header */}
-            <div className="flex items-center justify-between px-5 py-4"
-              style={{ borderBottom:"1px solid var(--border)", background:"var(--surface)" }}>
-              <p className="text-sm font-bold" style={{ color:"var(--text)" }}>
-                {phoneStep==="input" ? (lang === "ES" ? "📱 Verificar número de teléfono" : "📱 Verify phone number") : (lang === "ES" ? "🔐 Introduce el código" : "🔐 Enter the code")}
-              </p>
-              <button onClick={() => setPhoneModal(false)}
-                className="w-7 h-7 rounded-lg flex items-center justify-center hover:opacity-70"
-                style={{ background:"var(--card)", border:"1px solid var(--border)", color:"var(--text-muted)" }}>
-                <X size={14}/>
-              </button>
-            </div>
-
-            <div className="p-5 space-y-4">
-              {phoneStep==="input" ? (
-                <>
-                  <p className="text-xs" style={{ color:"var(--text-muted)" }}>
-                    {lang === "ES" ? "Ingresa tu número de teléfono. Te enviaremos un código de verificación por SMS." : "Enter your phone number. We will send you a verification code via SMS."}
-                  </p>
-                  {phoneErr && (
-                    <div className="text-xs px-3 py-2 rounded-xl"
-                      style={{ background:"rgba(239,68,68,0.08)", border:"1px solid rgba(239,68,68,0.2)", color:"#FCA5A5" }}>
-                      {phoneErr}
-                    </div>
-                  )}
-                  <div>
-                    <label className="text-[10px] font-bold uppercase tracking-wider mb-1.5 block"
-                      style={{ color:"var(--text-subtle)" }}>{lang === "ES" ? "Número de teléfono" : "Phone number"}</label>
-                    <div className="flex gap-2">
-                    <select
-                      value={phoneCountry}
-                      onChange={e => setPhoneCountry(e.target.value)}
-                      className="px-2 py-3 rounded-xl text-xs outline-none flex-shrink-0"
-                      style={{ background:"var(--surface)", border:"1.5px solid var(--border)", color:"var(--text)", width:"110px" }}>
-                      {COUNTRY_CODES.map(c => (
-                        <option key={c.code} value={c.code}>{c.flag} {c.code}</option>
-                      ))}
-                    </select>
-                    <input type="tel" placeholder="999 999 999" value={phoneNum}
-                      onChange={e => { setPhoneNum(e.target.value.replace(/[^0-9 ]/g,"")); setPhoneErr(""); }}
-                      className="flex-1 px-4 py-3 rounded-xl text-sm outline-none"
-                      style={{ background:"var(--surface)", border:"1.5px solid var(--border)", color:"var(--text)" }}
-                      onFocus={e => (e.currentTarget.style.borderColor="#1E3A8A")}
-                      onBlur={e  => (e.currentTarget.style.borderColor="var(--border)")}/>
-                  </div>
-                  </div>
-                  <button onClick={handlePhoneSend}
-                    className="w-full py-3 rounded-xl text-sm font-bold text-white hover:opacity-90"
-                    style={{ background:"linear-gradient(135deg,#1E3A8A,#EA580C)" }}>
-                    {lang === "ES" ? "Enviar código →" : "Send code →"}
-                  </button>
-                </>
-              ) : (
-                <>
-                  <p className="text-xs" style={{ color:"var(--text-muted)" }}>
-                    {lang === "ES" ? "Código enviado a" : "Code sent to"} <strong style={{ color:"var(--text)" }}>{phoneNum}</strong>.
-                    {lang === "ES" ? " Ingresa el código de 6 dígitos." : " Enter the 6-digit code."}
-                  </p>
-                  <div className="px-3 py-2 rounded-xl text-xs"
-                    style={{ background:"rgba(234,88,12,0.07)", border:"1px solid rgba(234,88,12,0.2)", color:"var(--text-muted)" }}>
-                    {lang === "ES" ? "Revisa tu teléfono e ingresa el código de 6 dígitos." : "Check your phone and enter the 6-digit code."}
-                  </div>
-                  {phoneErr && (
-                    <div className="text-xs px-3 py-2 rounded-xl"
-                      style={{ background:"rgba(239,68,68,0.08)", border:"1px solid rgba(239,68,68,0.2)", color:"#FCA5A5" }}>
-                      {phoneErr}
-                    </div>
-                  )}
-                  <div>
-                    <label className="text-[10px] font-bold uppercase tracking-wider mb-1.5 block"
-                      style={{ color:"var(--text-subtle)" }}>{lang === "ES" ? "Código de verificación" : "Verification code"}</label>
-                    <input type="text" placeholder="123456" maxLength={6} value={phoneCode}
-                      onChange={e => { setPhoneCode(e.target.value); setPhoneErr(""); }}
-                      className="w-full px-4 py-3 rounded-xl text-sm outline-none text-center tracking-[.3em] font-bold"
-                      style={{ background:"var(--surface)", border:"1.5px solid var(--border)", color:"var(--text)" }}
-                      onFocus={e => (e.currentTarget.style.borderColor="#1E3A8A")}
-                      onBlur={e  => (e.currentTarget.style.borderColor="var(--border)")}/>
-                  </div>
-                  {phoneSaved ? (
-                    <div className="flex items-center justify-center gap-2 py-3 text-sm font-bold text-green-400">
-                      <Check size={16}/> {lang === "ES" ? "¡Número verificado!" : "Number verified!"}
-                    </div>
-                  ) : (
-                    <div className="flex gap-2">
-                      <button onClick={() => { setPhoneStep("input"); setPhoneErr(""); }}
-                        className="flex-1 py-3 rounded-xl text-sm font-semibold hover:opacity-70"
-                        style={{ background:"var(--surface)", border:"1px solid var(--border)", color:"var(--text-muted)" }}>
-                        {lang === "ES" ? "← Volver" : "← Back"}
-                      </button>
-                      <button onClick={handlePhoneVerify}
-                        className="flex-1 py-3 rounded-xl text-sm font-bold text-white hover:opacity-90"
-                        style={{ background:"linear-gradient(135deg,#1E3A8A,#EA580C)" }}>
-                        {lang === "ES" ? "Verificar" : "Verify"}
-                      </button>
-                    </div>
-                  )}
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
