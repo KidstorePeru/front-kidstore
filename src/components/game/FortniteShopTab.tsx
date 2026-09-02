@@ -831,8 +831,11 @@ export default function FortniteShopTab() {
   },[data,search]);
 
   const totalItems=data?.entries.length??0;
+  // `data.date` es la medianoche UTC del día de la tienda. Hay que formatearlo
+  // en UTC: si no, en zonas al oeste de UTC (p. ej. Lima, UTC-5) se muestra el
+  // día anterior y parece que la tienda no se actualizó.
   const dateStr=data?.date
-    ? new Date(data.date).toLocaleDateString(shopLang === "en" ? "en-US" : "es-419",{ weekday:"long", day:"numeric", month:"long", year:"numeric" })
+    ? new Date(data.date).toLocaleDateString(shopLang === "en" ? "en-US" : "es-419",{ weekday:"long", day:"numeric", month:"long", year:"numeric", timeZone:"UTC" })
     : "";
 
   // Loading

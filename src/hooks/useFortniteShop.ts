@@ -1,11 +1,20 @@
 "use client";
 import { useState, useEffect, useCallback, useRef } from "react";
 
-// Vía proxy propio (/api/fortnite-shop): añade caché server-side (revalidate 1800s)
-// y evita depender de CORS de terceros desde el navegador.
+// Vía proxy propio (/api/fortnite-shop): evita CORS de terceros desde el
+// navegador. La tienda rota a las 00:00 UTC, así que el caché de sesión dura
+// poco — antes era permanente y una pestaña abierta nunca veía la rotación.
 const API_BASE = "/api/fortnite-shop";
-const MAX_CACHE_ENTRIES = 10;
-const cache = new Map<string, FortniteShopData>();
+const MAX_CACHE_ENTRIES = 6;
+const CACHE_TTL_MS = 10 * 60 * 1000; // 10 min
+const cache = new Map<string, { data: FortniteShopData; ts: number }>();
+
+function readCache(lang: string): FortniteShopData | null {
+  const hit = cache.get(lang);
+  if (!hit) return null;
+  if (Date.now() - hit.ts > CACHE_TTL_MS) { cache.delete(lang); return null; }
+  return hit.data;
+}
 
 export interface FortniteBRItem {
   id: string;
@@ -55,22 +64,26 @@ export function useFortniteShop(lang = "es-419") {
   const [error, setError] = useState<string | null>(null);
   const abortRef = useRef<AbortController | null>(null);
 
-  const load = useCallback(async (l: string) => {
+  const load = useCallback(async (l: string, force = false) => {
     setLoading(true);
     setError(null);
 
-    if (cache.has(l)) {
-      setData(cache.get(l)!);
-      setLoading(false);
-      return;
+    if (!force) {
+      const cached = readCache(l);
+      if (cached) {
+        setData(cached);
+        setLoading(false);
+        return;
+      }
     }
 
     abortRef.current?.abort();
     abortRef.current = new AbortController();
 
     try {
-      const res = await fetch(`${API_BASE}?language=${l}`, {
+      const res = await fetch(`${API_BASE}?language=${encodeURIComponent(l)}`, {
         signal: abortRef.current.signal,
+        cache: "no-store",
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const json = await res.json();
@@ -79,7 +92,7 @@ export function useFortniteShop(lang = "es-419") {
         const oldest = cache.keys().next().value;
         if (oldest !== undefined) cache.delete(oldest);
       }
-      cache.set(l, json.data);
+      cache.set(l, { data: json.data, ts: Date.now() });
       setData(json.data);
     } catch (err) {
       if (err instanceof Error && err.name !== "AbortError") setError(err.message);
@@ -94,5 +107,5 @@ export function useFortniteShop(lang = "es-419") {
     return () => abortRef.current?.abort();
   }, [lang, load]);
 
-  return { data, loading, error, reload: () => load(lang) };
+  return { data, loading, error, reload: () => load(lang, true) };
 }
