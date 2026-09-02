@@ -318,7 +318,7 @@ function orderSummaryText(o: Order): string {
     ...o.items.map(i => `• ${i.name} x${i.quantity} — ${money1(i.price * i.quantity, o.currency)}`),
     "",
     `Total: ${money1(o.total, o.currency)} (${paymentInfo(o.paymentMethod).label})`,
-    ...Object.entries(o.formData).filter(([k]) => !["name", "phone"].includes(k)).map(([k, v]) => `${formLabel(k)}: ${v}`),
+    ...Object.entries(o.formData).filter(([k]) => !["name","phone","email"].includes(k)).map(([k, v]) => `${formLabel(k)}: ${v}`),
     `Fecha: ${formatDate(o.createdAt)}`,
   ].filter(Boolean).join("\n");
 }
@@ -853,7 +853,7 @@ function TabPedidos({ orders, onRefresh }: { orders: Order[]; onRefresh: () => v
             const exp = expanded === order.id;
             const pm = paymentInfo(order.paymentMethod);
             const next = NEXT_STATUS[order.status];
-            const gameData = Object.entries(order.formData).filter(([k, v]) => !["name", "phone"].includes(k) && v);
+            const gameData = Object.entries(order.formData).filter(([k, v]) => !["name","phone","email"].includes(k) && v);
 
             return (
               <div key={order.dbId} className="rounded-2xl overflow-hidden transition-all"
