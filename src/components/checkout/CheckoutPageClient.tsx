@@ -1,6 +1,6 @@
 "use client";
 // build: 2026-04-16-fix-orders
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -399,7 +399,10 @@ function PaymentModal({ paymentId, total, onConfirm, onClose, loading: confirmLo
 interface ContactData { name: string; email: string; phone: string; }
 
 function genOrderNumber() {
-  return Math.floor(100000 + Math.random() * 900000).toString();
+  // Cabe en INTEGER de Postgres (< 2.147e9) y con colisión prácticamente nula:
+  // ventana de timestamp (~2.7 h de resolución) × 100 + 2 dígitos aleatorios.
+  // El aleatorio de 6 dígitos anterior chocaba entre clientes con ~1100 pedidos.
+  return String((Date.now() % 10_000_000) * 100 + Math.floor(Math.random() * 100));
 }
 
 // ── Success Screen ─────────────────────────────────────────────
@@ -873,6 +876,9 @@ export default function CheckoutPageClient() {
       },
     };
 
+    // El backend deduplica por (email, orderId) — un reintento tras un guardado
+    // que sí entró devuelve 200 y NO crea otra fila. Solo reintentamos ante
+    // fallos de red / timeout, no ante un 4xx (payload inválido: no se arregla).
     let savedToBackend = false;
     for (let attempt = 0; attempt < 3 && !savedToBackend; attempt++) {
       try {
@@ -884,10 +890,11 @@ export default function CheckoutPageClient() {
         });
         if (orderRes.ok) {
           savedToBackend = true;
-          console.log(`[checkout] Order ${ordNum} saved to backend successfully`);
+          console.log(`[checkout] Order ${ordNum} saved to backend`);
         } else {
           const errText = await orderRes.text();
-          console.error(`[checkout] Order save attempt ${attempt + 1} failed — status ${orderRes.status}:`, errText);
+          console.error(`[checkout] Order save attempt ${attempt + 1} — status ${orderRes.status}:`, errText);
+          if (orderRes.status >= 400 && orderRes.status < 500) break; // no reintentar
         }
       } catch (e) {
         console.error(`[checkout] Order save attempt ${attempt + 1} error:`, e);
@@ -895,24 +902,11 @@ export default function CheckoutPageClient() {
     }
 
     if (!savedToBackend) {
-      console.error("[checkout] All 3 attempts failed — backend unreachable.");
+      console.error("[checkout] Order save failed after retries — backend unreachable.");
     }
 
-    // Send receipt email via proxy (non-blocking)
-    fetch("/api/send-receipt", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email: contact.email,
-        customerName: contact.name,
-        orderId: ordNum,
-        total,
-        currency: txCurrency,
-        paymentMethod: method,
-        formData,
-        items: orderItems,
-      }),
-    }).catch(() => {});
+    // Los correos (recibo al cliente + aviso al admin) los envía el backend al
+    // guardar el pedido, dentro de saveOrderController. Aquí ya no se llaman.
 
     // Save to localStorage for profile page (only if logged in)
     if (user) {
@@ -928,12 +922,17 @@ export default function CheckoutPageClient() {
   }
 
   const [confirming,     setConfirming]     = useState(false);
+  const confirmingRef = useRef(false);
   // Snapshots captured before clearCart() so SuccessScreen has correct data
   const [snapItems,      setSnapItems]      = useState<typeof items>([]);
   const [snapTotal,      setSnapTotal]      = useState(0);
   const [snapCurrency,   setSnapCurrency]   = useState("PEN");
 
   async function handleConfirm() {
+    // Candado anti-doble-envío: un doble clic / doble evento no debe generar
+    // dos pedidos (el ref bloquea aunque el re-render aún no haya aplicado).
+    if (confirmingRef.current) return;
+    confirmingRef.current = true;
     setConfirming(true);
     const finalTotal  = calcFinalPrice(totalPrice, paidWith, rates);
     const txCurrency  = ["paypal","binance"].includes(paidWith) ? "USD" : paidWith === "bizum" ? "EUR" : "PEN";
@@ -941,11 +940,15 @@ export default function CheckoutPageClient() {
     setSnapItems([...items]);
     setSnapTotal(finalTotal);
     setSnapCurrency(txCurrency);
-    await saveOrder(paidWith, finalTotal, orderNumber);
-    clearCart();
-    setConfirming(false);
-    setModal(null);
-    setSuccess(true);
+    try {
+      await saveOrder(paidWith, finalTotal, orderNumber);
+      clearCart();
+      setModal(null);
+      setSuccess(true);
+    } finally {
+      setConfirming(false);
+      confirmingRef.current = false;
+    }
   }
 
   if (success) {
