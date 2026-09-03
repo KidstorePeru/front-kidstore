@@ -468,8 +468,10 @@ function SuccessScreen({ total, paymentMethod, items, contact, orderNumber, curr
   const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(waMessage)}`;
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-4 py-16 text-center"
-      style={{ background:"var(--bg)" }}>
+    <>
+      <Navbar />
+      <main className="flex flex-col items-center px-4 py-16 md:py-20 text-center"
+        style={{ background:"var(--bg)", minHeight:"72vh" }}>
       <h1 className="text-4xl md:text-5xl font-black mb-4 tracking-tight" style={{ color:"var(--text)" }}>
         {t.checkout.thankYou} 🎉
       </h1>
@@ -520,13 +522,15 @@ function SuccessScreen({ total, paymentMethod, items, contact, orderNumber, curr
           style={{ background:"linear-gradient(135deg,#22C55E,#16A34A)", boxShadow:"0 4px 16px rgba(34,197,94,0.35)" }}>
           💬 {t.checkout.sendReceipt}
         </a>
-        <Link href="/games/fortnite" onClick={clearCart}
+        <Link href="/games" onClick={clearCart}
           className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-2xl text-sm font-bold text-white transition-all hover:scale-[1.02]"
           style={{ background:"linear-gradient(135deg,#3B82F6,#1D4ED8)", boxShadow:"0 4px 16px rgba(59,130,246,0.35)" }}>
           🛒 {t.checkout.backToShop}
         </Link>
       </div>
-    </div>
+      </main>
+      <Footer />
+    </>
   );
 }
 
@@ -993,7 +997,7 @@ export default function CheckoutPageClient() {
       <main style={{ background:"var(--bg)", minHeight:"100vh" }}>
         <div className="max-w-[1200px] mx-auto px-4 lg:px-8 py-10">
           <div className="flex items-center gap-3 mb-8">
-            <Link href="/games/fortnite"
+            <Link href="/games"
               className="w-9 h-9 rounded-xl flex items-center justify-center hover:opacity-70 transition-all"
               style={{ background:"var(--card)", border:"1px solid var(--border)", color:"var(--text-muted)" }}>
               <ArrowLeft size={16}/>
@@ -1003,7 +1007,7 @@ export default function CheckoutPageClient() {
               <nav className="flex items-center gap-1.5 text-[11px]" style={{ color:"var(--text-subtle)" }}>
                 <Link href="/" className="hover:opacity-80">{t.checkout.home}</Link>
                 <ChevronRight size={10}/>
-                <Link href="/games/fortnite" className="hover:opacity-80">{t.checkout.shop}</Link>
+                <Link href="/games" className="hover:opacity-80">{t.checkout.shop}</Link>
                 <ChevronRight size={10}/>
                 <span style={{ color:"var(--text)" }}>{t.checkout.title}</span>
               </nav>
