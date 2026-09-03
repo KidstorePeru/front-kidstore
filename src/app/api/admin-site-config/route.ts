@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { assertAdmin } from "@/lib/adminSession";
 
 // Guarda overrides de visibilidad. El token de admin vive solo en el servidor.
 export const dynamic = "force-dynamic";
@@ -10,6 +11,8 @@ const API_KEY     = process.env.NEXT_PUBLIC_API_KEY ?? "";
 const ADMIN_TOKEN = process.env.ADMIN_SESSION_TOKEN ?? "kidstore-admin-secret-2025";
 
 export async function PUT(request: Request) {
+  const unauth = assertAdmin(request);
+  if (unauth) return unauth;
   try {
     const body = await request.json();
 

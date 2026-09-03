@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { assertAdmin } from "@/lib/adminSession";
 
 // Force dynamic — never cache this route, always hit the backend
 export const dynamic = "force-dynamic";
@@ -9,7 +10,9 @@ const API_KEY      = process.env.NEXT_PUBLIC_API_KEY ?? "";
 // Debe coincidir con ADMIN_SESSION_TOKEN del backend (Railway).
 const ADMIN_TOKEN  = process.env.ADMIN_SESSION_TOKEN ?? "kidstore-admin-secret-2025";
 
-export async function GET() {
+export async function GET(request: Request) {
+  const unauth = assertAdmin(request);
+  if (unauth) return unauth;
   try {
     const res = await fetch(`${BACKEND_URL}/admin/orders`, {
       headers: {

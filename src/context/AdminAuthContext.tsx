@@ -2,14 +2,10 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 
-// ── Admin credentials — validated via env vars (never expose in client bundle) ──
-// In production, replace with server-side auth (JWT / session)
-const ADMIN_EMAIL = process.env.NEXT_PUBLIC_ADMIN_EMAIL ?? "";
-const ADMIN_PASS  = process.env.NEXT_PUBLIC_ADMIN_PASS  ?? "";
-
-const ADMINS = [
-  { email: ADMIN_EMAIL, password: ADMIN_PASS, name: "Administrador", role: "owner" as const },
-];
+// El login se valida en el servidor (/api/admin-login), que compara contra
+// variables de entorno NO públicas y devuelve una cookie httpOnly firmada.
+// La contraseña ya no viaja al navegador. Lo que guardamos en localStorage es
+// solo para pintar la UI al instante; la cookie es la que realmente autoriza.
 
 interface AdminUser {
   email: string;
@@ -41,19 +37,29 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   async function loginAdmin(email: string, password: string) {
-    await new Promise(r => setTimeout(r, 600)); // simulate network
-    const found = ADMINS.find(
-      a => a.email.toLowerCase() === email.toLowerCase() && a.password === password
-    );
-    if (!found) throw new Error("Credenciales incorrectas.");
-    const { password: _, ...safeAdmin } = found;
-    setAdmin(safeAdmin);
-    localStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify(safeAdmin));
+    let data: { success?: boolean; admin?: AdminUser; error?: string } = {};
+    try {
+      const res = await fetch("/api/admin-login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+      data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.success || !data.admin) {
+        throw new Error(data.error || "Credenciales incorrectas.");
+      }
+    } catch (e) {
+      if (e instanceof Error) throw e;
+      throw new Error("No se pudo iniciar sesión.");
+    }
+    setAdmin(data.admin);
+    try { localStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify(data.admin)); } catch {}
   }
 
   function logoutAdmin() {
     setAdmin(null);
-    localStorage.removeItem(ADMIN_SESSION_KEY);
+    try { localStorage.removeItem(ADMIN_SESSION_KEY); } catch {}
+    fetch("/api/admin-logout", { method: "POST" }).catch(() => {});
   }
 
   return (

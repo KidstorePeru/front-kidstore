@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { assertAdmin } from "@/lib/adminSession";
 
 const BACKEND_URL  = process.env.NEXT_PUBLIC_API_URL ?? "";
 const API_KEY      = process.env.NEXT_PUBLIC_API_KEY ?? "";
@@ -6,6 +7,8 @@ const API_KEY      = process.env.NEXT_PUBLIC_API_KEY ?? "";
 const ADMIN_TOKEN  = process.env.ADMIN_SESSION_TOKEN ?? "kidstore-admin-secret-2025";
 
 export async function PATCH(request: Request) {
+  const unauth = assertAdmin(request);
+  if (unauth) return unauth;
   try {
     const body = await request.json();
 

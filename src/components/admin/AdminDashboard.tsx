@@ -169,6 +169,12 @@ const NAV = [
 async function fetchOrders(): Promise<Order[]> {
   try {
     const res = await fetch(`/api/admin-orders`, { cache: "no-store" });
+    // Cookie de sesión ausente o caducada -> de vuelta al login.
+    if (res.status === 401 && typeof window !== "undefined") {
+      try { localStorage.removeItem("kidstore_admin_session"); } catch {}
+      window.location.href = "/admin/login";
+      return [];
+    }
     const json = await res.json();
     const raw = json.orders ?? json.data ?? [];
     if (!Array.isArray(raw)) return [];

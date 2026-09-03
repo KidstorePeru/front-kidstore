@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { assertAdmin } from "@/lib/adminSession";
 
 // Lista de usuarios registrados (tabla users del backend). El x-admin-key vive
 // solo en el servidor.
@@ -9,7 +10,9 @@ const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL ?? "";
 const API_KEY     = process.env.NEXT_PUBLIC_API_KEY ?? "";
 const ADMIN_TOKEN = process.env.ADMIN_SESSION_TOKEN ?? "kidstore-admin-secret-2025";
 
-export async function GET() {
+export async function GET(request: Request) {
+  const unauth = assertAdmin(request);
+  if (unauth) return unauth;
   try {
     const res = await fetch(`${BACKEND_URL}/admin/users`, {
       headers: { "x-admin-key": ADMIN_TOKEN, "x-api-key": API_KEY },
