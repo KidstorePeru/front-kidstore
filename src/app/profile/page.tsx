@@ -443,7 +443,7 @@ function TabSeguridad({ user, updateProfile }: any) {
     setEmailErr("");
     setEmailBusy(true);
     try {
-      await requestEmailCode(newEmail.trim(), user.username, lang);
+      await requestEmailCode(newEmail.trim(), user.username, lang, "email-change");
       setEmailStep("verify");
       setEmailCode("");
     } catch (e) {

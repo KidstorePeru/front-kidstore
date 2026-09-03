@@ -20,7 +20,7 @@ interface AuthContextType {
   register:       (username: string, email: string, password: string, fullName?: string) => Promise<void>;
   logout:         () => void;
   checkAvailability: (username: string, email: string) => Promise<{ usernameTaken: boolean; emailTaken: boolean }>;
-  requestEmailCode: (email: string, username?: string, lang?: string) => Promise<void>;
+  requestEmailCode: (email: string, username?: string, lang?: string, purpose?: "register" | "reset" | "email-change") => Promise<void>;
   forgotPassword: (email: string) => Promise<void>;
   verifyCode:     (email: string, code: string) => Promise<{ username: string }>;
   updateProfile:  (data: Partial<User> & { newEmail?: string }) => Promise<void>;
@@ -96,11 +96,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { usernameTaken: !!data.usernameTaken, emailTaken: !!data.emailTaken };
   }
 
-  // ── Enviar código de verificación al correo (registro / cambio de correo) ──
-  async function requestEmailCode(email: string, username?: string, lang?: string) {
+  // ── Enviar código de verificación al correo (registro / reset / cambio de correo) ──
+  async function requestEmailCode(
+    email: string,
+    username?: string,
+    lang?: string,
+    purpose: "register" | "reset" | "email-change" = "register",
+  ) {
     const { error } = await api("/send-verification", {
       method: "POST",
-      body: JSON.stringify({ email, username: username || email.split("@")[0], lang }),
+      body: JSON.stringify({ email, username: username || email.split("@")[0], lang, purpose }),
     });
     if (error) throw new Error(error);
   }
@@ -117,7 +122,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const { error } = await api("/send-verification", {
         method: "POST",
-        body: JSON.stringify({ email, username: email.split("@")[0] }),
+        body: JSON.stringify({ email, username: email.split("@")[0], purpose: "reset" }),
       });
 
       if (error) throw new Error(error);

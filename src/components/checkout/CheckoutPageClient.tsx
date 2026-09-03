@@ -848,7 +848,7 @@ function CheckoutForm({ onOpenModal, onMethodChange }: {
 
 // ── MAIN ───────────────────────────────────────────────────────
 export default function CheckoutPageClient() {
-  const { formatPrice, currency, rates } = usePreferences();
+  const { formatPrice, currency, rates, lang } = usePreferences();
   const { items, totalPrice, clearCart } = useCart();
   const { user } = useAuth();
   const t = useT();
@@ -893,6 +893,7 @@ export default function CheckoutPageClient() {
         currency: txCurrency,
         paymentMethod: method,
         status: "pending",
+        lang: lang === "EN" ? "EN" : "ES",
         formData,
         items: orderItems.map(i => ({ id: i.productId, name: i.name, price: i.price, quantity: i.quantity, image: i.image })),
       },

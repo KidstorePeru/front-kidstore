@@ -213,7 +213,7 @@ function AuthModal({
         }
       } catch { /* no se pudo comprobar → seguimos */ }
 
-      await requestEmailCode(regEmail.trim(), username.trim(), lang);
+      await requestEmailCode(regEmail.trim(), username.trim(), lang, "register");
       setRegStep("verify");
       setRegCode("");
       setRegResendIn(60);
@@ -254,7 +254,7 @@ function AuthModal({
     setRegErr("");
     setRegSending(true);
     try {
-      await requestEmailCode(regEmail.trim(), username.trim(), lang);
+      await requestEmailCode(regEmail.trim(), username.trim(), lang, "register");
       setRegResendIn(60);
     } catch {
       setRegErr(isEN ? "Could not resend the code." : "No se pudo reenviar el código.");
