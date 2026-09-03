@@ -62,6 +62,7 @@ export function useFortniteShop(lang = "es-419") {
   const [data, setData] = useState<FortniteShopData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [stale, setStale] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
 
   const load = useCallback(async (l: string, force = false) => {
@@ -88,12 +89,20 @@ export function useFortniteShop(lang = "es-419") {
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const json = await res.json();
       if (json.status !== 200) throw new Error(`API status ${json.status}`);
-      if (cache.size >= MAX_CACHE_ENTRIES) {
-        const oldest = cache.keys().next().value;
-        if (oldest !== undefined) cache.delete(oldest);
+      // `_stale`: el proxy no pudo refrescar y devolvio la ultima tienda buena.
+      // No la cacheamos como fresca para reintentar en vivo al volver a montar.
+      if (json._stale) {
+        setData(json.data);
+        setStale(true);
+      } else {
+        if (cache.size >= MAX_CACHE_ENTRIES) {
+          const oldest = cache.keys().next().value;
+          if (oldest !== undefined) cache.delete(oldest);
+        }
+        cache.set(l, { data: json.data, ts: Date.now() });
+        setData(json.data);
+        setStale(false);
       }
-      cache.set(l, { data: json.data, ts: Date.now() });
-      setData(json.data);
     } catch (err) {
       if (err instanceof Error && err.name !== "AbortError") setError(err.message);
       else if (!(err instanceof Error)) setError("Error desconocido");
@@ -107,5 +116,5 @@ export function useFortniteShop(lang = "es-419") {
     return () => abortRef.current?.abort();
   }, [lang, load]);
 
-  return { data, loading, error, reload: () => load(lang, true) };
+  return { data, loading, error, stale, reload: () => load(lang, true) };
 }

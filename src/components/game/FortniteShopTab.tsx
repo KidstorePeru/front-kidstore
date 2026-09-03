@@ -811,7 +811,7 @@ export default function FortniteShopTab() {
   const shopLang = manualLang ?? webLang;
   useEffect(() => { setManualLang(null); }, [lang]);
 
-  const { data, loading, error, reload } = useFortniteShop(shopLang);
+  const { data, loading, error, stale, reload } = useFortniteShop(shopLang);
   const [selected, setSelected]          = useState<FortniteEntry|null>(null);
   const [search,   setSearch]            = useState("");
   const resetCountdown                   = useResetCountdown();
@@ -847,8 +847,9 @@ export default function FortniteShopTab() {
     </div>
   );
 
-  // Error
-  if (error) return (
+  // Error total: solo si no hay NADA que mostrar (ni tienda en vivo ni copia
+  // guardada). Si tenemos datos aunque sean viejos, se muestran con un aviso.
+  if (error && !data) return (
     <div style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", minHeight:380, gap:12, textAlign:"center", padding:24 }}>
       <div style={{ fontSize:44 }}>⚠️</div>
       <p style={{ fontFamily:"'Readex Pro', sans-serif", fontSize:16, fontWeight:700, color:"var(--text)" }}>{lang === "EN" ? "Error loading shop" : "Error al cargar la tienda"}</p>
@@ -969,6 +970,25 @@ export default function FortniteShopTab() {
           </button>
         </div>
       </div>
+
+      {/* Aviso: no se pudo refrescar en vivo, se muestra la ultima tienda */}
+      {data && (stale || error) && (
+        <div style={{
+          display:"flex", alignItems:"center", gap:10, flexWrap:"wrap" as const,
+          padding:"11px 16px", marginBottom:16, borderRadius:12,
+          background:"rgba(245,158,11,.1)", border:"1px solid rgba(245,158,11,.3)",
+        }}>
+          <span style={{ fontSize:15, flexShrink:0 }}>⚠️</span>
+          <p style={{ fontFamily:"'Manrope', sans-serif", fontSize:12.5, lineHeight:1.5, color:"var(--text-muted)", margin:0, flex:1, minWidth:180 }}>
+            {lang === "EN"
+              ? "Couldn't reach the live shop right now — showing the last available items. It'll update automatically once the provider is back."
+              : "No se pudo conectar con la tienda en vivo — mostrando los ultimos items disponibles. Se actualizara sola cuando el proveedor vuelva."}
+          </p>
+          <button onClick={reload} style={{ display:"flex", alignItems:"center", gap:6, padding:"7px 14px", borderRadius:8, border:"1px solid rgba(245,158,11,.4)", background:"rgba(245,158,11,.12)", color:"var(--text)", cursor:"pointer", fontFamily:"'Manrope', sans-serif", fontSize:12, fontWeight:700, flexShrink:0 }}>
+            <RefreshCw size={12}/> {lang === "EN" ? "Retry" : "Reintentar"}
+          </button>
+        </div>
+      )}
 
       {/* ── SECCIONES ────────────────────────────────────── */}
       <div style={{ margin:"0 -1rem" }}>
