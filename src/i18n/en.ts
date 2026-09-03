@@ -416,7 +416,7 @@ export const en: Translations = {
     robloxUsername: "Roblox username",
     gamePassLink: "Your Game Pass link",
     howItWorks: "How does it work?",
-    whatsappStep1: "Click \"Buy now\" and we'll redirect you to WhatsApp.",
+    whatsappStep1: "Choose a payment method and complete your purchase.",
     whatsappStep2: "Send us the amount, your username and your Game Pass link.",
     whatsappStep3: "We process the purchase immediately.",
     orderSummary: "Order summary",

@@ -414,7 +414,7 @@ export const es = {
     robloxUsername:        "Usuario de Roblox",
     gamePassLink:          "Link de tu Game Pass",
     howItWorks:            "¿Cómo funciona?",
-    whatsappStep1:         'Haz clic en "Comprar ahora" y te redirigiremos a WhatsApp.',
+    whatsappStep1:         'Elige un método de pago y completa tu compra.',
     whatsappStep2:         "Envíanos la cantidad, tu usuario y el link de tu Game Pass.",
     whatsappStep3:         "Procesamos la compra de inmediato.",
     orderSummary:          "Resumen del pedido",

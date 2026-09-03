@@ -169,13 +169,6 @@ export default function TFTProductClient({ slug }: { slug: string }) {
   }
 
   function handleBuyNow() {
-    if (whatsapp) {
-      const msg = encodeURIComponent(
-        `Hi! I want to buy:\n🪙 *${p.name}*\n${p.subtitle}\n🌎 ${p.region}\n💰 S/ ${p.price.toFixed(2)}\n\nCan you help me?`
-      );
-      window.open(`https://wa.me/51983454837?text=${msg}`, "_blank");
-      return;
-    }
     if (!validate()) return;
     addItem({
       slug: p.slug, name: p.name, img: p.img,
@@ -186,7 +179,7 @@ export default function TFTProductClient({ slug }: { slug: string }) {
         gameName: fieldGame || undefined, platform: platform || undefined,
       },
     });
-    router.push("/checkout");
+    window.location.href = "/checkout";
   }
 
   function handleWishlist() {

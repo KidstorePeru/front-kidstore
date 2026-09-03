@@ -246,15 +246,6 @@ export default function DiscordProductClient({ slug }: { slug: string }) {
   }
 
   function handleBuyNow() {
-    if (whatsapp) {
-      const msg = encodeURIComponent(
-        lang === "ES"
-          ? `Hola! Quiero comprar:\n💎 *${p.name}*\n🌎 ${p.region}\n💰 S/ ${p.price.toFixed(2)}\n\n¿Puedes ayudarme?`
-          : `Hi! I want to buy:\n💎 *${p.name}*\n🌎 ${p.region}\n💰 S/ ${p.price.toFixed(2)}\n\nCan you help me?`
-      );
-      window.open(`https://wa.me/51983454837?text=${msg}`, "_blank");
-      return;
-    }
     if (!validate()) return;
     addItem({
       slug: p.slug, name: p.name, img: p.img,
@@ -262,7 +253,7 @@ export default function DiscordProductClient({ slug }: { slug: string }) {
       region: p.region, format: p.format, tabLabel: p.tabLabel,
       orderData: buildOrderData(),
     });
-    router.push("/checkout");
+    window.location.href = "/checkout";
   }
 
   function handleWishlist() {
