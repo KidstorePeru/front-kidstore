@@ -97,7 +97,7 @@ function AuthModal({
 }) {
   const overlayRef = useRef<HTMLDivElement>(null);
   const router     = useRouter();
-  const { login, register, requestEmailCode, forgotPassword, verifyCode, loading } = useAuth();
+  const { login, register, checkAvailability, requestEmailCode, forgotPassword, verifyCode, loading } = useAuth();
   const { lang }   = usePreferences();
   const t          = useT();
   const isEN       = lang === "EN";
@@ -132,6 +132,7 @@ function AuthModal({
   const [showReg,    setShowReg]    = useState(false);
   const [regErr,     setRegErr]     = useState("");
   const [regErrs,    setRegErrs]    = useState<Record<string, boolean>>({});
+  const [regTaken,   setRegTaken]   = useState<{ username?: boolean; email?: boolean }>({});
   const [regStep,    setRegStep]    = useState<"form" | "verify">("form");
   const [regCode,    setRegCode]    = useState("");
   const [regSending, setRegSending] = useState(false);
@@ -181,7 +182,7 @@ function AuthModal({
     }
   }
 
-  // Paso 1: valida el formulario y envía el código al correo
+  // Paso 1: valida, comprueba disponibilidad y envía el código al correo
   async function handleRegister(ev: React.FormEvent) {
     ev.preventDefault();
     const e: Record<string, boolean> = {};
@@ -191,10 +192,27 @@ function AuthModal({
     if (regPass.length < 8)                             e.password = true;
     if (regPass !== regConfirm)                         e.confirm  = true;
     setRegErrs(e);
+    setRegTaken({});
     if (Object.keys(e).length) return;
     setRegErr("");
     setRegSending(true);
     try {
+      // ¿usuario o correo ya registrados? — se avisa antes de gastar un código.
+      // Best-effort: si la comprobación falla (backend viejo / caído) seguimos;
+      // el registro igual rechaza duplicados (23505).
+      try {
+        const avail = await checkAvailability(username.trim(), regEmail.trim());
+        if (avail.usernameTaken || avail.emailTaken) {
+          setRegTaken({ username: avail.usernameTaken, email: avail.emailTaken });
+          setRegErr(
+            avail.usernameTaken && avail.emailTaken ? t.auth.bothInUse
+            : avail.usernameTaken ? t.auth.usernameInUse
+            : t.auth.emailInUse,
+          );
+          return;
+        }
+      } catch { /* no se pudo comprobar → seguimos */ }
+
       await requestEmailCode(regEmail.trim(), username.trim(), lang);
       setRegStep("verify");
       setRegCode("");
@@ -554,16 +572,18 @@ function AuthModal({
                   {/* Username */}
                   <div>
                     <label className="text-[10px] font-bold uppercase tracking-wider mb-1.5 block"
-                      style={{ color: regErrs.username ? "#EF4444" : "var(--text-subtle)" }}>
+                      style={{ color: (regErrs.username || regTaken.username) ? "#EF4444" : "var(--text-subtle)" }}>
                       {t.auth.username}
-                      {regErrs.username && <span className="normal-case font-normal ml-1 opacity-70">{t.auth.usernameMin}</span>}
+                      {regTaken.username
+                        ? <span className="normal-case font-normal ml-1 opacity-70">{t.auth.takenShort}</span>
+                        : regErrs.username && <span className="normal-case font-normal ml-1 opacity-70">{t.auth.usernameMin}</span>}
                     </label>
                     <input type="text" placeholder={isEN ? "YourUsername" : "TuNombreDeUsuario"}
-                      value={username} onChange={e => { setUsername(e.target.value); setRegErrs(p => ({...p, username:false})); }}
+                      value={username} onChange={e => { setUsername(e.target.value); setRegErrs(p => ({...p, username:false})); setRegTaken(p => ({...p, username:false})); setRegErr(""); }}
                       className="w-full px-4 py-3 rounded-xl text-sm"
-                      style={inp(regErrs.username)}
-                      onFocus={e => (e.currentTarget.style.borderColor = regErrs.username ? "#EF4444" : "#1E3A8A")}
-                      onBlur={e  => (e.currentTarget.style.borderColor = regErrs.username ? "#EF4444" : "var(--border)")}
+                      style={inp(regErrs.username || regTaken.username)}
+                      onFocus={e => (e.currentTarget.style.borderColor = (regErrs.username || regTaken.username) ? "#EF4444" : "#1E3A8A")}
+                      onBlur={e  => (e.currentTarget.style.borderColor = (regErrs.username || regTaken.username) ? "#EF4444" : "var(--border)")}
                     />
                   </div>
                   {/* Nombre completo (opcional) */}
@@ -581,16 +601,18 @@ function AuthModal({
                   {/* Email */}
                   <div>
                     <label className="text-[10px] font-bold uppercase tracking-wider mb-1.5 block"
-                      style={{ color: regErrs.email ? "#EF4444" : "var(--text-subtle)" }}>
+                      style={{ color: (regErrs.email || regTaken.email) ? "#EF4444" : "var(--text-subtle)" }}>
                       {t.auth.email}
-                      {regErrs.email && <span className="normal-case font-normal ml-1 opacity-70">{t.auth.required}</span>}
+                      {regTaken.email
+                        ? <span className="normal-case font-normal ml-1 opacity-70">{t.auth.takenShort}</span>
+                        : regErrs.email && <span className="normal-case font-normal ml-1 opacity-70">{t.auth.required}</span>}
                     </label>
                     <input type="email" placeholder={isEN ? "your@email.com" : "tu@correo.com"}
-                      value={regEmail} onChange={e => { setRegEmail(e.target.value); setRegErrs(p => ({...p, email:false})); }}
+                      value={regEmail} onChange={e => { setRegEmail(e.target.value); setRegErrs(p => ({...p, email:false})); setRegTaken(p => ({...p, email:false})); setRegErr(""); }}
                       className="w-full px-4 py-3 rounded-xl text-sm"
-                      style={inp(regErrs.email)}
-                      onFocus={e => (e.currentTarget.style.borderColor = regErrs.email ? "#EF4444" : "#1E3A8A")}
-                      onBlur={e  => (e.currentTarget.style.borderColor = regErrs.email ? "#EF4444" : "var(--border)")}
+                      style={inp(regErrs.email || regTaken.email)}
+                      onFocus={e => (e.currentTarget.style.borderColor = (regErrs.email || regTaken.email) ? "#EF4444" : "#1E3A8A")}
+                      onBlur={e  => (e.currentTarget.style.borderColor = (regErrs.email || regTaken.email) ? "#EF4444" : "var(--border)")}
                     />
                   </div>
                   {/* Password */}

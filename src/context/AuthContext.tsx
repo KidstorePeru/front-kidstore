@@ -19,6 +19,7 @@ interface AuthContextType {
   login:          (identifier: string, password: string) => Promise<void>;
   register:       (username: string, email: string, password: string, fullName?: string) => Promise<void>;
   logout:         () => void;
+  checkAvailability: (username: string, email: string) => Promise<{ usernameTaken: boolean; emailTaken: boolean }>;
   requestEmailCode: (email: string, username?: string, lang?: string) => Promise<void>;
   forgotPassword: (email: string) => Promise<void>;
   verifyCode:     (email: string, code: string) => Promise<{ username: string }>;
@@ -83,6 +84,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } finally {
       setLoading(false);
     }
+  }
+
+  // ── Comprobar si el usuario / correo ya existen (antes de mandar código) ──
+  async function checkAvailability(username: string, email: string) {
+    const { data, error } = await api<{ success: boolean; usernameTaken: boolean; emailTaken: boolean }>(
+      "/auth/check-availability",
+      { method: "POST", body: JSON.stringify({ username, email }) },
+    );
+    if (error || !data) throw new Error(error ?? "No se pudo comprobar la disponibilidad.");
+    return { usernameTaken: !!data.usernameTaken, emailTaken: !!data.emailTaken };
   }
 
   // ── Enviar código de verificación al correo (registro / cambio de correo) ──
@@ -186,7 +197,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   return (
     <AuthContext.Provider value={{
       user, loading, login, register, logout,
-      requestEmailCode, forgotPassword, verifyCode, updateProfile, changePassword,
+      checkAvailability, requestEmailCode, forgotPassword, verifyCode, updateProfile, changePassword,
     }}>
       {children}
     </AuthContext.Provider>
