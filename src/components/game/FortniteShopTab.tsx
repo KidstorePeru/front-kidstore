@@ -123,10 +123,13 @@ function getSectionGlow(group: {entries:FortniteEntry[]}) {
 }
 function groupEntries(entries: FortniteEntry[]) {
   const map: Record<string,{id:string;name:string;rank:number;entries:FortniteEntry[]}> = {};
-  entries.forEach(e=>{
-    const id=e.layout?.id??"__other__";
-    const name=e.layout?.name??"Destacados";
-    const rank=e.layout?.rank??0;
+  // Los ítems sin `layout` caían en una sección fallback "Destacados": son
+  // ítems que Epic no asigna a ninguna sección de la tienda y que no se
+  // pueden regalar. Se excluyen para no vender algo que no se puede enviar.
+  entries.filter(e=>e.layout).forEach(e=>{
+    const id=e.layout!.id;
+    const name=e.layout!.name;
+    const rank=e.layout!.rank??0;
     if (!map[id]) map[id]={id,name,rank,entries:[]};
     map[id].entries.push(e);
   });
@@ -830,7 +833,13 @@ export default function FortniteShopTab() {
     })).filter(g=>g.entries.length>0);
   },[data,search]);
 
-  const totalItems=data?.entries.length??0;
+  // Cuenta solo lo que realmente se puede comprar (sin los ítems sin `layout`,
+  // excluidos en groupEntries por no poderse regalar) — independiente de la
+  // búsqueda, a diferencia de `groups`.
+  const totalItems=useMemo(
+    ()=>data?groupEntries(data.entries).reduce((n,g)=>n+g.entries.length,0):0,
+    [data],
+  );
   // `data.date` es la medianoche UTC del día de la tienda. Hay que formatearlo
   // en UTC: si no, en zonas al oeste de UTC (p. ej. Lima, UTC-5) se muestra el
   // día anterior y parece que la tienda no se actualizó.
