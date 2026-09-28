@@ -23,20 +23,22 @@
 
   /* Una sola familia, como la oficial, con tres ajustes de sus ejes: bold (títulos, etiquetas y
      botones) · medium (nombres, precios y menús) · regular (textos secundarios).
-     Anybody (ver FortniteShop.tsx), ajustada para verse como Heading Now (la de fortnite.com):
-     mismo ancho de línea y mismo grosor visual; font-size-adjust iguala la altura de las
-     mayúsculas (0,75 em en Heading Now; Anybody es ~10 % más baja).
+     Roboto Flex (ver FortniteShop.tsx) ajustada para verse como Heading Now (la de fortnite.com),
+     comparándolas a la misma altura de mayúsculas: mismo ancho de línea (wdth + XTRA), mismo
+     grosor (wght) y minúsculas igual de altas (YTLC 570 → x-height ≈ 80 % de la mayúscula).
+     font-size-adjust iguala la altura de las mayúsculas (0,75 em en Heading Now; Roboto Flex
+     es ~5 % más baja). El eje opsz lo elige el navegador según el tamaño.
      Si se compra la licencia web de Heading Now (Zetafonts, variable recta): añadir su
      @font-face (font-weight 100 1000) y usar --font-heading: "Heading Now", …;
      --fv-bold: "wdth" 825, "wght" 700; --fv-medium: "wdth" 668, "wght" 500;
      --fv-regular: "wdth" 668, "wght" 400. */
-  --font-heading: var(--fns-font-anybody), "Arial Black", system-ui, sans-serif;
+  --font-heading: var(--fns-font-flex), "Arial Black", system-ui, sans-serif;
   --font-display: var(--font-heading);
   --font-ui: var(--font-heading);
   --font-body: var(--font-heading);
-  --fv-bold: "wdth" 112, "wght" 800;
-  --fv-medium: "wdth" 96, "wght" 600;
-  --fv-regular: "wdth" 96, "wght" 500;
+  --fv-bold: "wdth" 151, "wght" 1000, "XTRA" 419, "YTLC" 570;
+  --fv-medium: "wdth" 142, "wght" 620, "YTLC" 570;
+  --fv-regular: "wdth" 142, "wght" 480, "YTLC" 570;
   /* La cursiva oficial es la misma letra inclinada 12,2°. Chrome no sintetiza "oblique 12deg"
      (solo a partir de ~14°), así que se inclina con skewX y font-style se deja en normal
      para que ningún navegador la incline dos veces. */

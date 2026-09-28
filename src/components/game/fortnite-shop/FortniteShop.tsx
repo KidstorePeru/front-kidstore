@@ -1,6 +1,6 @@
 "use client";
 import { useCallback, useDeferredValue, useMemo, useState } from "react";
-import { Anybody } from "next/font/google";
+import { Roboto_Flex } from "next/font/google";
 import { usePreferences } from "@/context/PreferencesContext";
 import { useFortniteExchangeRate } from "@/hooks/useFortniteExchangeRate";
 import ShopHeader from "./ShopHeader";
@@ -14,13 +14,14 @@ import { buildShop, filterShop, type Offer } from "./model";
 import { SHOP_LANGS, type OfferKind, type ShopLangKey } from "./i18n";
 import "./fortnite-shop.css";
 
-// Fuente de la tienda: Anybody (Google Fonts, licencia OFL: uso web y comercial libre). Es la
-// libre más parecida a Heading Now, la de fortnite.com: grotesca ancha con O/0/G/Q cuadradas y
-// eje de anchura. next/font la descarga al compilar y la sirve desde nuestro dominio.
-const anybody = Anybody({
+// Fuente de la tienda: Roboto Flex (Google Fonts, licencia OFL: uso web y comercial libre).
+// Con sus ejes de anchura (wdth), anchura de las letras (XTRA) y altura de minúsculas (YTLC) es
+// la libre que más se acerca a Heading Now, la de fortnite.com. next/font la descarga al
+// compilar y la sirve desde nuestro dominio.
+const robotoFlex = Roboto_Flex({
   subsets: ["latin"],
-  axes: ["wdth"],
-  variable: "--fns-font-anybody",
+  axes: ["opsz", "wdth", "XTRA", "YTLC"],
+  variable: "--fns-font-flex",
   display: "swap",
 });
 
@@ -79,7 +80,7 @@ export default function FortniteShop() {
   };
 
   return (
-    <div className={`fnshop ${anybody.variable}`}>
+    <div className={`fnshop ${robotoFlex.variable}`}>
       {shop && <SectionBackgrounds sections={shop.sections} activeId={activeSectionId} />}
 
       <div className="fns-shop">
