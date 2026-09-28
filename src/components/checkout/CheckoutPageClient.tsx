@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import { useCart } from "@/context/CartContext";
+import { useCart, maxQuantity } from "@/context/CartContext";
 import { usePreferences } from "@/context/PreferencesContext";
 import { useAuth } from "@/context/AuthContext";
 import { useT } from "@/i18n";
@@ -600,7 +600,9 @@ function OrderSummary({ selectedMethod }: { selectedMethod: PaymentId }) {
                     </button>
                     <span className="text-xs font-bold w-5 text-center" style={{ color:"var(--text)" }}>{item.quantity}</span>
                     <button onClick={() => updateQty(item.slug, item.quantity + 1)}
-                      className="w-7 h-7 rounded-lg flex items-center justify-center transition-all hover:opacity-70"
+                      disabled={item.quantity >= maxQuantity(item)}
+                      title={item.quantity >= maxQuantity(item) ? t.cart.maxOne : undefined}
+                      className="w-7 h-7 rounded-lg flex items-center justify-center transition-all hover:opacity-70 disabled:opacity-30 disabled:cursor-not-allowed"
                       style={{ background:"var(--surface)", border:"1px solid var(--border)", color:"var(--text-muted)" }}>
                       <Plus size={12}/>
                     </button>

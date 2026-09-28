@@ -94,6 +94,7 @@ export const es = {
     items:         "producto",
     itemsPlural:   "productos",
     digital:       "digital",
+    maxOne:        "Los objetos de la tienda de Fortnite se compran de uno en uno.",
   },
 
   // ── Checkout ──────────────────────────────────────────

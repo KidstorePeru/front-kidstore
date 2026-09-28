@@ -22,6 +22,11 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "fortnite-api.com",
       },
+      {
+        // Portadas de las pistas de improvisación (cdn.fortnite-api.com) que llegan al carrito/checkout.
+        protocol: "https",
+        hostname: "**.fortnite-api.com",
+      },
     ],
   },
 };

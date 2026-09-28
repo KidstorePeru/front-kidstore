@@ -96,6 +96,7 @@ export const en: Translations = {
     items:         "item",
     itemsPlural:   "items",
     digital:       "digital",
+    maxOne:        "Fortnite Item Shop items can only be bought one at a time.",
   },
 
   // ── Checkout ──────────────────────────────────────────

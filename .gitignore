@@ -43,3 +43,7 @@ next-env.d.ts
 supabase-*.sql
 supabase-*.html
 backend-*.md
+
+# Heading Now: la versión gratuita es solo para uso personal (no web/comercial) y no se puede
+# redistribuir. No subir al repo público hasta tener la licencia web de Zetafonts.
+public/fonts/Heading-Now-Variable.*

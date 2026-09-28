@@ -43,11 +43,19 @@ interface CartContextType {
 // ── Helpers ────────────────────────────────────────────────────
 const CART_KEY = "kidstore_cart";
 
+// Los objetos de la tienda diaria de Fortnite (tabLabel "Tienda") se regalan de uno en uno:
+// una sola unidad por objeto. Para volver a comprarlo hay que cerrar antes ese pedido.
+export function maxQuantity(item: Pick<CartItem, "tabLabel">): number {
+  return item.tabLabel === "Tienda" ? 1 : Infinity;
+}
+
 function loadCart(): CartItem[] {
   if (typeof window === "undefined") return [];
   try {
     const raw = localStorage.getItem(CART_KEY);
-    return raw ? (JSON.parse(raw) as CartItem[]) : [];
+    const items = raw ? (JSON.parse(raw) as CartItem[]) : [];
+    // Carritos guardados antes del límite: se recortan al máximo permitido.
+    return items.map(i => ({ ...i, quantity: Math.min(i.quantity, maxQuantity(i)) }));
   } catch {
     return [];
   }
@@ -81,6 +89,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setItems(prev => {
       const existing = prev.find(i => i.slug === newItem.slug);
       if (existing) {
+        if (existing.quantity >= maxQuantity(existing)) return prev;
         return prev.map(i =>
           i.slug === newItem.slug
             ? { ...i, quantity: i.quantity + 1, orderData: newItem.orderData ?? i.orderData }
@@ -99,7 +108,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     if (qty <= 0) {
       setItems(prev => prev.filter(i => i.slug !== slug));
     } else {
-      setItems(prev => prev.map(i => i.slug === slug ? { ...i, quantity: qty } : i));
+      setItems(prev => prev.map(i => i.slug === slug ? { ...i, quantity: Math.min(qty, maxQuantity(i)) } : i));
     }
   }, []);
 

@@ -12,7 +12,7 @@ import {
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { PAVOS, PAQUETES, CLUB, BATTLE_PASSES, FortniteProduct } from "@/data/fortnite";
-import FortniteShopTab from "@/components/game/FortniteShopTab";
+import FortniteShop from "@/components/game/fortnite-shop/FortniteShop";
 import { usePreferences } from "@/context/PreferencesContext";
 import { useGameVisibility } from "@/hooks/useGameVisibility";
 import { useT, useBadge } from "@/i18n";
@@ -531,14 +531,17 @@ function FortnitePageInner({ TABS, pavos, paquetes, club, battlePasses }: {
         </div>
         )}
 
-        {/* CONTENT */}
-        <div className="max-w-[1400px] mx-auto px-4 lg:px-8 py-8">
-          {shownTab === "tienda"   && <FortniteShopTab />}
-          {shownTab === "bots"     && <TabBots />}
-          {shownTab === "pavos"    && <TabPavos products={pavos} />}
-          {shownTab === "paquetes" && <TabPaquetes products={paquetes} />}
-          {shownTab === "pases"    && <TabPases club={club} bp={battlePasses} />}
-        </div>
+        {/* CONTENT — la tienda ocupa todo el ancho con su propio fondo, como la oficial */}
+        {shownTab === "tienda" ? (
+          <FortniteShop />
+        ) : (
+          <div className="max-w-[1400px] mx-auto px-4 lg:px-8 py-8">
+            {shownTab === "bots"     && <TabBots />}
+            {shownTab === "pavos"    && <TabPavos products={pavos} />}
+            {shownTab === "paquetes" && <TabPaquetes products={paquetes} />}
+            {shownTab === "pases"    && <TabPases club={club} bp={battlePasses} />}
+          </div>
+        )}
       </main>
       <Footer />
     </>

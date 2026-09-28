@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { X, Plus, Minus, Trash2, Zap, ShoppingCart } from "lucide-react";
-import { useCart } from "@/context/CartContext";
+import { useCart, maxQuantity } from "@/context/CartContext";
 import { usePreferences } from "@/context/PreferencesContext";
 import { useT } from "@/i18n";
 
@@ -182,7 +182,9 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                         </span>
                         <button
                           onClick={() => updateQty(item.slug, item.quantity + 1)}
-                          className="w-6 h-6 rounded-lg flex items-center justify-center transition-all hover:opacity-70"
+                          disabled={item.quantity >= maxQuantity(item)}
+                          title={item.quantity >= maxQuantity(item) ? t.cart.maxOne : undefined}
+                          className="w-6 h-6 rounded-lg flex items-center justify-center transition-all hover:opacity-70 disabled:opacity-30 disabled:cursor-not-allowed"
                           style={{ background: "var(--surface)", border: "1px solid var(--border)", color: "var(--text-muted)" }}>
                           <Plus size={11} />
                         </button>
