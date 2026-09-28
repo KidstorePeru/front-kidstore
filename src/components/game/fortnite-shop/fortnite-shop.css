@@ -3,17 +3,6 @@
    Todo va con el prefijo fns- y bajo .fnshop para no tocar el resto de la web.
    ══════════════════════════════════════════════════════════════════ */
 
-/* Heading Now: la fuente de la tienda oficial. Es variable (ejes wght y wdth de 100 a 1000) y
-   la oficial usa su versión cursiva, que es la misma letra inclinada ~12°: aquí se sintetiza
-   con skewX(-12.2deg) a partir de la recta (ver --slant). */
-@font-face {
-  font-family: "Heading Now";
-  src: url("/fonts/Heading-Now-Variable.woff2") format("woff2");
-  font-weight: 100 1000;
-  font-style: normal;
-  font-display: swap;
-}
-
 .fnshop {
   --fn-blue: #0774bb;
   --fn-blue-mid: #052f6f;
@@ -32,16 +21,22 @@
   --text-xl: 1.6875rem;  /* 27px */
   --text-2xl: 2.6875rem; /* 43px */
 
-  /* Una sola familia, como la oficial, con tres ajustes de sus ejes:
-     bold (825/700) títulos, etiquetas y botones · medium (668/500) nombres, precios y menús ·
-     regular (668/400) textos secundarios. Archivo es el respaldo gratuito si falta Heading Now. */
-  --font-heading: "Heading Now", var(--fns-font-archivo), "Arial Black", system-ui, sans-serif;
+  /* Una sola familia, como la oficial, con tres ajustes de sus ejes: bold (títulos, etiquetas y
+     botones) · medium (nombres, precios y menús) · regular (textos secundarios).
+     Anybody (ver FortniteShop.tsx), ajustada para verse como Heading Now (la de fortnite.com):
+     mismo ancho de línea y mismo grosor visual; font-size-adjust iguala la altura de las
+     mayúsculas (0,75 em en Heading Now; Anybody es ~10 % más baja).
+     Si se compra la licencia web de Heading Now (Zetafonts, variable recta): añadir su
+     @font-face (font-weight 100 1000) y usar --font-heading: "Heading Now", …;
+     --fv-bold: "wdth" 825, "wght" 700; --fv-medium: "wdth" 668, "wght" 500;
+     --fv-regular: "wdth" 668, "wght" 400. */
+  --font-heading: var(--fns-font-anybody), "Arial Black", system-ui, sans-serif;
   --font-display: var(--font-heading);
   --font-ui: var(--font-heading);
   --font-body: var(--font-heading);
-  --fv-bold: "wdth" 825, "wght" 700;
-  --fv-medium: "wdth" 668, "wght" 500;
-  --fv-regular: "wdth" 668, "wght" 400;
+  --fv-bold: "wdth" 112, "wght" 800;
+  --fv-medium: "wdth" 96, "wght" 600;
+  --fv-regular: "wdth" 96, "wght" 500;
   /* La cursiva oficial es la misma letra inclinada 12,2°. Chrome no sintetiza "oblique 12deg"
      (solo a partir de ~14°), así que se inclina con skewX y font-style se deja en normal
      para que ningún navegador la incline dos veces. */
@@ -56,6 +51,7 @@
 
   position: relative;
   color: #fff;
+  font-size-adjust: cap-height 0.75;
   background-color: var(--fn-blue-mid);
   font-family: var(--font-ui);
   font-variation-settings: var(--fv-regular);
@@ -2147,7 +2143,7 @@
 }
 
 /* ══════════════════════════════════════════════════════
-   Tipografía — mismos ajustes de Heading Now que fortnite.com/item-shop
+   Tipografía — mismos roles que fortnite.com/item-shop (pesos en --fv-*)
    ══════════════════════════════════════════════════════ */
 /* Títulos: bold inclinado */
 .fns-header__title,

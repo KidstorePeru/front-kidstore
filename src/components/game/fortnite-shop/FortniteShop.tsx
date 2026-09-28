@@ -1,6 +1,6 @@
 "use client";
 import { useCallback, useDeferredValue, useMemo, useState } from "react";
-import { Archivo } from "next/font/google";
+import { Anybody } from "next/font/google";
 import { usePreferences } from "@/context/PreferencesContext";
 import { useFortniteExchangeRate } from "@/hooks/useFortniteExchangeRate";
 import ShopHeader from "./ShopHeader";
@@ -14,14 +14,14 @@ import { buildShop, filterShop, type Offer } from "./model";
 import { SHOP_LANGS, type OfferKind, type ShopLangKey } from "./i18n";
 import "./fortnite-shop.css";
 
-// Respaldo gratuito por si no está el archivo de Heading Now: Archivo tiene eje de anchura y es
-// la libre más parecida. Sin precarga, así solo se descarga si de verdad hace falta.
-const archivo = Archivo({
+// Fuente de la tienda: Anybody (Google Fonts, licencia OFL: uso web y comercial libre). Es la
+// libre más parecida a Heading Now, la de fortnite.com: grotesca ancha con O/0/G/Q cuadradas y
+// eje de anchura. next/font la descarga al compilar y la sirve desde nuestro dominio.
+const anybody = Anybody({
   subsets: ["latin"],
   axes: ["wdth"],
-  variable: "--fns-font-archivo",
+  variable: "--fns-font-anybody",
   display: "swap",
-  preload: false,
 });
 
 // Réplica de la tienda de objetos oficial (orden, tamaños y diseño) con los datos de
@@ -79,7 +79,7 @@ export default function FortniteShop() {
   };
 
   return (
-    <div className={`fnshop ${archivo.variable}`}>
+    <div className={`fnshop ${anybody.variable}`}>
       {shop && <SectionBackgrounds sections={shop.sections} activeId={activeSectionId} />}
 
       <div className="fns-shop">
