@@ -32,9 +32,12 @@ export default function FortniteShop() {
   const { lang, setLang } = usePreferences();
   const langKey: ShopLangKey = lang === "EN" ? "en" : "es";
   const t = SHOP_LANGS[langKey];
-  const { status, error, entries, date, stale, reload } = useShopData(t.apiLang);
+  const { status, error, entries, date, namesEs, stale, reload } = useShopData(t.apiLang);
 
-  const shop = useMemo(() => (entries ? buildShop(entries, t) : null), [entries, t]);
+  const shop = useMemo(
+    () => (entries ? buildShop(entries, t, { date, namesEs }) : null),
+    [entries, t, date, namesEs],
+  );
   const itemCount = useMemo(
     () => (shop ? shop.sections.reduce((n, s) => n + s.groups.reduce((m, g) => m + g.offers.length, 0), 0) : null),
     [shop],

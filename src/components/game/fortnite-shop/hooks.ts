@@ -8,7 +8,8 @@ import type { ApiEntry } from "./model";
    marcada `_stale` en vez de un error. */
 
 const CACHE_TTL_MS = 10 * 60 * 1000;
-const cache = new Map<string, { entries: ApiEntry[]; date: string; ts: number }>();
+type NamesEs = Record<string, string> | null;
+const cache = new Map<string, { entries: ApiEntry[]; date: string; namesEs: NamesEs; ts: number }>();
 
 // La tienda rota todos los días a las 00:00 UTC.
 export function nextShopReset(now = Date.now()): number {
@@ -20,12 +21,21 @@ interface ShopState {
   status: "loading" | "ready" | "error";
   entries: ApiEntry[] | null;
   date: string | null;
+  // Nombres de sección en español por id (los añade el proxy cuando la tienda va en otro idioma).
+  namesEs: NamesEs;
   stale: boolean;
   error: string | null;
 }
 
 export function useShopData(apiLang: string) {
-  const [state, setState] = useState<ShopState>({ status: "loading", entries: null, date: null, stale: false, error: null });
+  const [state, setState] = useState<ShopState>({
+    status: "loading",
+    entries: null,
+    date: null,
+    namesEs: null,
+    stale: false,
+    error: null,
+  });
   const [reloadKey, setReloadKey] = useState(0);
   const forceRef = useRef(false);
 
@@ -36,7 +46,7 @@ export function useShopData(apiLang: string) {
     if (!force && hit && Date.now() - hit.ts < CACHE_TTL_MS) {
       // Sincroniza con la caché del módulo al cambiar de idioma (sistema externo al estado).
       // eslint-disable-next-line react-hooks/set-state-in-effect
-      setState({ status: "ready", entries: hit.entries, date: hit.date, stale: false, error: null });
+      setState({ status: "ready", entries: hit.entries, date: hit.date, namesEs: hit.namesEs, stale: false, error: null });
       return undefined;
     }
     const ctrl = new AbortController();
@@ -49,8 +59,9 @@ export function useShopData(apiLang: string) {
         const entries = json?.data?.entries;
         if (json?.status !== 200 || !Array.isArray(entries)) throw new Error("Respuesta inesperada de la tienda");
         const stale = Boolean(json._stale);
-        if (!stale) cache.set(apiLang, { entries, date: json.data.date, ts: Date.now() });
-        setState({ status: "ready", entries, date: json.data.date, stale, error: null });
+        const namesEs: NamesEs = json._sectionNamesEs ?? null;
+        if (!stale) cache.set(apiLang, { entries, date: json.data.date, namesEs, ts: Date.now() });
+        setState({ status: "ready", entries, date: json.data.date, namesEs, stale, error: null });
       })
       .catch((err: unknown) => {
         if (ctrl.signal.aborted) return;

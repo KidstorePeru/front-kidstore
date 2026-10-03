@@ -1,7 +1,9 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 import { memo, useMemo, useState } from "react";
+import Image from "next/image";
 import type { ShopSection } from "./model";
+import { backgroundSrc, type SectionBackground } from "./sectionMeta";
 
 // Las texturas oficiales se pueden pedir redimensionadas al tamaño de la pantalla.
 function sized(url: string) {
@@ -12,23 +14,35 @@ function sized(url: string) {
   return `${url}?resize=1&w=${w}&h=${h}&quality=high`;
 }
 
-// Fondo fijo de pantalla completa: cada sección tiene su textura y se hace un fundido de 0,2 s
-// al entrar en ella. Solo se cargan la activa y sus vecinas.
+// Las imágenes propias (src/assets/secciones) pasan por next/image: se sirven en WebP/AVIF al
+// tamaño de la pantalla en vez del archivo original (algunos PNG pesan casi 2 MB).
+function Background({ bg }: { bg: SectionBackground }) {
+  if (typeof bg === "string") return <img src={sized(bg)} alt="" decoding="async" />;
+  return <Image src={bg} alt="" fill sizes="100vw" loading="eager" />;
+}
+
+// Fondo de pantalla completa: cada sección tiene su imagen y se hace un fundido de 0,2 s al entrar
+// en ella, como la oficial. Solo se cargan la activa y sus vecinas.
 function SectionBackgrounds({ sections, activeId }: { sections: ShopSection[]; activeId: string | null }) {
-  const urls = useMemo(() => [...new Set(sections.map((s) => s.background))], [sections]);
-  const activeUrl = sections.find((s) => s.domId === activeId)?.background ?? urls[0];
+  const backgrounds = useMemo(() => {
+    const bySrc = new Map<string, SectionBackground>();
+    for (const s of sections) bySrc.set(backgroundSrc(s.background), s.background);
+    return [...bySrc];
+  }, [sections]);
+  const active = sections.find((s) => s.domId === activeId)?.background ?? sections[0]?.background;
+  const activeSrc = active ? backgroundSrc(active) : null;
   const [mounted, setMounted] = useState<Set<string>>(() => new Set());
 
-  // Una vez cargada, una textura se queda montada (volver a una sección no la descarga otra vez).
+  // Una vez cargada, una imagen se queda montada (volver a una sección no la descarga otra vez).
   const i = sections.findIndex((s) => s.domId === activeId);
-  const near = [sections[i - 1], sections[i], sections[i + 1]].filter(Boolean).map((s) => s.background);
+  const near = [sections[i - 1], sections[i], sections[i + 1]].filter(Boolean).map((s) => backgroundSrc(s.background));
   if (!near.every((u) => mounted.has(u))) setMounted(new Set([...mounted, ...near]));
 
   return (
     <div className="fns-backgrounds" aria-hidden="true">
-      {urls.map((url) => (
-        <div key={url} className={`fns-backgrounds__layer${url === activeUrl ? " is-active" : ""}`}>
-          {(mounted.has(url) || url === activeUrl) && <img src={sized(url)} alt="" decoding="async" />}
+      {backgrounds.map(([src, bg]) => (
+        <div key={src} className={`fns-backgrounds__layer${src === activeSrc ? " is-active" : ""}`}>
+          {(mounted.has(src) || src === activeSrc) && <Background bg={bg} />}
         </div>
       ))}
     </div>

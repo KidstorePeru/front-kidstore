@@ -157,9 +157,11 @@ export default function OfferModal({ offer, t, onClose }: { offer: Offer; t: Sho
               </h2>
               <div className="fns-modal__pricing">
                 <Price price={offer.price} t={t} className="fns-modal__price" />
-                {offer.discountBanner && (
-                  <div className="fns-card__pill fns-modal__pill">
-                    <span>{offer.discountBanner}</span>
+                {offer.pill && (
+                  <div
+                    className={`fns-card__pill fns-modal__pill${offer.pill.tone === "yellow" ? " fns-card__pill--yellow" : ""}`}
+                  >
+                    <span>{offer.pill.text}</span>
                   </div>
                 )}
               </div>

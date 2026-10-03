@@ -1181,6 +1181,10 @@
   color: #000;
   transform: skewX(-12deg);
 }
+/* Banners como "¡NUEVO!", "¡PERSONALIZABLE!" o "¡REACCIONA A LA MÚSICA!": amarillo de la oficial */
+.fns-card__pill--yellow {
+  background: #f7ff19;
+}
 .fns-card__pill span {
   overflow: hidden;
   white-space: nowrap;
@@ -1326,15 +1330,25 @@
   filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.45));
   transition: opacity 0.2s var(--ease), transform 0.2s var(--ease);
 }
+/* Franja al pasar el ratón: tipo de la oferta sobre negro al 70 %; si tiene características,
+   "TIPO + CARACTERÍSTICAS" en negro sobre blanco brillante (igual que la oficial). */
 .fns-card__features {
   max-height: 0;
   overflow: hidden;
   padding: 0 8px;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.7);
+  text-align: center;
+  transition: max-height 0.2s var(--ease), padding 0.2s var(--ease);
+}
+.fns-card__features.has-features {
   color: #000;
   background: linear-gradient(90deg, #fff 0%, rgba(255, 255, 255, 0.55) 25%, #fff 50%, rgba(255, 255, 255, 0.55) 75%, #fff 100%);
   background-size: 200% 100%;
-  text-align: center;
-  transition: max-height 0.2s var(--ease), padding 0.2s var(--ease);
+}
+.fns-card__features-plus {
+  margin: 0 4px 0 12px;
+  font-style: normal;
 }
 .fns-card__features span {
   display: block;
@@ -1356,6 +1370,8 @@
   .fns-card:hover .fns-card__features {
     max-height: 50px;
     padding: 4px 8px;
+  }
+  .fns-card:hover .fns-card__features.has-features {
     animation: fns-shimmer 2.5s linear infinite;
   }
   .fns-card:hover .fns-card__info:has(~ .fns-card__features) {
@@ -2161,7 +2177,6 @@
 }
 /* Etiquetas en mayúsculas: bold (inclinadas cuando son tags) */
 .fns-card__pill span,
-.fns-card__features span,
 .fns-header__eyebrow,
 .fns-countdown__label,
 .fns-card__leave,
@@ -2196,6 +2211,7 @@
 }
 /* Nombres, precios, menús: medium */
 .fns-card__title,
+.fns-card__features span,
 .fns-price__current,
 .fns-price__original,
 .fns-price__local,

@@ -3,7 +3,7 @@
 //   → grupos (número final de layoutId DESC; cada grupo es una fila propia)
 //   → ofertas (sortPriority DESC; empate: orden de la API)
 import type { OfferKind, ShopText } from "./i18n";
-import { sectionBackground, sectionSubtitle } from "./sectionMeta";
+import { sectionBackground, sectionSubtitle, type SectionBackground } from "./sectionMeta";
 
 /* ── Tipos de la API (solo los campos que se usan) ─────────────────── */
 
@@ -71,7 +71,8 @@ export interface Offer {
   images: string[];
   colors: { gradient: string; text: string; accent: string };
   price: { final: number; regular: number; formattedFinal: string; formattedRegular: string };
-  discountBanner: string | null;
+  // Pastilla sobre el nombre: descuento (blanca) o banner como "¡NUEVO!" (amarilla).
+  pill: { text: string; tone: "white" | "yellow" } | null;
   features: string[];
   offerTag: string | null;
   outDate?: string;
@@ -93,7 +94,7 @@ export interface ShopSection {
   rank: number;
   index: number;
   category: string | null;
-  background: string;
+  background: SectionBackground;
   subtitle: string | null;
   groups: ShopGroup[];
 }
@@ -102,8 +103,15 @@ export interface ShopModel { sections: ShopSection[]; categories: ShopCategory[]
 
 const SIZE_COLS: Record<string, 1 | 2 | 3 | 4> = { Size_1_x_1: 1, Size_2_x_1: 2, Size_3_x_1: 3, Size_4_x_1: 4 };
 
-export function buildShop(entries: ApiEntry[], t: ShopText): ShopModel {
+// date: fecha de la tienda (data.date, medianoche UTC) → elige la variante de fondo del día.
+// namesEs: nombres de sección en español por id (para encontrar las imágenes propias en inglés).
+export function buildShop(
+  entries: ApiEntry[],
+  t: ShopText,
+  { date, namesEs }: { date?: string | null; namesEs?: Record<string, string> | null } = {},
+): ShopModel {
   const nf = new Intl.NumberFormat(t.locale);
+  const day = Math.floor((Date.parse(date ?? "") || Date.now()) / 86_400_000);
   const sections = new Map<string, Omit<ShopSection, "groups"> & { groups: Map<number, ShopGroup> }>();
 
   entries.forEach((entry, order) => {
@@ -123,7 +131,7 @@ export function buildShop(entries: ApiEntry[], t: ShopText): ShopModel {
         rank: layout.rank ?? 0,
         index: layout.index ?? 0,
         category: layout.category?.trim() || null,
-        background: sectionBackground(layout.id, name),
+        background: sectionBackground(layout.id, [name, namesEs?.[layout.id]], day),
         subtitle: sectionSubtitle(layout.id, t.apiLang),
         groups: new Map(),
       };
@@ -249,15 +257,17 @@ function toOffer(entry: ApiEntry, order: number, t: ShopText, nf: Intl.NumberFor
   const regular = entry.regularPrice ?? entry.finalPrice;
   const final = entry.finalPrice;
 
-  let discountBanner: string | null = null;
-  const features: string[] = [];
-  if (entry.banner?.value) {
-    if (entry.banner.backendValue === "AmountOff") {
-      discountBanner = regular > final ? t.amountOff(nf.format(regular - final)) : entry.banner.value;
-    } else {
-      features.push(entry.banner.value);
-    }
+  // Como la oficial: el descuento va en pastilla blanca y el resto de banners ("Nuevo",
+  // "Personalizable", "Reacciona a la música"…) en pastilla amarilla con signos de exclamación.
+  let pill: Offer["pill"] = null;
+  const banner = entry.banner?.value?.replace(/^[¡!\s]+|[!\s]+$/g, "");
+  if (banner) {
+    pill =
+      entry.banner?.backendValue === "AmountOff"
+        ? { text: regular > final ? t.amountOff(nf.format(regular - final)) : banner, tone: "white" }
+        : { text: t.bannerText(banner), tone: "yellow" };
   }
+  const features: string[] = [];
   if (br.some((i) => i.variants?.some((v) => (v.options?.length ?? 0) > 1))) features.push(t.selectableStyles);
 
   const included = [
@@ -294,12 +304,12 @@ function toOffer(entry: ApiEntry, order: number, t: ShopText, nf: Intl.NumberFor
     images,
     colors: offerColors(entry.colors),
     price: { final, regular, formattedFinal: nf.format(final), formattedRegular: nf.format(regular) },
-    discountBanner,
+    pill,
     features,
     offerTag: entry.offerTag?.text ? stripMarkup(entry.offerTag.text) : null,
     outDate: entry.outDate,
     description: track || entry.bundle ? null : main?.description || null,
-    typeLabel: track ? t.jamTrack : entry.bundle ? t.bundle : main?.type?.displayValue || null,
+    typeLabel: offerTypeLabel(entry, track, outfit, main, t),
     rarityLabel: main?.series?.value || main?.rarity?.displayValue || null,
     setText: main?.set?.text || null,
     track: track
@@ -309,6 +319,33 @@ function toOffer(entry: ApiEntry, order: number, t: ShopText, nf: Intl.NumberFor
     included,
     searchText: normalize([title, track?.artist, ...included.map((i) => i.name)].join(" ")),
   };
+}
+
+// Tipo que muestra la oficial en la franja de la tarjeta (comprobado contra fortnite.com):
+// lote → "Lote" (los de vehículo: "Carrocería [y bonificación]"); atuendo + 1 objeto →
+// "Atuendo y bonificación"; atuendo + 2 o más → "Paquete y bonificación"; varios objetos sin
+// atuendo → "Paquete"; un solo objeto → su tipo ("Pico", "Gesto", "Mochila retro"…).
+function offerTypeLabel(
+  entry: ApiEntry,
+  track: ApiTrack | null,
+  outfit: ApiItem | undefined,
+  main: ApiItem | undefined,
+  t: ShopText,
+): string | null {
+  if (track) return t.jamTrack;
+  const br = entry.brItems ?? [];
+  const cars = entry.cars ?? [];
+  if (entry.bundle) {
+    if (cars.length && !br.length) {
+      const hasBody = cars.some((c) => c.type?.value === "body");
+      return hasBody && cars.length > 1 ? t.carBodyBonus : t.carBody;
+    }
+    return t.bundle;
+  }
+  const count = br.length + cars.length + (entry.instruments?.length ?? 0) + (entry.legoKits?.length ?? 0);
+  if (outfit) return count === 1 ? outfit.type?.displayValue || null : count === 2 ? t.outfitBonus : t.packBonus;
+  if (count > 1) return t.pack;
+  return t.typeNames[main?.type?.value ?? ""] || main?.type?.displayValue || null;
 }
 
 // Presets de posición de imagen de la tienda oficial (ver fortnite-shop.css).

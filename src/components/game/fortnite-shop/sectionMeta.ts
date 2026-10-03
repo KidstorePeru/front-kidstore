@@ -1,11 +1,14 @@
 // Datos de sección que la tienda oficial muestra pero fortnite-api.com no trae:
-// el fondo fijo de cada sección y algunos subtítulos.
-// Fondo: textura oficial conocida (por id) → imagen local en /fortnite/secciones (por nombre) → textura por defecto.
+// el fondo de cada sección y algunos subtítulos.
+// Fondo: imagen propia en src/assets/secciones (por nombre de sección, con rotación diaria de las
+// variantes "Nombre 2", "Nombre 3"…) → textura oficial conocida (por id) → textura por defecto.
+import type { StaticImageData } from "next/image";
+import { LOCAL_BACKGROUNDS } from "./sectionBackgrounds.generated";
 
 const CDN = "https://cdn2.unrealengine.com/";
 
-// Texturas oficiales observadas en la tienda (id de sección en minúsculas). Cambian con cada rotación:
-// si una sección nueva no está aquí se busca una imagen local y, si no, se usa la de por defecto.
+// Texturas oficiales observadas en la tienda (id de sección en minúsculas). Solo se usan si no hay
+// imagen propia para la sección.
 const OFFICIAL: Record<string, string> = {
   madisonbeer: "sk-MistTycoon_SectionBG-cbd22aec.png",
   persona5: "sk-BG_Section-9ff91c07.png",
@@ -30,42 +33,44 @@ const OFFICIAL: Record<string, string> = {
   dominusgt: "sk-Drof_SectionBG-73c65b99.png",
 };
 
-// Imágenes locales en public/fortnite/secciones (nombre de sección tal como lo muestra la tienda).
-const LOCAL: Record<string, string> = {
-  "Madison Beer": "Madison Beer.jpg",
-  "Casillero de Suja": "Casillero de Suja.avif",
-  FNCS: "FNCS.jpg",
-  "Pistas de improvisación": "Pistas de improvisación.avif",
-  "Lúcete en el escenario principal": "Lúcete en el escenario principal.webp",
-  "Las guerreras k-pop": "Las guerreras k-pop.jpg",
-  "No te preocupes": "No te preocupes.avif",
-  "CONTROL Resonant": "CONTROL Resonant.jpg",
-  Disney: "Disney.jpg",
-  "Kingdom Hearts": "Kingdom Hearts.jpg",
-  "Persona 5 Royal": "Persona 5 Royal.jpg",
-  "Resident Evil (!)": "Resident Evil (!).jpg",
-  "The Walking Dead": "The Walking Dead.jpg",
-  PEAK: "PEAK.jpg",
-  Ironmouse: "Ironmouse.jpg",
-  "Escuadrón saltarín": "Escuadrón saltarín.webp",
-  "Pasos con estilo": "Pasos con estilo.jpg",
-  "Accesorios de vehículos": "Accesorios de vehículos.jpg",
-  "Dominus GT": "Dominus GT.jpg",
-  "Takumi Rx-T": "Takumi Rx-T.jpg",
-  "LO MÁS VENDIDO DE HOY": "LO MÁS VENDIDO DE HOY.jpg",
-  "Look del día": "Look del día.jpg",
-  Portada: "Portada.jpg",
-};
-
 const DEFAULT_BACKGROUND = `${CDN}default-sparks-sectionbg-v1-1920x1080-9b27879ce008.jpg`;
 
-export function sectionBackground(id: string, name: string): string {
+export type SectionBackground = string | StaticImageData;
+
+// Clave de comparación: sin acentos, mayúsculas ni signos ("Resident Evil (!)" = "Resident Evil").
+const keyOf = (s: string) =>
+  s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]/g, "");
+
+// Índice de las imágenes propias: clave del nombre → variantes ordenadas (1 = sin número).
+// "Look del día 3.png" es la variante 3 de "Look del día"; "Nick Eh 30.jpg" se busca también
+// por su nombre completo, así que una sección que termina en número no se confunde.
+const LOCAL = new Map<string, { n: number; image: StaticImageData }[]>();
+function addLocal(key: string, n: number, image: StaticImageData) {
+  const list = LOCAL.get(key) ?? [];
+  list.push({ n, image });
+  LOCAL.set(key, list);
+}
+for (const { file, image } of LOCAL_BACKGROUNDS) {
+  const name = file.replace(/\.[^.]+$/, "").trim();
+  addLocal(keyOf(name), 1, image);
+  const m = name.match(/^(.*\S)\s+(\d+)$/);
+  if (m) addLocal(keyOf(m[1]), Number(m[2]), image);
+}
+for (const list of LOCAL.values()) list.sort((a, b) => a.n - b.n);
+
+// names: nombre de la sección en el idioma actual y en español (las imágenes van con el nombre
+// en español). day: número de día de la tienda (rota a las 00:00 UTC), elige la variante del día.
+export function sectionBackground(id: string, names: (string | null | undefined)[], day: number): SectionBackground {
+  for (const name of names) {
+    const list = name ? LOCAL.get(keyOf(name)) : undefined;
+    if (list?.length) return list[day % list.length].image;
+  }
   const official = OFFICIAL[id.toLowerCase()];
   if (official) return CDN + official;
-  const local = LOCAL[name.trim()];
-  if (local) return "/fortnite/secciones/" + encodeURIComponent(local);
   return DEFAULT_BACKGROUND;
 }
+
+export const backgroundSrc = (bg: SectionBackground) => (typeof bg === "string" ? bg : bg.src);
 
 // Subtítulos observados en la tienda oficial (solo existen en español).
 const SUBTITLES: Record<string, string> = {

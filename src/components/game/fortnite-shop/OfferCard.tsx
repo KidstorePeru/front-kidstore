@@ -53,25 +53,38 @@ function OfferCard({
 
         <div className="fns-card__content">
           <div className="fns-card__info">
-            {offer.discountBanner && (
-              <div className="fns-card__pill">
-                <span>{offer.discountBanner}</span>
+            {offer.pill && (
+              <div className={`fns-card__pill${offer.pill.tone === "yellow" ? " fns-card__pill--yellow" : ""}`}>
+                <span>{offer.pill.text}</span>
               </div>
             )}
             {offer.subtitle && <div className="fns-card__subtitle">{offer.subtitle}</div>}
             <h3 className="fns-card__title">{offer.title}</h3>
             <Price price={offer.price} t={t} local={local} />
           </div>
-          {/* Como en la oficial: el "+" solo aparece si hay características que mostrar al pasar el ratón. */}
+          {/* Como en la oficial: al pasar el ratón aparece una franja con el tipo ("Lote", "Pico"…) y,
+              si hay características, "+ Estilos seleccionables…" sobre fondo blanco brillante.
+              El "+" de la esquina solo aparece si hay características. */}
           {offer.features.length > 0 && (
-            <>
-              <div className="fns-card__plus" aria-hidden="true">
-                <PlusIcon />
-              </div>
-              <div className="fns-card__features" aria-hidden="true">
-                <span>+ {offer.features.join(", ")}</span>
-              </div>
-            </>
+            <div className="fns-card__plus" aria-hidden="true">
+              <PlusIcon />
+            </div>
+          )}
+          {(offer.typeLabel || offer.features.length > 0) && (
+            <div
+              className={`fns-card__features${offer.features.length ? " has-features" : ""}`}
+              aria-hidden="true"
+            >
+              <span>
+                {offer.typeLabel}
+                {offer.features.length > 0 && (
+                  <>
+                    {offer.typeLabel && <i className="fns-card__features-plus">+</i>}
+                    {offer.features.join(", ")}
+                  </>
+                )}
+              </span>
+            </div>
           )}
         </div>
 

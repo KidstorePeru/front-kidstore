@@ -46,6 +46,45 @@ async function saveGood(lang: string, body: Record<string, unknown>) {
   }
 }
 
+// Las imágenes de fondo propias se llaman como la sección en español. Cuando la tienda se pide
+// en otro idioma se adjunta { layoutId: nombre en español } (de la copia en español si es
+// reciente; si no, se pide una vez). Si falla, la tienda funciona igual con los fondos por defecto.
+const ES = "es-419";
+const NAMES_MAX_AGE_MS = 15 * 60 * 1000;
+
+function sectionNames(body: Record<string, unknown>): Record<string, string> {
+  const entries = (body as { data?: { entries?: { layout?: { id?: string; name?: string } }[] } }).data?.entries ?? [];
+  const names: Record<string, string> = {};
+  for (const e of entries) if (e.layout?.id && e.layout.name) names[e.layout.id] = e.layout.name.trim();
+  return names;
+}
+
+async function spanishNames(): Promise<Record<string, string> | null> {
+  const cached = await readStale(ES);
+  if (cached && Date.now() - cached.ts < NAMES_MAX_AGE_MS) return sectionNames(cached.body);
+  try {
+    const res = await fetch(`${UPSTREAM}?language=${ES}`, {
+      cache: "no-store",
+      signal: AbortSignal.timeout(8_000),
+      headers: { "User-Agent": "kidstoreperu.com" },
+    });
+    const data = res.ok ? await res.json() : null;
+    if (data?.status === 200 && data?.data) {
+      await saveGood(ES, data);
+      return sectionNames(data);
+    }
+  } catch {
+    /* sin nombres en español: se usa la copia vieja si existe */
+  }
+  return cached ? sectionNames(cached.body) : null;
+}
+
+async function withSpanishNames(lang: string, body: Record<string, unknown>) {
+  if (lang.startsWith("es")) return body;
+  const names = await spanishNames();
+  return names ? { ...body, _sectionNamesEs: names } : body;
+}
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const lang = searchParams.get("language") ?? "es-419";
@@ -65,7 +104,7 @@ export async function GET(request: Request) {
         const data = await res.json();
         if (data?.status === 200 && data?.data) {
           await saveGood(lang, data);
-          return NextResponse.json(data, {
+          return NextResponse.json(await withSpanishNames(lang, data), {
             headers: {
               "Cache-Control": "public, max-age=0, s-maxage=600, stale-while-revalidate=1800",
             },
@@ -87,7 +126,7 @@ export async function GET(request: Request) {
   if (stale && Date.now() - stale.ts < STALE_MAX_MS) {
     return NextResponse.json(
       {
-        ...stale.body,
+        ...(await withSpanishNames(lang, stale.body)),
         _stale: true,
         _staleAt: new Date(stale.ts).toISOString(),
         _staleReason: lastErr,

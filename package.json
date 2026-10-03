@@ -3,7 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "fondos": "node scripts/gen-section-backgrounds.mjs",
+    "predev": "node scripts/gen-section-backgrounds.mjs",
     "dev": "next dev",
+    "prebuild": "node scripts/gen-section-backgrounds.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"
