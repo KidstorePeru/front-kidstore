@@ -130,5 +130,3 @@ export const CATALOG: CatalogGame[] = [
     extras: [{ key: "rocket-league:bulk-credits", label: "Selector de créditos a granel" }],
   },
 ];
-
-export const catalogGame = (slug: string) => CATALOG.find(g => g.slug === slug);

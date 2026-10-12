@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import AllGamesClient from "@/components/game/AllGamesClient";
 
 export const metadata = {
@@ -8,5 +9,10 @@ export const metadata = {
 };
 
 export default function AllGamesPage() {
-  return <AllGamesClient />;
+  // AllGamesClient lee los filtros de la URL (useSearchParams).
+  return (
+    <Suspense>
+      <AllGamesClient />
+    </Suspense>
+  );
 }

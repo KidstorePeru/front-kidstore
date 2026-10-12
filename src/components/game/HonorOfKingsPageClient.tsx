@@ -56,7 +56,7 @@ function ProductCard({ p }: { p: HOKProduct }) {
       {/* Imagen */}
       <div className="relative w-full overflow-hidden"
         style={{ aspectRatio:"1/1", background:"linear-gradient(135deg,var(--hok-bg),rgba(5,3,15,0.88))" }}>
-        <Image src={p.img} alt={lang==="EN" ? p.nameEN || p.name : p.name} fill
+        <Image src={p.img} alt={lang==="EN" ? p.nameEN || p.name : p.name} fill sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 300px"
           className="object-contain p-4 transition-transform duration-300 group-hover:scale-105"/>
         {p.badge && (
           <span className={`absolute top-2 right-2 px-2 py-0.5 rounded-full text-[10px] font-bold ${badgeStyle[p.badge] ?? "badge-popular"}`}>
@@ -208,7 +208,7 @@ function HOKPageInner({ tokens }: { tokens: HOKProduct[] }) {
 
         {/* Hero */}
         <section className="relative overflow-hidden" style={{ height:"65vh", minHeight:"440px" }}>
-          <Image src="/games/honor-of-kings.jpg" alt="Honor of Kings" fill
+          <Image src="/games/honor-of-kings.jpg" alt="Honor of Kings" fill sizes="100vw"
             className="object-cover object-top" priority/>
           <div className="absolute inset-0"
             style={{ background:"linear-gradient(to right,rgba(0,0,0,0.93) 0%,rgba(0,0,0,0.48) 60%,transparent 100%)" }}/>

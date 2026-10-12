@@ -4,11 +4,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound, useRouter } from "next/navigation";
-import {
-  ChevronRight, ShoppingCart, AlertTriangle,
-  Shield, Zap, Info, MessageCircle,
-  Check, Heart, ExternalLink,
-} from "lucide-react";
+import { ChevronRight, ShoppingCart, AlertTriangle, Shield, Zap, MessageCircle, Check, Heart } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { ALL_MARVEL_RIVALS_PRODUCTS } from "@/data/marvelrivals";
@@ -174,7 +170,7 @@ export default function MarvelRivalsProductClient({ slug }: { slug: string }) {
       tabLabel: "Lattices",
       orderData: buildOrderData(),
     });
-    window.location.href = "/checkout";
+    router.push("/checkout");
   }
 
   function handleWishlist() {
@@ -236,7 +232,7 @@ export default function MarvelRivalsProductClient({ slug }: { slug: string }) {
             <div className="space-y-6">
               <div className="relative w-full rounded-2xl overflow-hidden"
                 style={{ aspectRatio:"4/3", background:"linear-gradient(135deg,rgba(220,38,38,0.18),rgba(10,5,30,0.85))", border:"1px solid var(--border)" }}>
-                <Image src={p.img} alt={lang==="EN" ? p.nameEN || p.name : p.name} fill className="object-contain p-8" priority/>
+                <Image src={p.img} alt={lang==="EN" ? p.nameEN || p.name : p.name} fill sizes="(max-width: 1024px) 90vw, 520px" className="object-contain p-8" priority/>
               </div>
               <div className="rounded-2xl p-6" style={{ background:"var(--card)", border:"1px solid var(--border)" }}>
                 <MRDescription/>

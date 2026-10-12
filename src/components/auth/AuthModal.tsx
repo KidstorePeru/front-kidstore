@@ -4,11 +4,11 @@ import {
   createContext, useContext, useState, useEffect, useRef,
   ReactNode, useCallback,
 } from "react";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import {
   X, Eye, EyeOff, ArrowRight, AlertCircle,
-  Zap, Shield, MessageCircle, Check,
+  Zap, Shield, MessageCircle,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useT } from "@/i18n";
@@ -39,26 +39,13 @@ export function useAuthModal() {
 // ══════════════════════════════════════════════
 // Provider — envuelve toda la app en el layout
 // ══════════════════════════════════════════════
+// Las rutas /login, /register y /forgot-password redirigen al inicio y abren este modal
+// (ver sus page.tsx).
 export function AuthModalProvider({ children }: { children: ReactNode }) {
   const [view, setView] = useState<ModalView>(null);
-  const pathname = usePathname();
-  const router   = useRouter();
-
-  // Auto-open cuando se navega directamente a /login /register /forgot-password
-  useEffect(() => {
-    if (pathname === "/login")           { setView("login");    return; }
-    if (pathname === "/register")        { setView("register"); return; }
-    if (pathname === "/forgot-password") { setView("forgot");   return; }
-  }, [pathname]);
 
   const openModal  = useCallback((v: ModalView = "login") => setView(v), []);
-  const closeModal = useCallback(() => {
-    setView(null);
-    // Si llegó por URL directa, vuelve al home
-    if (["/login", "/register", "/forgot-password"].includes(pathname)) {
-      router.push("/");
-    }
-  }, [pathname, router]);
+  const closeModal = useCallback(() => setView(null), []);
 
   return (
     <AuthModalCtx.Provider value={{ openModal, closeModal, view }}>
@@ -151,7 +138,6 @@ function AuthModal({
   const [forgotSent,    setForgotSent]    = useState(false);
   const [forgotInvalid, setForgotInvalid] = useState(false);
   const [forgotCode,    setForgotCode]    = useState("");
-  const [forgotVerified, setForgotVerified] = useState(false);
 
   // Password strength
   const strength = [
@@ -174,11 +160,12 @@ function AuthModal({
     if (Object.keys(e).length) return;
     setLoginErr("");
     try {
-      await login(identifier, loginPass);
+      await login(identifier.trim(), loginPass);
       onClose();
     } catch (err) {
+      // El backend responde en español: credenciales malas → texto traducido.
       const msg = err instanceof Error ? err.message : "";
-      setLoginErr(msg || t.auth.invalidCredentials);
+      setLoginErr(!msg || msg.includes("incorrectos") ? t.auth.invalidCredentials : msg);
     }
   }
 
@@ -186,9 +173,9 @@ function AuthModal({
   async function handleRegister(ev: React.FormEvent) {
     ev.preventDefault();
     const e: Record<string, boolean> = {};
-    if (!username.trim() || username.trim().length < 3) e.username = true;
+    if (username.trim().length < 3 || username.trim().length > 32) e.username = true;
     if (/[^a-zA-Z0-9_]/.test(username.trim()))          e.username = true;
-    if (!regEmail.trim() || !regEmail.includes("@"))    e.email    = true;
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(regEmail.trim())) e.email = true;
     if (regPass.length < 8)                             e.password = true;
     if (regPass !== regConfirm)                         e.confirm  = true;
     setRegErrs(e);
@@ -265,12 +252,12 @@ function AuthModal({
 
   async function handleForgot(ev: React.FormEvent) {
     ev.preventDefault();
-    if (!forgotEmail.trim() || !forgotEmail.includes("@")) {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(forgotEmail.trim())) {
       setForgotInvalid(true); return;
     }
     setForgotErr(""); setForgotInvalid(false);
     try {
-      await forgotPassword(forgotEmail);
+      await forgotPassword(forgotEmail.trim());
       setForgotSent(true);
     } catch (err) {
       const msg = err instanceof Error ? err.message : "";
@@ -282,10 +269,10 @@ function AuthModal({
     ev.preventDefault();
     setForgotErr("");
     try {
-      await verifyCode(forgotEmail, forgotCode);
-      setForgotVerified(true);
-      // Store email for reset page, then redirect
-      sessionStorage.setItem("kidstore_reset_email", forgotEmail);
+      await verifyCode(forgotEmail.trim(), forgotCode.trim());
+      // La página de nueva contraseña usa este correo; el backend exige que el código se haya
+      // verificado hace menos de 15 minutos.
+      sessionStorage.setItem("kidstore_reset_email", forgotEmail.trim());
       onClose();
       router.push("/reset-password");
     } catch {

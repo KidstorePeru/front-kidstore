@@ -513,7 +513,7 @@ export default function FortniteProductClient({ slug }: { slug: string }) {
   function handleBuyNow() {
     if (!validate()) return;
     if (!alreadyInCart) addToCart();
-    window.location.href = "/checkout";
+    router.push("/checkout");
   }
 
   function handleWishlist() {
@@ -592,7 +592,7 @@ export default function FortniteProductClient({ slug }: { slug: string }) {
             <div className="space-y-6">
               <div className="relative w-full rounded-2xl overflow-hidden"
                 style={{ aspectRatio:"4/3", background:"linear-gradient(135deg,rgba(124,58,237,0.18),rgba(15,10,40,0.7))", border:"1px solid var(--border)" }}>
-                <Image src={p.img} alt={displayName} fill className="object-contain p-8" priority/>
+                <Image src={p.img} alt={displayName} fill sizes="(max-width: 1024px) 90vw, 520px" className="object-contain p-8" priority/>
               </div>
 
               {/* Aviso + referencia de región Turquía */}

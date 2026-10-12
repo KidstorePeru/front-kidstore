@@ -52,7 +52,7 @@ function WishCard({ item, onRemove, onAddCart, inCart }: {
       <div className="relative w-full overflow-hidden"
         style={{ aspectRatio:"4/3", background:"linear-gradient(135deg,rgba(124,58,237,0.15),rgba(15,10,40,0.6))" }}>
         <Link href={`/games/${item.gameSlug}/${item.slug}`}>
-          <Image src={item.img} alt={item.name} fill
+          <Image src={item.img} alt={item.name} fill sizes="80px"
             className="object-contain p-4 transition-transform duration-300 group-hover:scale-105"/>
         </Link>
         {/* Remove button */}

@@ -9,6 +9,7 @@ import { useT, useTag } from "@/i18n";
 import { games, categories } from "@/data";
 import { useVisibility } from "@/context/VisibilityContext";
 import { gameKey } from "@/config/visibility";
+import { gameMatches } from "@/lib/search";
 
 export default function SearchBar() {
   const [query, setQuery]         = useState("");
@@ -36,12 +37,12 @@ export default function SearchBar() {
     return () => clearTimeout(timer);
   }, [query]);
 
-  const results = useMemo(() => games.filter((g) => {
-    if (!isVisible(gameKey(g.slug))) return false;
-    const matchQuery = g.name.toLowerCase().includes(debouncedQuery.toLowerCase());
-    const matchCat   = catFilter === "all" || g.category === catFilter;
-    return matchQuery && matchCat;
-  }), [debouncedQuery, catFilter, isVisible]);
+  // Sin tildes y también por producto ("pokemon", "robux", "pavos"…).
+  const results = useMemo(() => games.filter((g) =>
+    isVisible(gameKey(g.slug)) &&
+    (catFilter === "all" || g.category === catFilter) &&
+    gameMatches(g, debouncedQuery),
+  ), [debouncedQuery, catFilter, isVisible]);
 
   const showDropdown = open && (query.length > 0 || catFilter !== "all");
 
@@ -145,7 +146,7 @@ export default function SearchBar() {
                         }
                       >
                         <div className="relative w-10 h-10 rounded-lg overflow-hidden flex-shrink-0">
-                          <Image src={game.image} alt={game.name} fill className="object-cover" />
+                          <Image src={game.image} alt={game.name} fill sizes="80px" className="object-cover" />
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-semibold truncate" style={{ color: "var(--text)" }}>
@@ -173,7 +174,7 @@ export default function SearchBar() {
               {results.length > 8 && (
                 <div style={{ borderTop: "1px solid var(--border)" }}>
                   <Link
-                    href={`/games?q=${query}&cat=${catFilter}`}
+                    href={`/games?q=${encodeURIComponent(query)}&cat=${catFilter}`}
                     onClick={() => setOpen(false)}
                     className="flex items-center justify-center py-3 text-xs font-semibold transition-colors hover:opacity-80"
                     style={{ color: "var(--brand)" }}

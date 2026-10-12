@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { ShoppingCart, Check } from "lucide-react";
+import { ShoppingCart } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { POKECOINS, PASES, PokemonGoProduct } from "@/data/pokemongo";
@@ -42,7 +42,7 @@ function ProductCard({ p }: { p: PokemonGoProduct }) {
       style={{ background:"var(--card)", border:"1px solid var(--border)" }}>
       <div className="relative w-full overflow-hidden"
         style={{ aspectRatio:"4/3", background:"linear-gradient(135deg,rgba(250,204,21,0.12),rgba(15,23,42,0.85))" }}>
-        <Image src={p.img} alt={lang==="EN" ? p.nameEN || p.name : p.name} fill
+        <Image src={p.img} alt={lang==="EN" ? p.nameEN || p.name : p.name} fill sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 300px"
           className="object-contain p-4 transition-transform duration-300 group-hover:scale-105"/>
         {p.badge && (
           <span className={`absolute top-2 right-2 px-2 py-0.5 rounded-full text-[10px] font-bold ${badgeStyle[p.badge] ?? "badge-popular"}`}>
@@ -165,14 +165,13 @@ function PokemonGoPageInner({ tabDefs, coins, pases }: {
   const searchParams = useSearchParams();
   const router       = useRouter();
   const tabParam     = searchParams.get("tab");
-  const [activeTab, setActiveTab] = useState(tabParam ?? "coins");
+  // La pestaña activa sale de la URL (?tab=): enlaces directos y botón "atrás" funcionan.
+  const activeTab    = tabParam ?? "coins";
 
-  useEffect(() => { if (tabParam) setActiveTab(tabParam); }, [tabParam]);
 
   const shownTab = tabDefs.some(tb => tb.id === activeTab) ? activeTab : (tabDefs[0]?.id ?? activeTab);
 
   function handleTab(id: string) {
-    setActiveTab(id);
     router.push(`/games/pokemon-go?tab=${id}`, { scroll: false });
   }
 
@@ -185,7 +184,7 @@ function PokemonGoPageInner({ tabDefs, coins, pases }: {
 
         {/* Hero */}
         <section className="relative overflow-hidden" style={{ height:"60vh", minHeight:"420px" }}>
-          <Image src="/games/pokemon-go.jpg" alt="Pokémon GO" fill
+          <Image src="/games/pokemon-go.jpg" alt="Pokémon GO" fill sizes="100vw"
             className="object-cover object-center" priority/>
           <div className="absolute inset-0"
             style={{ background:"linear-gradient(to right,rgba(0,0,0,0.92) 0%,rgba(0,0,0,0.45) 60%,rgba(0,0,0,0.1) 100%)" }}/>

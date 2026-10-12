@@ -50,7 +50,7 @@ export default function PrivacyPage() {
             style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
             <p className="text-sm leading-[1.8]" style={{ color: "var(--text-muted)" }}>
               {isEN
-                ? <><strong style={{ color: "var(--text)" }}>KidStore</strong> is committed to the security of our users' data. We handle your information responsibly and transparently.</>
+                ? <><strong style={{ color: "var(--text)" }}>KidStore</strong> is committed to the security of our users&apos; data. We handle your information responsibly and transparently.</>
                 : <><strong style={{ color: "var(--text)" }}>KidStore</strong> est&aacute; comprometido con la seguridad de los datos de nuestros usuarios. Manejamos tu informaci&oacute;n de forma responsable y transparente.</>}
             </p>
           </div>
@@ -69,8 +69,8 @@ export default function PrivacyPage() {
 
             <Section icon={<Database size={18}/>} title={isEN ? "Information we collect" : "Informaci\u00f3n que recopilamos"}>
               <Bullets items={isEN
-                ? [<><strong>Game account data</strong> (username, UID, credentials — only for delivery)</>, <><strong>Email address</strong></>, <><strong>Purchase and recharge history</strong></>, <><strong>Payment method used</strong> (we do not store card or bank data)</>]
-                : [<><strong>Datos de cuenta de juego</strong> (usuario, UID, credenciales &mdash; solo para entrega)</>, <><strong>Direcci&oacute;n de correo electr&oacute;nico</strong></>, <><strong>Historial de compras y recargas</strong></>, <><strong>M&eacute;todo de pago utilizado</strong> (no almacenamos datos de tarjetas ni bancarios)</>]
+                ? [<><strong>Game account data</strong> (username, UID or account email — only for delivery; we never ask for your password on the website)</>, <><strong>Email address</strong></>, <><strong>Purchase and recharge history</strong></>, <><strong>Payment method used</strong> (we do not store card or bank data)</>]
+                : [<><strong>Datos de cuenta de juego</strong> (usuario, UID o correo de la cuenta &mdash; solo para la entrega; nunca te pedimos tu contrase&ntilde;a en la web)</>, <><strong>Direcci&oacute;n de correo electr&oacute;nico</strong></>, <><strong>Historial de compras y recargas</strong></>, <><strong>M&eacute;todo de pago utilizado</strong> (no almacenamos datos de tarjetas ni bancarios)</>]
               }/>
             </Section>
 
@@ -107,8 +107,8 @@ export default function PrivacyPage() {
             <Section icon={<Cookie size={18}/>} title="Cookies">
               <P>
                 {isEN
-                  ? <>We use <strong>essential cookies only</strong> for site functionality (session, language and theme). We do <strong>not</strong> use advertising tracking cookies.</>
-                  : <>Usamos <strong>cookies esenciales</strong> para el funcionamiento del sitio (sesi&oacute;n, idioma y tema). <strong>No</strong> usamos cookies de seguimiento publicitario.</>}
+                  ? <>We only use <strong>essential cookies and local storage</strong> for site functionality (session, cart, language and theme). We do <strong>not</strong> use advertising tracking cookies.</>
+                  : <>Solo usamos <strong>cookies y almacenamiento local esenciales</strong> para el funcionamiento del sitio (sesi&oacute;n, carrito, idioma y tema). <strong>No</strong> usamos cookies de seguimiento publicitario.</>}
               </P>
             </Section>
 

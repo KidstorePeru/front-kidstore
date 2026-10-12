@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -47,7 +47,7 @@ function ProductCard({ p }: { p: TFTProduct }) {
         style={{ aspectRatio: "4/3", background: `linear-gradient(135deg,rgba(${ACCENT_GLOW},0.18),rgba(5,3,15,0.75))` }}
       >
         <Image
-          src={p.img} alt={lang==="EN" ? p.nameEN || p.name : p.name} fill
+          src={p.img} alt={lang==="EN" ? p.nameEN || p.name : p.name} fill sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 300px"
           className="object-contain p-4 transition-transform duration-300 group-hover:scale-105"
         />
         {p.badge && (
@@ -192,12 +192,11 @@ function TFTPageInner({ coins }: { coins: TFTProduct[] }) {
   const searchParams = useSearchParams();
   const router       = useRouter();
   const tabParam     = searchParams.get("tab");
-  const [activeTab,  setActiveTab] = useState(tabParam ?? "coins");
+  // La pestaña activa sale de la URL (?tab=): enlaces directos y botón "atrás" funcionan.
+  const activeTab    = tabParam ?? "coins";
 
-  useEffect(() => { if (tabParam) setActiveTab(tabParam); }, [tabParam]);
 
   function handleTab(id: string) {
-    setActiveTab(id);
     router.push(`/games/team-fight-tactics?tab=${id}`, { scroll: false });
   }
 
@@ -209,7 +208,7 @@ function TFTPageInner({ coins }: { coins: TFTProduct[] }) {
         {/* ── HERO ── */}
         <section className="relative overflow-hidden" style={{ height: "60vh", minHeight: "420px" }}>
           <Image
-            src="/games/team-fight-tactics.jpg" alt="Teamfight Tactics" fill
+            src="/games/team-fight-tactics.jpg" alt="Teamfight Tactics" fill sizes="100vw"
             className="object-cover object-center" priority
           />
           <div className="absolute inset-0"

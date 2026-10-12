@@ -10,8 +10,7 @@ import { BoltIcon, CartIcon, ChatIcon, CheckIcon, ClockIcon, CloseIcon, InfoIcon
 import { formatCountdown, useNow } from "./hooks";
 import type { Offer } from "./model";
 import type { ShopText } from "./i18n";
-
-const WA_NUMBER = "51983454837";
+import { whatsappLink } from "@/config/site";
 
 // Detalle de la oferta (imágenes, tipo, rareza, precio, tiempo restante, objetos incluidos,
 // estilos) + el flujo de compra de KidStore: usuario de Epic → carrito / comprar ahora / WhatsApp.
@@ -96,9 +95,7 @@ export default function OfferModal({ offer, t, onClose }: { offer: Offer; t: Sho
     router.push("/checkout");
   }
 
-  const waHref = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(
-    t.waMsg(offer.title, offer.typeLabel ?? "", offer.price.formattedFinal, localPrice),
-  )}`;
+  const waHref = whatsappLink(t.waMsg(offer.title, offer.typeLabel ?? "", offer.price.formattedFinal, localPrice));
 
   return (
     <div className="fns-modal" role="presentation" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>

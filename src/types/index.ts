@@ -44,19 +44,3 @@ export interface Category {
   icon:    string;
   color:   string;
 }
-
-export type StoreItemType = "game" | "giftcard" | "pin" | "subscription";
-
-export interface StoreItem {
-  id:       string;
-  type:     StoreItemType;
-  name:     string;
-  slug:     string;
-  image:    string;
-  category: string;
-  tags?:    string[];
-  popular?:  boolean;
-  featured?: boolean;
-  offer?:    GameOffer;
-  products:  Product[];
-}

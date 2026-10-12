@@ -247,7 +247,7 @@ export default function HonkaiStarRailProductClient({ slug }: { slug: string }) 
       region: p.region, format: p.format, tabLabel: p.tabLabel,
       orderData: buildOrderData(),
     });
-    window.location.href = "/checkout";
+    router.push("/checkout");
   }
 
   function handleWishlist() {
@@ -314,7 +314,7 @@ export default function HonkaiStarRailProductClient({ slug }: { slug: string }) 
             <div className="space-y-6">
               <div className="relative w-full rounded-2xl overflow-hidden"
                 style={{ aspectRatio:"4/3", background:"linear-gradient(135deg,var(--hsr-bg),rgba(5,3,20,0.9))", border:"1px solid var(--border)" }}>
-                <Image src={p.img} alt={lang==="EN" ? p.nameEN || p.name : p.name} fill className="object-contain p-8" priority/>
+                <Image src={p.img} alt={lang==="EN" ? p.nameEN || p.name : p.name} fill sizes="(max-width: 1024px) 90vw, 520px" className="object-contain p-8" priority/>
                 {p.bonus && (
                   <div className="absolute bottom-3 left-3 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold"
                     style={{ background:"var(--hsr-bg)", border:"1px solid var(--hsr-border)", color:"var(--hsr-text)" }}>

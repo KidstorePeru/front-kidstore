@@ -34,7 +34,7 @@ export default function TermsPage() {
               {isEN ? "Terms & Conditions" : "T\u00e9rminos y Condiciones"}
             </h1>
             <p className="text-sm text-white/50">
-              {isEN ? "Last updated: March 30, 2026" : "\u00daltima actualizaci\u00f3n: 30 de marzo de 2026"}
+              {isEN ? "Last updated: October 12, 2026" : "\u00daltima actualizaci\u00f3n: 12 de octubre de 2026"}
             </p>
           </div>
         </div>
@@ -60,28 +60,28 @@ export default function TermsPage() {
             {/* 1 */}
             <Section icon={<Gamepad2 size={18}/>} title={isEN ? "1. What we offer" : "1. Qu\u00e9 ofrecemos"}>
               <P isEN={isEN}
-                en={<>KidStore is a <strong>digital marketplace</strong> specializing in in-game currency recharges and digital products for multiple games: <strong>Fortnite, Roblox, Genshin Impact, Honkai Star Rail, Zenless Zone Zero, Wuthering Waves, Marvel Rivals, Wild Rift, Pokemon GO, Honor of Kings, Teamfight Tactics</strong> and <strong>Discord Nitro</strong>.</>}
-                es={<>KidStore es un <strong>marketplace digital</strong> especializado en recargas de monedas in-game y productos digitales para m&uacute;ltiples juegos: <strong>Fortnite, Roblox, Genshin Impact, Honkai Star Rail, Zenless Zone Zero, Wuthering Waves, Marvel Rivals, Wild Rift, Pokemon GO, Honor of Kings, Teamfight Tactics</strong> y <strong>Discord Nitro</strong>.</>}/>
+                en={<>KidStore is a <strong>digital marketplace</strong> specializing in in-game currency recharges and digital products for multiple games: <strong>Fortnite, Roblox, Genshin Impact, Honkai Star Rail, Zenless Zone Zero, Wuthering Waves, Marvel Rivals, Wild Rift, Pokemon GO, Honor of Kings, Teamfight Tactics, Rocket League</strong> and <strong>Discord Nitro</strong>.</>}
+                es={<>KidStore es un <strong>marketplace digital</strong> especializado en recargas de monedas in-game y productos digitales para m&uacute;ltiples juegos: <strong>Fortnite, Roblox, Genshin Impact, Honkai Star Rail, Zenless Zone Zero, Wuthering Waves, Marvel Rivals, Wild Rift, Pokemon GO, Honor of Kings, Teamfight Tactics, Rocket League</strong> y <strong>Discord Nitro</strong>.</>}/>
             </Section>
 
             {/* 2 */}
             <Section icon={<AlertCircle size={18}/>} title={isEN ? "2. No affiliation" : "2. No afiliaci\u00f3n"}>
               <P isEN={isEN}
-                en={<>KidStore is <strong>not affiliated, sponsored or approved</strong> by Epic Games, miHoYo/HoYoverse, Riot Games, Niantic, Roblox Corporation, Discord Inc. or any other game developer. All trademarks are property of their respective owners.</>}
-                es={<>KidStore <strong>no est&aacute; afiliado, patrocinado ni aprobado</strong> por Epic Games, miHoYo/HoYoverse, Riot Games, Niantic, Roblox Corporation, Discord Inc. ni ning&uacute;n otro desarrollador. Todas las marcas son propiedad de sus respectivos due&ntilde;os.</>}/>
+                en={<>KidStore is <strong>not affiliated, sponsored or approved</strong> by Epic Games, miHoYo/HoYoverse, Riot Games, Niantic, Roblox Corporation, Psyonix, Discord Inc. or any other game developer. All trademarks are property of their respective owners.</>}
+                es={<>KidStore <strong>no est&aacute; afiliado, patrocinado ni aprobado</strong> por Epic Games, miHoYo/HoYoverse, Riot Games, Niantic, Roblox Corporation, Psyonix, Discord Inc. ni ning&uacute;n otro desarrollador. Todas las marcas son propiedad de sus respectivos due&ntilde;os.</>}/>
             </Section>
 
             {/* 3 */}
             <Section icon={<UserCheck size={18}/>} title={isEN ? "3. Customer requirements" : "3. Requisitos del cliente"}>
               <Bullets isEN={isEN}
                 en={[
-                  <>Provide the <strong>correct account data</strong> required for each game (username, UID, credentials)</>,
+                  <>Provide the <strong>correct account data</strong> required for each game (username, UID or account email). We never ask for your password on the website: if a product needs account access, we coordinate it privately on WhatsApp</>,
                   <>Have your account <strong>in good standing</strong> and eligible to receive products</>,
                   <>Meet any <strong>game-specific requirements</strong> (e.g., gifting enabled in Fortnite, active 2FA)</>,
                   <>Respond to our team if <strong>additional information</strong> is needed for delivery</>,
                 ]}
                 es={[
-                  <>Proporcionar los <strong>datos de cuenta correctos</strong> seg&uacute;n cada juego (usuario, UID, credenciales)</>,
+                  <>Proporcionar los <strong>datos de cuenta correctos</strong> seg&uacute;n cada juego (usuario, UID o correo de la cuenta). Nunca pedimos tu contrase&ntilde;a en la web: si un producto necesita acceso a la cuenta, lo coordinamos en privado por WhatsApp</>,
                   <>Tener tu cuenta <strong>en buen estado</strong> y habilitada para recibir productos</>,
                   <>Cumplir los <strong>requisitos espec&iacute;ficos</strong> de cada juego (ej: gifting activado en Fortnite, 2FA activo)</>,
                   <>Responder a nuestro equipo si se necesita <strong>informaci&oacute;n adicional</strong> para la entrega</>,

@@ -6,44 +6,35 @@ import Image from "next/image";
 import Link from "next/link";
 import {
   Eye, EyeOff, Check, Upload, Shield, Phone, Mail,
-  Lock, ShoppingBag, Heart, User, Clock, AlertCircle,
-  ShoppingCart, X,
+  Lock, ShoppingBag, Heart, User as UserIcon, AlertCircle,
+  ShoppingCart, X, RefreshCw,
 } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import { useAuth } from "@/context/AuthContext";
-import { useWishlist } from "@/context/WishlistContext";
+import { useAuth, type User } from "@/context/AuthContext";
+import { useWishlist, type WishlistItem } from "@/context/WishlistContext";
 import { useCart } from "@/context/CartContext";
 import { usePreferences } from "@/context/PreferencesContext";
+import { api } from "@/lib/api";
 
-type Tab = "perfil" | "seguridad" | "pedidos" | "transacciones" | "wishlist";
+type Tab = "perfil" | "seguridad" | "pedidos" | "wishlist";
+const TAB_IDS: Tab[] = ["perfil", "seguridad", "pedidos", "wishlist"];
 
-// ── Helpers: fetch orders/transactions from localStorage ──
-function getOrders(userId: string) {
-  try {
-    const all = JSON.parse(localStorage.getItem("kidstore_orders") ?? "[]");
-    return all.filter((o: any) => String(o.userId) === String(userId));
-  } catch { return []; }
-}
-function getTransactions(userId: string) {
-  try {
-    const all = JSON.parse(localStorage.getItem("kidstore_transactions") ?? "[]");
-    return all.filter((t: any) => String(t.userId) === String(userId));
-  } catch { return []; }
-}
+type UpdateProfile = ReturnType<typeof useAuth>["updateProfile"];
 
 function ProfilePageInner() {
   const router       = useRouter();
   const searchParams = useSearchParams();
-  const { user, loading, logout, updateProfile, changePassword } = useAuth();
-  const { items: wishItems, toggle: toggleWish, removeItem: removeWish } = useWishlist();
+  const { user, loading, logout, updateProfile } = useAuth();
+  const { items: wishItems, removeItem: removeWish } = useWishlist();
   const { addItem: addToCart } = useCart();
   const { formatPrice, lang } = usePreferences();
 
-  const tabParam = searchParams.get("tab") as Tab | null;
-  const [tab, setTab] = useState<Tab>(tabParam ?? "perfil");
+  // La pestaña activa vive en la URL (?tab=pedidos): los enlaces del menú y el botón "atrás" funcionan.
+  const tabParam = searchParams.get("tab");
+  const tab: Tab = TAB_IDS.includes(tabParam as Tab) ? (tabParam as Tab) : "perfil";
+  const setTab = (id: Tab) => router.replace(id === "perfil" ? "/profile" : `/profile?tab=${id}`, { scroll: false });
 
-  useEffect(() => { if (tabParam) setTab(tabParam); }, [tabParam]);
   useEffect(() => { if (!loading && !user) router.push("/login"); }, [user, loading, router]);
 
   if (loading || !user) return (
@@ -53,12 +44,11 @@ function ProfilePageInner() {
     </div>
   );
 
-  const TABS = [
-    { id:"perfil",        icon:<User size={15}/>,        label: lang === "ES" ? "Perfil de usuario" : "User profile" },
-    { id:"seguridad",     icon:<Shield size={15}/>,      label: lang === "ES" ? "Seguridad" : "Security"             },
-    { id:"pedidos",       icon:<ShoppingBag size={15}/>, label: lang === "ES" ? "Mis pedidos" : "My orders"          },
-    { id:"transacciones", icon:<Clock size={15}/>,       label: lang === "ES" ? "Historial" : "History"              },
-    { id:"wishlist",      icon:<Heart size={15}/>,       label: lang === "ES" ? "Lista de deseos" : "Wishlist"       },
+  const TABS: { id: Tab; icon: React.ReactNode; label: string }[] = [
+    { id:"perfil",    icon:<UserIcon size={15}/>,    label: lang === "ES" ? "Perfil de usuario" : "User profile" },
+    { id:"seguridad", icon:<Shield size={15}/>,      label: lang === "ES" ? "Seguridad" : "Security"             },
+    { id:"pedidos",   icon:<ShoppingBag size={15}/>, label: lang === "ES" ? "Mis pedidos" : "My orders"          },
+    { id:"wishlist",  icon:<Heart size={15}/>,       label: lang === "ES" ? "Lista de deseos" : "Wishlist"       },
   ];
 
   return (
@@ -73,6 +63,7 @@ function ProfilePageInner() {
             <div className="w-14 h-14 rounded-2xl overflow-hidden flex items-center justify-center text-2xl font-black text-white flex-shrink-0"
               style={{ background:"linear-gradient(135deg,#1E3A8A,#EA580C)" }}>
               {user.avatar
+                // eslint-disable-next-line @next/next/no-img-element -- foto local en base64 (data URL)
                 ? <img src={user.avatar} alt="avatar" className="w-full h-full object-cover"/>
                 : user.username[0].toUpperCase()
               }
@@ -83,7 +74,7 @@ function ProfilePageInner() {
             </div>
 
             <button
-              onClick={async () => { await logout(); router.push("/"); }}
+              onClick={() => { logout(); router.push("/"); }}
               className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all hover:opacity-70"
               style={{ background:"var(--surface)", border:"1px solid var(--border)", color:"var(--text-muted)" }}>
               {lang === "ES" ? "🚪 Cerrar sesión" : "🚪 Sign out"}
@@ -97,7 +88,7 @@ function ProfilePageInner() {
               style={{ background:"var(--card)", border:"1px solid var(--border)" }}>
               {TABS.map((item, i, arr) => (
                 <button key={item.id}
-                  onClick={() => setTab(item.id as Tab)}
+                  onClick={() => setTab(item.id)}
                   className="w-full flex items-center justify-between px-4 py-3.5 text-left transition-all"
                   style={{
                     background: tab===item.id ? "linear-gradient(135deg,rgba(30,58,138,0.08),rgba(234,88,12,0.06))" : "transparent",
@@ -115,11 +106,10 @@ function ProfilePageInner() {
 
             {/* Contenido */}
             <div>
-              {tab==="perfil"        && <TabPerfil user={user} updateProfile={updateProfile} loading={loading}/>}
-              {tab==="seguridad"     && <TabSeguridad user={user} updateProfile={updateProfile}/>}
-              {tab==="pedidos"       && <TabPedidos userId={String(user.id)}/>}
-              {tab==="transacciones" && <TabTransacciones userId={String(user.id)}/>}
-              {tab==="wishlist"      && (
+              {tab==="perfil"    && <TabPerfil user={user} updateProfile={updateProfile} loading={loading}/>}
+              {tab==="seguridad" && <TabSeguridad user={user} updateProfile={updateProfile}/>}
+              {tab==="pedidos"   && <TabPedidos/>}
+              {tab==="wishlist"  && (
                 <TabWishlist
                   items={wishItems}
                   removeWish={removeWish}
@@ -139,7 +129,7 @@ function ProfilePageInner() {
 // ══════════════════════════════════════════════════
 // TAB PERFIL
 // ══════════════════════════════════════════════════
-function TabPerfil({ user, updateProfile, loading }: any) {
+function TabPerfil({ user, updateProfile, loading }: { user: User; updateProfile: UpdateProfile; loading: boolean }) {
   const { lang } = usePreferences();
   const ES = lang === "ES";
   const [username,   setUsername]   = useState(user.username);
@@ -190,27 +180,35 @@ function TabPerfil({ user, updateProfile, loading }: any) {
   }
 
   async function handleSaveAvatar() {
-    await updateProfile({ avatar: avatar ?? undefined });
-    setAvatarSaved(true);
-    setTimeout(() => setAvatarSaved(false), 2500);
+    try {
+      await updateProfile({ avatar: avatar ?? undefined });
+      setAvatarSaved(true);
+      setTimeout(() => setAvatarSaved(false), 2500);
+    } catch (e) {
+      setAvatarErr(e instanceof Error ? e.message : (ES ? "No se pudo guardar la foto." : "Could not save the photo."));
+    }
   }
 
   async function handleSaveUsername(ev: React.FormEvent) {
     ev.preventDefault();
     // Validate length
-    if (username.trim().length < 6 || username.trim().length > 32) {
-      setUsernameErr(lang === "ES" ? "El nombre de usuario debe tener entre 6 y 32 caracteres." : "Username must be between 6 and 32 characters.");
+    if (username.trim().length < 3 || username.trim().length > 32) {
+      setUsernameErr(lang === "ES" ? "El nombre de usuario debe tener entre 3 y 32 caracteres." : "Username must be between 3 and 32 characters.");
       return;
     }
     if (/[^a-zA-Z0-9_]/.test(username.trim())) {
       setUsernameErr(lang === "ES" ? "Solo letras, números y guiones bajos. Sin espacios ni caracteres especiales." : "Only letters, numbers, and underscores. No spaces or special characters.");
       return;
     }
-    // Username uniqueness is validated by the backend on update
+    // El backend comprueba que el nombre no esté en uso.
     setUsernameErr("");
-    await updateProfile({ username: username.trim() });
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2500);
+    try {
+      await updateProfile({ username: username.trim() });
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2500);
+    } catch (e) {
+      setUsernameErr(e instanceof Error ? e.message : (ES ? "No se pudo cambiar el nombre de usuario." : "Could not change the username."));
+    }
   }
 
   const joinDate = user.createdAt
@@ -231,6 +229,7 @@ function TabPerfil({ user, updateProfile, loading }: any) {
               <div className="w-20 h-20 rounded-2xl overflow-hidden flex items-center justify-center"
                 style={{ background:"linear-gradient(135deg,#1E3A8A,#EA580C)" }}>
                 {avatar
+                  // eslint-disable-next-line @next/next/no-img-element -- foto local en base64 (data URL)
                   ? <img src={avatar} alt="avatar" className="w-full h-full object-cover"/>
                   : <span className="text-3xl font-black text-white">{user.username[0].toUpperCase()}</span>
                 }
@@ -284,7 +283,7 @@ function TabPerfil({ user, updateProfile, loading }: any) {
             onFocus={e => (e.currentTarget.style.borderColor="#1E3A8A")}
             onBlur={e  => (e.currentTarget.style.borderColor="var(--border)")}/>
           <p className="text-xs" style={{ color:"var(--text-subtle)" }}>
-            {lang === "ES" ? "Nombre único en el sitio. Entre 6 y 32 caracteres. Sin espacios ni caracteres especiales." : "Unique name on the site. Between 6 and 32 characters. No spaces or special characters."}
+            {lang === "ES" ? "Nombre único en el sitio. Entre 3 y 32 caracteres. Sin espacios ni caracteres especiales." : "Unique name on the site. Between 3 and 32 characters. No spaces or special characters."}
           </p>
           {usernameErr && (
             <p className="text-xs font-semibold flex items-center gap-1.5" style={{ color:"#EF4444" }}>
@@ -379,21 +378,21 @@ function TabPerfil({ user, updateProfile, loading }: any) {
           <p className="text-sm font-bold" style={{ color:"var(--text)" }}>{ES ? "Información de la cuenta" : "Account information"}</p>
         </div>
         <div className="divide-y" style={{ borderColor:"var(--border)" }}>
-          {[
+          {([
             { label: ES ? "Correo electrónico" : "Email", value:user.email, badge:{ text: ES ? "Verificado" : "Verified", color:"#22C55E", bg:"rgba(34,197,94,0.1)" } },
             { label: ES ? "Número de teléfono" : "Phone number", value: user.phone || (ES ? "No configurado" : "Not configured") },
-            { label: ES ? "ID de usuario" : "User ID",      value:user.id ?? "—" },
+            { label: ES ? "ID de usuario" : "User ID",      value: String(user.id ?? "—") },
             { label: ES ? "Hora de unirse" : "Join date",     value:joinDate },
-          ].map((row, i) => (
+          ] as { label: string; value: string; badge?: { text: string; color: string; bg: string } }[]).map((row, i) => (
             <div key={i} className="px-6 py-4 flex items-center justify-between gap-4">
               <div>
                 <p className="text-[10px] font-bold uppercase tracking-wider mb-0.5" style={{ color:"var(--text-subtle)" }}>{row.label}</p>
                 <p className="text-sm font-semibold flex items-center gap-2" style={{ color:"var(--text)" }}>
                   {row.value}
-                  {(row as any).badge && (
+                  {row.badge && (
                     <span className="text-[10px] font-bold px-2 py-0.5 rounded-full"
-                      style={{ color:(row as any).badge.color, background:(row as any).badge.bg }}>
-                      {(row as any).badge.text}
+                      style={{ color:row.badge.color, background:row.badge.bg }}>
+                      {row.badge.text}
                     </span>
                   )}
                 </p>
@@ -409,7 +408,7 @@ function TabPerfil({ user, updateProfile, loading }: any) {
 // ══════════════════════════════════════════════════
 // TAB SEGURIDAD
 // ══════════════════════════════════════════════════
-function TabSeguridad({ user, updateProfile }: any) {
+function TabSeguridad({ user, updateProfile }: { user: User; updateProfile: UpdateProfile }) {
   const { lang } = usePreferences();
   const ES = lang === "ES";
   const { changePassword, requestEmailCode, verifyCode } = useAuth();
@@ -498,7 +497,7 @@ function TabSeguridad({ user, updateProfile }: any) {
       await changePassword(currentPass, newPass);
     } catch (err) {
       const msg = err instanceof Error ? err.message : "";
-      if (msg.includes("incorrecta") || msg.includes("incorrect")) {
+      if (msg.includes("actual es incorrecta")) {
         setPassError(lang === "ES" ? "La contraseña actual es incorrecta." : "Current password is incorrect.");
       } else {
         setPassError(msg || (lang === "ES" ? "Error al cambiar la contraseña." : "Error changing password."));
@@ -563,7 +562,7 @@ function TabSeguridad({ user, updateProfile }: any) {
         <p className="text-xs" style={{ color:"var(--text-muted)" }}>
           {ES
             ? <>Tu teléfono está en <strong style={{ color:"var(--text)" }}>Perfil → Datos de compra</strong>. Se usa para coordinar la entrega por WhatsApp.</>
-            : <>Your phone lives in <strong style={{ color:"var(--text)" }}>Profile → Purchase details</strong>. It's used to coordinate delivery via WhatsApp.</>}
+            : <>Your phone lives in <strong style={{ color:"var(--text)" }}>Profile → Purchase details</strong>. It&apos;s used to coordinate delivery via WhatsApp.</>}
         </p>
       </div>
 
@@ -733,52 +732,85 @@ function TabSeguridad({ user, updateProfile }: any) {
 }
 
 // ══════════════════════════════════════════════════
-// TAB PEDIDOS — datos reales de localStorage
+// TAB PEDIDOS — historial real desde el backend (GET /orders/me, con la sesión)
 // ══════════════════════════════════════════════════
-// ORDER_TABS defined inside component to access lang
+interface MyOrder {
+  orderId:       number;
+  total:         number;
+  currency:      string;
+  paymentMethod: string;
+  status:        string;
+  createdAt:     string;
+  updatedAt?:    string;
+  items: { id: string; name: string; price: number; quantity: number; image?: string }[];
+}
 
-function TabPedidos({ userId }: { userId: string }) {
+// Estados que pone el administrador desde el panel.
+const ORDER_STATUS: Record<string, { es: string; en: string; color: string; bg: string }> = {
+  pending:    { es: "Pendiente",  en: "Pending",    color: "#F59E0B", bg: "rgba(245,158,11,0.1)" },
+  processing: { es: "Procesando", en: "Processing", color: "#60A5FA", bg: "rgba(96,165,250,0.1)" },
+  delivered:  { es: "Entregado",  en: "Delivered",  color: "#22C55E", bg: "rgba(34,197,94,0.1)"  },
+  cancelled:  { es: "Cancelado",  en: "Cancelled",  color: "#EF4444", bg: "rgba(239,68,68,0.1)"  },
+};
+const PAYMENT_LABEL: Record<string, string> = {
+  yape: "Yape", plin: "Plin", transferencia: "Transferencia", paypal: "PayPal", binance: "Binance Pay", bizum: "Bizum",
+};
+const CURRENCY_SYMBOL: Record<string, string> = { PEN: "S/", USD: "$", EUR: "€" };
+
+function TabPedidos() {
   const { lang } = usePreferences();
-  const ORDER_TABS = [
-    { id:"todos",      label: lang === "ES" ? "Todos los pedidos" : "All orders" },
-    { id:"pendiente",  label: lang === "ES" ? "Pendiente" : "Pending"            },
-    { id:"procesando", label: lang === "ES" ? "Procesando" : "Processing"        },
-    { id:"reembolso",  label: lang === "ES" ? "Reembolso" : "Refund"             },
-    { id:"cancelado",  label: lang === "ES" ? "Cancelado" : "Cancelled"          },
-  ];
-  const [activeTab, setActiveTab] = useState("todos");
-  const [search,    setSearch]    = useState("");
+  const { logout } = useAuth();
+  const ES = lang === "ES";
+  const [orders,    setOrders]    = useState<MyOrder[]>([]);
+  const [error,     setError]     = useState("");
+  const [reloadKey, setReloadKey] = useState(0);
+  const [loadedKey, setLoadedKey] = useState(-1);
+  const [activeTab, setActiveTab] = useState<"all" | keyof typeof ORDER_STATUS>("all");
   const [query,     setQuery]     = useState("");
-  const [orders] = useState<any[]>(() => getOrders(userId));
+  const loading = loadedKey !== reloadKey;
 
-  const filtered = orders.filter((o: any) => {
-    const matchTab =
-      activeTab==="todos" ||
-      o.status?.toLowerCase() === activeTab;
-    const matchSearch =
-      !query ||
-      o.id?.toLowerCase().includes(query.toLowerCase()) ||
-      o.items?.some((i: any) => i.name?.toLowerCase().includes(query.toLowerCase()));
-    return matchTab && matchSearch;
-  });
+  useEffect(() => {
+    let cancelled = false;
+    api<{ success: boolean; orders: MyOrder[] }>("/orders/me").then(({ data, error: apiError, status }) => {
+      if (cancelled) return;
+      if (status === 401) { logout(); return; } // sesión caducada → vuelve al login
+      if (apiError || !data) {
+        setError(ES ? "No pudimos cargar tus pedidos. Inténtalo de nuevo." : "We couldn't load your orders. Please try again.");
+      } else {
+        setError("");
+        setOrders(data.orders ?? []);
+      }
+      setLoadedKey(reloadKey);
+    });
+    return () => { cancelled = true; };
+  }, [reloadKey, ES, logout]);
 
-  const STATUS_COLOR: Record<string, { color: string; bg: string }> = {
-    pendiente:  { color:"#F59E0B", bg:"rgba(245,158,11,0.1)"  },
-    procesando: { color:"#60A5FA", bg:"rgba(96,165,250,0.1)"  },
-    completado: { color:"#22C55E", bg:"rgba(34,197,94,0.1)"   },
-    reembolso:  { color:"#F97316", bg:"rgba(249,115,22,0.1)"  },
-    cancelado:  { color:"#EF4444", bg:"rgba(239,68,68,0.1)"   },
-  };
+  const ORDER_TABS: { id: "all" | keyof typeof ORDER_STATUS; label: string }[] = [
+    { id: "all", label: ES ? "Todos" : "All" },
+    ...Object.entries(ORDER_STATUS).map(([id, st]) => ({ id, label: ES ? st.es : st.en })),
+  ];
+  const q = query.trim().toLowerCase();
+  const filtered = orders.filter((o) =>
+    (activeTab === "all" || o.status === activeTab) &&
+    (!q || String(o.orderId).includes(q) || o.items.some((i) => i.name.toLowerCase().includes(q))),
+  );
+  const fmtDate = (d: string) =>
+    new Date(d).toLocaleString(ES ? "es-PE" : "en-US", { dateStyle: "medium", timeStyle: "short" });
 
   return (
     <div className="rounded-2xl overflow-hidden" style={{ background:"var(--card)", border:"1px solid var(--border)" }}>
-      <div className="px-6 py-4" style={{ borderBottom:"1px solid var(--border)", background:"var(--surface)" }}>
-        <p className="text-sm font-bold" style={{ color:"var(--text)" }}>{lang === "ES" ? "🛍️ Mis pedidos" : "🛍️ My orders"}</p>
+      <div className="px-6 py-4 flex items-center justify-between gap-3" style={{ borderBottom:"1px solid var(--border)", background:"var(--surface)" }}>
+        <p className="text-sm font-bold" style={{ color:"var(--text)" }}>{ES ? "🛍️ Mis pedidos" : "🛍️ My orders"}</p>
+        <button onClick={() => setReloadKey((k) => k + 1)} disabled={loading}
+          className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg hover:opacity-70 disabled:opacity-50"
+          style={{ background:"var(--card)", border:"1px solid var(--border)", color:"var(--text-muted)" }}>
+          <RefreshCw size={12} className={loading ? "animate-spin" : ""}/> {ES ? "Actualizar" : "Refresh"}
+        </button>
       </div>
 
-      {/* Sub-tabs */}
+      {/* Filtro por estado */}
       <div className="flex overflow-x-auto" style={{ borderBottom:"1px solid var(--border)", scrollbarWidth:"none" }}>
-        {ORDER_TABS.map(ot => (
+        {ORDER_TABS.map((ot) => (
           <button key={ot.id} onClick={() => setActiveTab(ot.id)}
             className="flex-shrink-0 px-4 py-3 text-xs font-semibold transition-all relative whitespace-nowrap"
             style={{ color: activeTab===ot.id ? "#EA580C" : "var(--text-muted)" }}>
@@ -792,78 +824,81 @@ function TabPedidos({ userId }: { userId: string }) {
       </div>
 
       {/* Buscador */}
-      <div className="p-4 flex items-center gap-2" style={{ borderBottom:"1px solid var(--border)" }}>
-        <input type="text" placeholder={lang === "ES" ? "Nombre del artículo, ID de pedido..." : "Item name, order ID..."}
-          value={search} onChange={e => setSearch(e.target.value)}
-          onKeyDown={e => { if (e.key==="Enter") setQuery(search); }}
-          className="flex-1 px-3 py-2.5 rounded-xl text-xs outline-none"
+      <div className="p-4" style={{ borderBottom:"1px solid var(--border)" }}>
+        <input type="search" placeholder={ES ? "Buscar por producto o número de pedido…" : "Search by item or order number…"}
+          value={query} onChange={(e) => setQuery(e.target.value)}
+          className="w-full px-3 py-2.5 rounded-xl text-xs outline-none"
           style={{ background:"var(--surface)", border:"1px solid var(--border)", color:"var(--text)" }}/>
-        <button
-          onClick={() => setQuery(search)}
-          className="px-4 py-2.5 rounded-xl text-xs font-bold text-white hover:opacity-90"
-          style={{ background:"linear-gradient(135deg,#1E3A8A,#EA580C)" }}>
-          {lang === "ES" ? "Buscar" : "Search"}
-        </button>
       </div>
 
-      {/* Lista */}
       <div className="p-4">
-        {filtered.length === 0 ? (
+        {error && (
+          <div className="mb-3 flex items-center gap-2 px-4 py-3 rounded-xl text-xs"
+            style={{ background:"rgba(239,68,68,0.08)", border:"1px solid rgba(239,68,68,0.25)", color:"#EF4444" }}>
+            <AlertCircle size={13} className="flex-shrink-0"/>{error}
+          </div>
+        )}
+        {loading && orders.length === 0 ? (
+          <div className="py-12 flex justify-center">
+            <span className="w-6 h-6 border-2 border-t-transparent rounded-full animate-spin" style={{ borderColor:"#EA580C", borderTopColor:"transparent" }}/>
+          </div>
+        ) : filtered.length === 0 ? (
           <div className="py-12 text-center">
             <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-3"
               style={{ background:"var(--surface)", border:"1px solid var(--border)" }}>
               <ShoppingBag size={24} style={{ color:"var(--text-subtle)" }}/>
             </div>
             <p className="text-sm font-bold mb-1" style={{ color:"var(--text)" }}>
-              {query ? (lang === "ES" ? "Sin resultados para tu búsqueda" : "No results for your search") : (lang === "ES" ? "No tienes pedidos aún" : "You don't have any orders yet")}
+              {orders.length ? (ES ? "No hay pedidos con este filtro" : "No orders match this filter") : (ES ? "No tienes pedidos aún" : "You don't have any orders yet")}
             </p>
             <p className="text-xs mb-4" style={{ color:"var(--text-subtle)" }}>
-              {query ? (lang === "ES" ? "Intenta con otro término." : "Try a different term.") : (lang === "ES" ? "Cuando realices una compra aparecerá aquí." : "When you make a purchase it will appear here.")}
+              {orders.length ? (ES ? "Prueba con otro estado o búsqueda." : "Try another status or search.") : (ES ? "Cuando realices una compra con el correo de tu cuenta aparecerá aquí." : "Purchases made with your account email will appear here.")}
             </p>
-            {!query && (
-              <Link href="/"
+            {!orders.length && (
+              <Link href="/games"
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold text-white"
                 style={{ background:"linear-gradient(135deg,#1E3A8A,#EA580C)" }}>
-                {lang === "ES" ? "Ver todos los juegos →" : "View all games →"}
+                {ES ? "Ver todos los juegos →" : "View all games →"}
               </Link>
             )}
           </div>
         ) : (
           <div className="space-y-3">
-            {filtered.map((order: any) => {
-              const sc = STATUS_COLOR[order.status] ?? STATUS_COLOR.pendiente;
+            {filtered.map((order) => {
+              const st = ORDER_STATUS[order.status] ?? ORDER_STATUS.pending;
+              const sym = CURRENCY_SYMBOL[order.currency] ?? order.currency;
               return (
-                <div key={order.id} className="rounded-xl overflow-hidden"
-                  style={{ border:"1px solid var(--border)" }}>
-                  <div className="px-4 py-3 flex items-center justify-between"
+                <div key={`${order.orderId}-${order.createdAt}`} className="rounded-xl overflow-hidden" style={{ border:"1px solid var(--border)" }}>
+                  <div className="px-4 py-3 flex flex-wrap items-center justify-between gap-2"
                     style={{ background:"var(--surface)", borderBottom:"1px solid var(--border)" }}>
-                    <div className="flex items-center gap-3">
-                      <span className="text-xs" style={{ color:"var(--text-muted)" }}>{lang === "ES" ? "Pedido" : "Order"}</span>
-                      <span className="text-xs font-bold" style={{ color:"var(--text)" }}>#{order.id}</span>
-                      <span className="text-xs" style={{ color:"var(--text-subtle)" }}>
-                        {new Date(order.createdAt).toLocaleString(lang === "ES" ? "es-ES" : "en-US", { dateStyle:"short", timeStyle:"short" })}
-                      </span>
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                      <span className="text-xs font-bold" style={{ color:"var(--text)" }}>{ES ? "Pedido" : "Order"} #{order.orderId}</span>
+                      <span className="text-xs" style={{ color:"var(--text-subtle)" }}>{fmtDate(order.createdAt)}</span>
                     </div>
                     <span className="text-[10px] font-bold px-2.5 py-1 rounded-full"
-                      style={{ color:sc.color, background:sc.bg, border:`1px solid ${sc.color}30` }}>
-                      {order.status?.charAt(0).toUpperCase() + order.status?.slice(1)}
+                      style={{ color:st.color, background:st.bg, border:`1px solid ${st.color}30` }}>
+                      {ES ? st.es : st.en}
                     </span>
                   </div>
-                  {order.items?.map((item: any, i: number) => (
+                  {order.items.map((item, i) => (
                     <div key={i} className="px-4 py-3 flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl flex items-center justify-center text-lg flex-shrink-0"
+                      <div className="relative w-10 h-10 rounded-xl overflow-hidden flex items-center justify-center text-lg flex-shrink-0"
                         style={{ background:"var(--surface)", border:"1px solid var(--border)" }}>
-                        🎮
+                        {item.image ? <Image src={item.image} alt="" fill sizes="40px" className="object-contain p-1"/> : "🎮"}
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-xs font-bold truncate" style={{ color:"var(--text)" }}>{item.name}</p>
                         <p className="text-[10px]" style={{ color:"var(--text-muted)" }}>x{item.quantity}</p>
                       </div>
-                      <p className="text-sm font-black flex-shrink-0" style={{ color:"#EA580C" }}>
-                        {item.total}
+                      <p className="text-xs font-bold flex-shrink-0" style={{ color:"var(--text-muted)" }}>
+                        S/ {(item.price * item.quantity).toFixed(2)}
                       </p>
                     </div>
                   ))}
+                  <div className="px-4 py-3 flex items-center justify-between gap-3 text-xs" style={{ borderTop:"1px solid var(--border)" }}>
+                    <span style={{ color:"var(--text-muted)" }}>{ES ? "Pago:" : "Payment:"} <strong style={{ color:"var(--text)" }}>{PAYMENT_LABEL[order.paymentMethod] ?? order.paymentMethod}</strong></span>
+                    <span className="text-sm font-black" style={{ color:"#EA580C" }}>{sym} {order.total.toFixed(2)}</span>
+                  </div>
                 </div>
               );
             })}
@@ -875,137 +910,22 @@ function TabPedidos({ userId }: { userId: string }) {
 }
 
 // ══════════════════════════════════════════════════
-// TAB HISTORIAL — datos reales de localStorage
-// ══════════════════════════════════════════════════
-// DATE_FILTERS and STATUS_FILTERS defined inside component to access lang
-
-function TabTransacciones({ userId }: { userId: string }) {
-  const { lang } = usePreferences();
-  const DATE_FILTERS = [
-    { id:"30d", label: lang === "ES" ? "Últimos 30 días" : "Last 30 days" },
-    { id:"3m",  label: lang === "ES" ? "3 meses" : "3 months" },
-    { id:"6m",  label: lang === "ES" ? "6 meses" : "6 months" },
-    { id:"1y",  label: lang === "ES" ? "1 año" : "1 year" },
-    { id:"all", label: lang === "ES" ? "Todos los tiempos" : "All time" },
-  ];
-  const STATUS_FILTERS = [
-    { id:"Todo",                  label: lang === "ES" ? "Todo" : "All" },
-    { id:"Pendiente",             label: lang === "ES" ? "Pendiente" : "Pending" },
-    { id:"Reintegrado",           label: lang === "ES" ? "Reintegrado" : "Refunded" },
-    { id:"Terminado",             label: lang === "ES" ? "Terminado" : "Completed" },
-    { id:"Cancelación del retiro",label: lang === "ES" ? "Cancelación del retiro" : "Withdrawal cancelled" },
-    { id:"Retirada exitosa",      label: lang === "ES" ? "Retirada exitosa" : "Successful withdrawal" },
-  ];
-  const [dateFilter,   setDateFilter]   = useState("30d");
-  const [statusFilter, setStatusFilter] = useState("Todo");
-  const [transactions] = useState<any[]>(() => getTransactions(userId));
-
-  // Filtrar por fecha
-  const now = Date.now();
-  const MS: Record<string, number> = {
-    "30d": 30*24*3600*1000,
-    "3m":  90*24*3600*1000,
-    "6m": 180*24*3600*1000,
-    "1y": 365*24*3600*1000,
-  };
-  const filtered = transactions.filter((tx: any) => {
-    const inDate = !MS[dateFilter] || (now - new Date(tx.date).getTime()) <= MS[dateFilter];
-    const inStatus = statusFilter==="Todo" || tx.status===statusFilter;
-    return inDate && inStatus;
-  });
-
-  return (
-    <div className="rounded-2xl overflow-hidden" style={{ background:"var(--card)", border:"1px solid var(--border)" }}>
-      <div className="px-6 py-4" style={{ borderBottom:"1px solid var(--border)", background:"var(--surface)" }}>
-        <p className="text-sm font-bold" style={{ color:"var(--text)" }}>{lang === "ES" ? "📊 Historial de transacciones" : "📊 Transaction history"}</p>
-      </div>
-      <div className="p-5 space-y-4">
-
-        {/* Filtros */}
-        <div className="space-y-3">
-          <div>
-            <p className="text-[10px] font-bold uppercase tracking-wider mb-2" style={{ color:"var(--text-subtle)" }}>{lang === "ES" ? "Fecha" : "Date"}</p>
-            <div className="flex flex-wrap gap-2">
-              {DATE_FILTERS.map(f => (
-                <button key={f.id} onClick={() => setDateFilter(f.id)}
-                  className="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all"
-                  style={{
-                    background: dateFilter===f.id ? "rgba(234,88,12,0.1)" : "var(--surface)",
-                    border: `1px solid ${dateFilter===f.id ? "rgba(234,88,12,0.3)" : "var(--border)"}`,
-                    color: dateFilter===f.id ? "#EA580C" : "var(--text-muted)",
-                  }}>{f.label}</button>
-              ))}
-            </div>
-          </div>
-          <div>
-            <p className="text-[10px] font-bold uppercase tracking-wider mb-2" style={{ color:"var(--text-subtle)" }}>{lang === "ES" ? "Estado" : "Status"}</p>
-            <div className="flex flex-wrap gap-2">
-              {STATUS_FILTERS.map(f => (
-                <button key={f.id} onClick={() => setStatusFilter(f.id)}
-                  className="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all"
-                  style={{
-                    background: statusFilter===f.id ? "rgba(30,58,138,0.1)" : "var(--surface)",
-                    border: `1px solid ${statusFilter===f.id ? "rgba(30,58,138,0.3)" : "var(--border)"}`,
-                    color: statusFilter===f.id ? "#60A5FA" : "var(--text-muted)",
-                  }}>{f.label}</button>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Tabla */}
-        <div className="rounded-xl overflow-hidden" style={{ border:"1px solid var(--border)" }}>
-          <div className="grid grid-cols-5 px-4 py-3 text-[10px] font-bold uppercase tracking-wider"
-            style={{ background:"var(--surface)", borderBottom:"1px solid var(--border)", color:"var(--text-subtle)" }}>
-            <span>{lang === "ES" ? "Fecha" : "Date"}</span>
-            <span className="col-span-2">{lang === "ES" ? "Elemento / Acción" : "Item / Action"}</span>
-            <span>{lang === "ES" ? "Entrada / Salida" : "In / Out"}</span>
-            <span>{lang === "ES" ? "Estado" : "Status"}</span>
-          </div>
-          {filtered.length === 0 ? (
-            <div className="py-10 text-center">
-              <p className="text-xs" style={{ color:"var(--text-subtle)" }}>
-                {lang === "ES" ? "No hay transacciones en el período seleccionado." : "No transactions in the selected period."}
-              </p>
-            </div>
-          ) : filtered.map((tx: any, i: number) => (
-            <div key={i} className="grid grid-cols-5 px-4 py-3 text-xs"
-              style={{ borderBottom: i<filtered.length-1 ? "1px solid var(--border)" : "none", color:"var(--text-muted)" }}>
-              <span>{new Date(tx.date).toLocaleDateString(lang === "ES" ? "es-ES" : "en-US")}</span>
-              <span className="col-span-2 truncate" style={{ color:"var(--text)" }}>{tx.description}</span>
-              <span style={{ color: tx.type==="in" ? "#22C55E" : "#EF4444" }}>
-                {tx.type==="in" ? "+" : "-"}{tx.amount}
-              </span>
-              <span>{tx.status}</span>
-            </div>
-          ))}
-        </div>
-
-        {/* Paginación */}
-        <div className="flex items-center justify-between text-xs" style={{ color:"var(--text-muted)" }}>
-          <button className="px-3 py-1.5 rounded-lg hover:opacity-70"
-            style={{ background:"var(--surface)", border:"1px solid var(--border)" }}>{lang === "ES" ? "← Anterior" : "← Previous"}</button>
-          <span>{lang === "ES" ? "Página 1 / 1" : "Page 1 / 1"}</span>
-          <button className="px-3 py-1.5 rounded-lg hover:opacity-70"
-            style={{ background:"var(--surface)", border:"1px solid var(--border)" }}>{lang === "ES" ? "Siguiente →" : "Next →"}</button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ══════════════════════════════════════════════════
 // TAB WISHLIST — conectada al WishlistContext real
 // ══════════════════════════════════════════════════
-function TabWishlist({ items, removeWish, addToCart, formatPrice }: any) {
+function TabWishlist({ items, removeWish, addToCart, formatPrice }: {
+  items: WishlistItem[];
+  removeWish: (slug: string) => void;
+  addToCart: ReturnType<typeof useCart>["addItem"];
+  formatPrice: (pen: number) => string;
+}) {
   const { lang } = usePreferences();
   const [added, setAdded] = useState<string[]>([]);
 
-  function handleAddToCart(item: any) {
+  function handleAddToCart(item: WishlistItem) {
     addToCart({
       slug: item.slug, name: item.name, img: item.img,
       price: item.price, priceOld: item.priceOld,
-      region: item.region, format: item.format,
+      region: item.region, format: item.format, tabLabel: item.tabLabel,
     });
     setAdded(prev => [...prev, item.slug]);
     setTimeout(() => setAdded(prev => prev.filter(s => s !== item.slug)), 2000);
@@ -1042,7 +962,7 @@ function TabWishlist({ items, removeWish, addToCart, formatPrice }: any) {
         </div>
       ) : (
         <div className="divide-y" style={{ borderColor:"var(--border)" }}>
-          {items.map((item: any) => {
+          {items.map((item) => {
             const disc = item.priceOld > item.price
               ? Math.round((1 - item.price / item.priceOld) * 100)
               : 0;
@@ -1052,7 +972,7 @@ function TabWishlist({ items, removeWish, addToCart, formatPrice }: any) {
                 {/* Imagen */}
                 <div className="relative w-16 h-16 rounded-xl overflow-hidden flex-shrink-0"
                   style={{ background:"linear-gradient(135deg,rgba(30,58,138,0.1),rgba(234,88,12,0.1))" }}>
-                  <Image src={item.img} alt={item.name} fill className="object-contain p-1"/>
+                  <Image src={item.img} alt={item.name} fill sizes="80px" className="object-contain p-1"/>
                   {disc > 0 && (
                     <span className="absolute top-0.5 left-0.5 text-[9px] font-black text-white px-1 py-0.5 rounded"
                       style={{ background:"#EF4444" }}>-{disc}%</span>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import GameCard from "@/components/ui/GameCard";
@@ -9,15 +9,27 @@ import { usePreferences } from "@/context/PreferencesContext";
 import { useVisibility } from "@/context/VisibilityContext";
 import { gameKey } from "@/config/visibility";
 import { useT } from "@/i18n";
+import { gameMatches } from "@/lib/search";
 
 export default function AllGamesClient() {
   const t = useT();
   const { lang } = usePreferences();
   const { isVisible } = useVisibility();
-  const [active, setActive] = useState<string>("all");
+  // Filtros en la URL (?cat=rpg&q=robux): el buscador de la barra superior enlaza aquí.
+  const router = useRouter();
+  const params = useSearchParams();
+  const active = params.get("cat") || "all";
+  const query  = params.get("q") ?? "";
+  const setFilters = (cat: string, q: string) => {
+    const next = new URLSearchParams();
+    if (cat !== "all") next.set("cat", cat);
+    if (q) next.set("q", q);
+    router.replace(next.size ? `/games?${next}` : "/games", { scroll: false });
+  };
+  const setActive = (cat: string) => setFilters(cat, query);
 
   const visibleGames = games.filter((g) => isVisible(gameKey(g.slug)));
-  const filtered = active === "all" ? visibleGames : visibleGames.filter((g) => g.category === active);
+  const filtered = visibleGames.filter((g) => (active === "all" || g.category === active) && gameMatches(g, query));
 
   return (
     <>
@@ -33,6 +45,13 @@ export default function AllGamesClient() {
             <p className="text-sm mt-1" style={{ color: "var(--text-muted)" }}>
               {filtered.length} {lang === "EN" ? "games" : "juegos"} {t.home.available}
             </p>
+            {query && (
+              <button onClick={() => setFilters(active, "")}
+                className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold hover:opacity-80"
+                style={{ background: "var(--card)", border: "1px solid var(--border)", color: "var(--text)" }}>
+                {lang === "EN" ? "Results for" : "Resultados para"} «{query}» <span aria-hidden>✕</span>
+              </button>
+            )}
           </div>
 
           {/* Filtros por categoría */}
@@ -71,10 +90,10 @@ export default function AllGamesClient() {
               style={{ background: "var(--card)", border: "1px solid var(--border)" }}
             >
               <p className="font-bold mb-2" style={{ color: "var(--text)" }}>
-                {t.category.comingSoon}
+                {query ? (lang === "EN" ? "No games match your search" : "No hay juegos que coincidan con tu búsqueda") : t.category.comingSoon}
               </p>
               <p className="text-sm" style={{ color: "var(--text-subtle)" }}>
-                {t.category.comingSoonDesc}
+                {query ? (lang === "EN" ? "Try another word, like the game or currency name." : "Prueba con otra palabra, como el nombre del juego o de la moneda.") : t.category.comingSoonDesc}
               </p>
             </div>
           ) : (

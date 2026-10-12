@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -41,7 +41,7 @@ const badgeStyle: Record<string, string> = {
 
 // ── ProductCard ───────────────────────────────────────────────
 function ProductCard({ p }: { p: DiscordProduct }) {
-  const { formatPrice: fmt, currencySymbol, lang } = usePreferences();
+  const { formatPrice: fmt, lang } = usePreferences();
   const t = useT();
   const badge = useBadge();
   const disc = Math.round((1 - p.price / p.priceOld) * 100);
@@ -50,7 +50,7 @@ function ProductCard({ p }: { p: DiscordProduct }) {
       style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
       <div className="relative w-full overflow-hidden"
         style={{ aspectRatio: "4/3", background: `linear-gradient(135deg,rgba(${ACCENT_GLOW},0.18),rgba(5,5,20,0.75))` }}>
-        <Image src={p.img} alt={lang==="EN" ? p.nameEN || p.name : p.name} fill
+        <Image src={p.img} alt={lang==="EN" ? p.nameEN || p.name : p.name} fill sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 300px"
           className="object-contain p-4 transition-transform duration-300 group-hover:scale-105" />
         {p.badge && (
           <span className={`absolute top-2 right-2 px-2 py-0.5 rounded-full text-[10px] font-bold ${badgeStyle[p.badge] ?? "badge-popular"}`}>
@@ -223,14 +223,13 @@ function DiscordPageInner({ tabDefs, nitro, mejoras, tienda }: {
   const searchParams = useSearchParams();
   const router       = useRouter();
   const tabParam     = searchParams.get("tab");
-  const [activeTab, setActiveTab] = useState(tabParam ?? "nitro");
+  // La pestaña activa sale de la URL (?tab=): enlaces directos y botón "atrás" funcionan.
+  const activeTab    = tabParam ?? "nitro";
 
-  useEffect(() => { if (tabParam) setActiveTab(tabParam); }, [tabParam]);
 
   const shownTab = tabDefs.some(tb => tb.id === activeTab) ? activeTab : (tabDefs[0]?.id ?? activeTab);
 
   function handleTab(id: string) {
-    setActiveTab(id);
     router.push(`/games/discord?tab=${id}`, { scroll: false });
   }
 
@@ -246,7 +245,7 @@ function DiscordPageInner({ tabDefs, nitro, mejoras, tienda }: {
 
         {/* HERO */}
         <section className="relative overflow-hidden" style={{ height: "60vh", minHeight: "420px" }}>
-          <Image src="/games/discord.jpg" alt="Discord" fill className="object-cover object-center" priority />
+          <Image src="/games/discord.jpg" alt="Discord" fill sizes="100vw" className="object-cover object-center" priority />
           <div className="absolute inset-0"
             style={{ background: "linear-gradient(to right,rgba(0,0,0,0.92) 0%,rgba(0,0,0,0.45) 60%,rgba(0,0,0,0.1) 100%)" }} />
           <div className="absolute inset-0"

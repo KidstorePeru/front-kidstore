@@ -3,7 +3,7 @@
 // dejar la imagen en esa carpeta con el nombre de la sección ("Look del día.jpg"); las variantes
 // "Look del día 2.jpg", "Look del día 3.png"… rotan cada día con la tienda.
 // Se ejecuta solo antes de `npm run dev` y `npm run build` (predev / prebuild) o con `npm run fondos`.
-import { existsSync, readdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, renameSync, unlinkSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -19,7 +19,7 @@ const out = join(root, "src", "components", "game", "fortnite-shop", "sectionBac
 const safeName = (f) =>
   f
     .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
+    .replace(/[\u0300-\u036f]/g, "")
     .replace(/[^A-Za-z0-9 ._()!-]/g, "")
     .replace(/\s+/g, " ")
     .trim();
@@ -32,6 +32,28 @@ for (const f of readdirSync(dir)) {
   }
   renameSync(join(dir, f), join(dir, safe));
   console.log(`[fondos] "${f}" → "${safe}"`);
+}
+
+// AVIF → WebP: Turbopack no sabe leer AVIF al compilar (avisa en cada build y no las optimiza).
+// Se convierten una vez con sharp (viene con Next) a WebP de alta calidad y se borra el AVIF.
+// Si sharp no está disponible se dejan como están (la web funciona igual).
+const avifs = readdirSync(dir).filter((f) => /\.avif$/i.test(f));
+if (avifs.length) {
+  try {
+    const { default: sharp } = await import("sharp");
+    for (const f of avifs) {
+      const webp = f.replace(/\.avif$/i, ".webp");
+      if (existsSync(join(dir, webp))) {
+        console.warn(`[fondos] No se convierte "${f}": ya existe "${webp}".`);
+        continue;
+      }
+      await sharp(join(dir, f)).webp({ quality: 90 }).toFile(join(dir, webp));
+      unlinkSync(join(dir, f));
+      console.log(`[fondos] "${f}" → "${webp}"`);
+    }
+  } catch (err) {
+    console.warn("[fondos] No se pudieron convertir los AVIF a WebP:", err?.message || err);
+  }
 }
 
 const files = readdirSync(dir)

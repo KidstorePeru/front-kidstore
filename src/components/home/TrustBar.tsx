@@ -1,6 +1,7 @@
 "use client";
 
 import { useT } from "@/i18n";
+import { games } from "@/data";
 
 export default function TrustBar() {
   const t = useT();
@@ -8,7 +9,7 @@ export default function TrustBar() {
   const items = [
     { icon: "⚡", text: t.trust.instantDelivery },
     { icon: "🔒", text: t.trust.securePayment },
-    { icon: "🎮", text: t.trust.gamesAvailable },
+    { icon: "🎮", text: t.trust.gamesAvailable(games.length) },
     { icon: "💬", text: t.trust.support },
   ];
 

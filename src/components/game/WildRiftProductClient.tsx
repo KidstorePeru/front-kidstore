@@ -170,7 +170,7 @@ export default function WildRiftProductClient({ slug }: { slug: string }) {
         gameName: fieldGame || undefined, platform: platform || undefined,
       },
     });
-    window.location.href = "/checkout";
+    router.push("/checkout");
   }
 
   function handleWishlist() {
@@ -236,7 +236,7 @@ export default function WildRiftProductClient({ slug }: { slug: string }) {
             <div className="space-y-6">
               <div className="relative w-full rounded-2xl overflow-hidden"
                 style={{ aspectRatio:"4/3", background:"linear-gradient(135deg,rgba(14,165,233,0.18),rgba(5,10,40,0.8))", border:"1px solid var(--border)" }}>
-                <Image src={p.img} alt={lang==="EN" ? p.nameEN || p.name : p.name} fill className="object-contain p-8" priority/>
+                <Image src={p.img} alt={lang==="EN" ? p.nameEN || p.name : p.name} fill sizes="(max-width: 1024px) 90vw, 520px" className="object-contain p-8" priority/>
               </div>
               <div className="rounded-2xl p-6" style={{ background:"var(--card)", border:"1px solid var(--border)" }}>
                 <WRDescription productType={p.productType}/>
@@ -338,7 +338,7 @@ export default function WildRiftProductClient({ slug }: { slug: string }) {
                       style={{ color: errors.user ? "#EF4444" : "var(--text-subtle)" }}>
                       {t.roblox.userEmailPhone}{errors.user && <span className="normal-case font-normal"> — {t.form.required}</span>}
                     </label>
-                    <input type="text" placeholder="your_user / email@example.com"
+                    <input type="text" placeholder={lang === "ES" ? "tu_usuario / correo@email.com" : "your_user / email@example.com"}
                       value={fieldUser} onChange={e => { setFieldUser(e.target.value); setErrors(p => ({ ...p, user:false })); }}
                       className="w-full px-4 py-3 rounded-xl text-sm outline-none transition-all"
                       style={inputStyle(errors.user)}
@@ -355,7 +355,7 @@ export default function WildRiftProductClient({ slug }: { slug: string }) {
                       style={{ color: errors.gameName ? "#EF4444" : "var(--text-subtle)" }}>
                       {t.wildrift.inGameUsername}{errors.gameName && <span className="normal-case font-normal"> — {t.form.required}</span>}
                     </label>
-                    <input type="text" placeholder="YourPlayerName"
+                    <input type="text" placeholder={lang === "ES" ? "TuNombreDeJugador" : "YourPlayerName"}
                       value={fieldGame} onChange={e => { setFieldGame(e.target.value); setErrors(p => ({ ...p, gameName:false })); }}
                       className="w-full px-4 py-3 rounded-xl text-sm outline-none transition-all"
                       style={inputStyle(errors.gameName)}

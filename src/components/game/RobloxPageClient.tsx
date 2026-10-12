@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -70,7 +70,7 @@ function ProductCard({ p }: { p: RobloxProduct }) {
     >
       <div className="relative w-full overflow-hidden"
         style={{ aspectRatio:"4/3", background:"linear-gradient(135deg,rgba(239,68,68,0.14),rgba(10,5,20,0.85))" }}>
-        <Image src={p.img} alt={name} fill
+        <Image src={p.img} alt={name} fill sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 300px"
           className="object-contain p-5 transition-transform duration-500 group-hover:scale-110" />
         {p.badge && (
           <span className={`absolute top-2.5 right-2.5 px-2 py-0.5 rounded-full text-[10px] font-bold ${badgeStyle[p.badge] ?? "badge-popular"}`}>
@@ -419,7 +419,7 @@ function GamePassGuide({ onClose }: { onClose: () => void }) {
 // ── Tab Game Pass ──────────────────────────────────────────────
 function TabGamePass() {
   const t = useT();
-  const { formatPrice } = usePreferences();
+  const { formatPrice, lang } = usePreferences();
   const [robux,     setRobux]     = useState(1000);
   const [inputVal,  setInputVal]  = useState("1000");
   const [fieldUser, setFieldUser] = useState("");
@@ -429,6 +429,7 @@ function TabGamePass() {
   const [errors,    setErrors]    = useState<Record<string, boolean>>({});
   const [added,     setAdded]     = useState(false);
   const { addItem } = useCart();
+  const router = useRouter();
 
   const price    = calcGamePassPrice(robux);
   const afterTax = calcRobuxAfterTax(robux);
@@ -480,7 +481,7 @@ function TabGamePass() {
   function handleBuyNow() {
     if (!validate()) return;
     addItem(getCartItem());
-    window.location.href = "/checkout";
+    router.push("/checkout");
   }
 
   const QUICK = [1000, 2000, 5000, 10000];
@@ -526,7 +527,7 @@ function TabGamePass() {
             style={{ border:"1px solid var(--border)", background:"linear-gradient(135deg,rgba(239,68,68,0.12),rgba(10,5,20,0.85))" }}
           >
             <div className="relative w-full" style={{ aspectRatio:"4/3" }}>
-              <Image src={IMG} alt="Robux Game Pass" fill className="object-contain p-8"/>
+              <Image src={IMG} alt="Robux Game Pass" fill sizes="(max-width: 1024px) 90vw, 520px" className="object-contain p-8"/>
               <div
                 className="absolute top-3 left-3 px-3 py-1 rounded-full text-xs font-black"
                 style={{ background:"linear-gradient(135deg,#DC2626,#7F1D1D)", color:"white" }}
@@ -700,7 +701,7 @@ function TabGamePass() {
                       {errors.user && <span className="normal-case font-normal"> — {t.form.required}</span>}
                     </label>
                     <input
-                      type="text" placeholder="YourRobloxUsername" value={fieldUser}
+                      type="text" placeholder={lang === "ES" ? "TuUsuarioDeRoblox" : "YourRobloxUsername"} value={fieldUser}
                       onChange={e => { setFieldUser(e.target.value); setErrors(p => ({ ...p, user:false })); }}
                       className="w-full px-4 py-3 rounded-xl text-sm outline-none transition-all"
                       style={{ background:"var(--surface)", border:`1px solid ${errors.user ? "#EF4444" : "var(--border)"}`, color:"var(--text)" }}
@@ -759,7 +760,7 @@ function TabGamePass() {
                       className="relative w-10 h-10 rounded-lg overflow-hidden flex-shrink-0"
                       style={{ background:"linear-gradient(135deg,rgba(239,68,68,0.15),rgba(10,5,20,0.8))" }}
                     >
-                      <Image src={IMG} alt="Robux" fill className="object-contain p-1"/>
+                      <Image src={IMG} alt="Robux" fill sizes="80px" className="object-contain p-1"/>
                     </div>
                     <div>
                       <p className="text-xs font-bold" style={{ color:"var(--text)" }}>
@@ -822,18 +823,17 @@ function RobloxPageInner({ TABS, cuenta, plus, grupo }: {
   cuenta: RobloxProduct[]; plus: RobloxProduct[]; grupo: RobloxProduct[];
 }) {
   const t = useT();
-  const { formatPrice, lang } = usePreferences();
+  const { formatPrice } = usePreferences();
   const searchParams = useSearchParams();
   const router       = useRouter();
   const tabParam     = searchParams.get("tab");
-  const [activeTab, setActiveTab] = useState(tabParam ?? "cuenta");
+  // La pestaña activa sale de la URL (?tab=): enlaces directos y botón "atrás" funcionan.
+  const activeTab    = tabParam ?? "cuenta";
 
-  useEffect(() => { if (tabParam) setActiveTab(tabParam); }, [tabParam]);
 
   const shownTab = TABS.some(tb => tb.id === activeTab) ? activeTab : (TABS[0]?.id ?? "cuenta");
 
   function handleTab(id: string) {
-    setActiveTab(id);
     router.push(`/games/roblox?tab=${id}`, { scroll: false });
   }
 
@@ -845,7 +845,7 @@ function RobloxPageInner({ TABS, cuenta, plus, grupo }: {
         {/* ── HERO ── */}
         <section className="relative overflow-hidden" style={{ height:"60vh", minHeight:"420px" }}>
           <Image
-            src="/games/roblox.jpg" alt="Roblox" fill
+            src="/games/roblox.jpg" alt="Roblox" fill sizes="100vw"
             className="object-cover object-center" priority
           />
           <div className="absolute inset-0"

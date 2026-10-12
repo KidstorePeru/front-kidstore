@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -84,7 +84,7 @@ function ProductCard({ name, amount, description, price, priceOld, badge, img, s
     >
       <div className="relative w-full overflow-hidden"
         style={{ aspectRatio:"4/3", background:`linear-gradient(135deg,rgba(234,88,12,0.18),rgba(15,10,40,0.6))` }}>
-        <Image src={img} alt={name ?? amount ?? "Rocket League"} fill
+        <Image src={img} alt={name ?? amount ?? "Rocket League"} fill sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 300px"
           className="object-contain p-4 transition-transform duration-500 group-hover:scale-110" />
         <div className="absolute inset-0"
           style={{ background:"linear-gradient(to top, rgba(0,0,0,0.35) 0%, transparent 45%)" }}/>
@@ -456,16 +456,13 @@ function RocketLeaguePageInner({ TABS, creditos, bulkVisible }: {
   const searchParams = useSearchParams();
   const router       = useRouter();
   const tabParam     = searchParams.get("tab");
-  const [activeTab, setActiveTab] = useState(tabParam ?? "creditos");
+  // La pestaña activa sale de la URL (?tab=): enlaces directos y botón "atrás" funcionan.
+  const activeTab    = tabParam ?? "creditos";
 
-  useEffect(() => {
-    if (tabParam) setActiveTab(tabParam);
-  }, [tabParam]);
 
   const shownTab = TABS.some(tb => tb.id === activeTab) ? activeTab : (TABS[0]?.id ?? "creditos");
 
   function handleTabClick(id: string) {
-    setActiveTab(id);
     router.push(`/games/rocket-league?tab=${id}`, { scroll: false });
   }
 
@@ -476,7 +473,7 @@ function RocketLeaguePageInner({ TABS, creditos, bulkVisible }: {
 
         {/* HERO */}
         <section className="relative overflow-hidden" style={{ height:"65vh", minHeight:"460px" }}>
-          <Image src="/games/rocket-league.jpg" alt="Rocket League" fill className="object-cover object-center kenburns" priority/>
+          <Image src="/games/rocket-league.jpg" alt="Rocket League" fill sizes="100vw" className="object-cover object-center kenburns" priority/>
           <div className="absolute inset-0"
             style={{ background:"linear-gradient(to right,rgba(0,0,0,0.88) 0%,rgba(0,0,0,0.45) 55%,rgba(0,0,0,0.1) 100%)" }}/>
           <div className="absolute inset-0"

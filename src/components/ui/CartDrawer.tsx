@@ -27,7 +27,7 @@ interface CartDrawerProps {
 }
 
 export default function CartDrawer({ open, onClose }: CartDrawerProps) {
-  const { items, totalItems, totalPrice, removeItem, updateQty, clearCart } = useCart();
+  const { items, totalItems, totalPrice, updateQty, clearCart } = useCart();
   const { formatPrice, lang } = usePreferences();
   const t = useT();
 
@@ -138,7 +138,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                   {/* Image */}
                   <div className="relative w-16 h-16 rounded-xl overflow-hidden flex-shrink-0"
                     style={{ background: "linear-gradient(135deg,rgba(124,58,237,0.15),rgba(15,10,40,0.5))" }}>
-                    <Image src={item.img} alt={item.name} fill className="object-contain p-1.5" />
+                    <Image src={item.img} alt={item.name} fill sizes="80px" className="object-contain p-1.5" />
                   </div>
 
                   {/* Info */}

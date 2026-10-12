@@ -217,7 +217,7 @@ export default function GenshinImpactProductClient({ slug }: { slug: string }) {
       region: p.region, format: p.format, tabLabel: p.tabLabel,
       orderData: buildOrderData(),
     });
-    window.location.href = "/checkout";
+    router.push("/checkout");
   }
 
   function handleWishlist() {
@@ -283,7 +283,7 @@ export default function GenshinImpactProductClient({ slug }: { slug: string }) {
             <div className="space-y-6">
               <div className="relative w-full rounded-2xl overflow-hidden"
                 style={{ aspectRatio:"4/3", background:`linear-gradient(135deg,rgba(212,175,55,0.15),rgba(10,8,30,0.85))`, border:"1px solid var(--border)" }}>
-                <Image src={p.img} alt={lang==="EN" ? p.nameEN || p.name : p.name} fill className="object-cover" priority/>
+                <Image src={p.img} alt={lang==="EN" ? p.nameEN || p.name : p.name} fill sizes="(max-width: 1024px) 90vw, 520px" className="object-cover" priority/>
                 {/* Overlay bottom */}
                 <div className="absolute inset-x-0 bottom-0 h-20"
                   style={{ background:"linear-gradient(to top,rgba(0,0,0,0.6),transparent)" }}/>

@@ -74,8 +74,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [hydrated, setHydrated] = useState(false);
 
-  // Cargar desde localStorage al montar
+  // Cargar desde localStorage al montar (solo existe en el cliente; leerlo en el primer render
+  // provocaría un desajuste de hidratación con el HTML del servidor).
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- carga inicial desde localStorage
     setItems(loadCart());
     setHydrated(true);
   }, []);

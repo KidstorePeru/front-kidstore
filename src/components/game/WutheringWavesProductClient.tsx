@@ -243,7 +243,7 @@ export default function WutheringWavesProductClient({ slug }: { slug: string }) 
   function handleBuyNow() {
     if (!validate()) return;
     addItem(getItem());
-    window.location.href = "/checkout";
+    router.push("/checkout");
   }
   function handleWishlist() {
     toggleWish({ slug:p.slug, name:p.name, img:p.img, price:activePrice, priceOld:activePriceOld, region:p.region, format:p.format, tabLabel:p.tabLabel, game:"Wuthering Waves", gameSlug:"wuthering-waves" });
@@ -298,7 +298,7 @@ export default function WutheringWavesProductClient({ slug }: { slug: string }) 
             <div className="space-y-6">
               <div className="relative w-full rounded-2xl overflow-hidden"
                 style={{ aspectRatio:"4/3", background:"linear-gradient(135deg,var(--ww-teal-bg),rgba(3,8,20,0.92))", border:"1px solid var(--border)" }}>
-                <Image src={p.img} alt={lang==="EN" ? p.nameEN || p.name : p.name} fill className="object-contain p-8" priority/>
+                <Image src={p.img} alt={lang==="EN" ? p.nameEN || p.name : p.name} fill sizes="(max-width: 1024px) 90vw, 520px" className="object-contain p-8" priority/>
                 {/* Method pill */}
                 <div className="absolute top-3 right-3 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold"
                   style={{
@@ -516,7 +516,7 @@ export default function WutheringWavesProductClient({ slug }: { slug: string }) 
                           style={{ color: errors.user ? "#EF4444" : "var(--text-subtle)" }}>
                           {t.ww.userEmail}{errors.user && <span className="normal-case font-normal text-red-400"> — {t.form.required}</span>}
                         </label>
-                        <input type="text" placeholder="your_user / email@example.com" value={fieldUser}
+                        <input type="text" placeholder={lang === "ES" ? "tu_usuario / correo@email.com" : "your_user / email@example.com"} value={fieldUser}
                           onChange={e => { setFieldUser(e.target.value); setErrors(p => ({...p, user:false})); }}
                           className="w-full px-4 py-3 rounded-xl text-sm outline-none transition-all"
                           style={inputStyle(errors.user)}

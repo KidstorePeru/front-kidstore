@@ -100,7 +100,7 @@ export default function CategoryPage({ params }: Props) {
                       <Image
                         src={game.image}
                         alt={game.name}
-                        fill
+                        fill sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 260px"
                         className="object-cover transition-transform duration-300 group-hover:scale-105"
                       />
                       {game.offer && (

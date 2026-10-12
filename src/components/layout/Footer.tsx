@@ -3,6 +3,8 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useT } from "@/i18n";
+import { games } from "@/data";
+import { CONTACT_EMAIL, SOCIAL, WHATSAPP_DISPLAY, whatsappLink } from "@/config/site";
 import { usePreferences } from "@/context/PreferencesContext";
 import {
   Zap, Shield, Clock, Mail, MessageCircle, MapPin,
@@ -101,7 +103,7 @@ export default function Footer({ showExtras = false }: { showExtras?: boolean })
             { icon: <Zap size={14}/>,    label: lang === "ES" ? "Entrega instantánea" : "Instant delivery" },
             { icon: <Shield size={14}/>, label: lang === "ES" ? "Pago 100% seguro"    : "100% secure payment" },
             { icon: <Clock size={14}/>,  label: lang === "ES" ? "Soporte 24/7"        : "24/7 Support" },
-            { icon: <Gamepad2 size={14}/>, label: lang === "ES" ? "13 juegos"          : "13 games" },
+            { icon: <Gamepad2 size={14}/>, label: lang === "ES" ? `${games.length} juegos` : `${games.length} games` },
           ].map((item) => (
             <div key={item.label} className="flex items-center gap-2.5">
               <div className="w-7 h-7 rounded-lg flex items-center justify-center"
@@ -138,19 +140,19 @@ export default function Footer({ showExtras = false }: { showExtras?: boolean })
               </p>
               <div className="flex gap-2.5">
                 {[
-                  { label: "WhatsApp", href: "https://wa.me/51983454837",
+                  { label: "WhatsApp", href: whatsappLink(),
                     d: "M12.04 2A10 10 0 0 0 2 12.05a10 10 0 0 0 1.4 5.13L2 22l4.95-1.38A10 10 0 0 0 22 12.05 10 10 0 0 0 12.04 2Zm5.03 13.56c-.2.58-1.2 1.1-1.65 1.17-.44.06-.99.1-1.6-.1a14.6 14.6 0 0 1-1.45-.54 11.3 11.3 0 0 1-4.45-3.93 4.9 4.9 0 0 1-1.04-2.6c-.02-.97.37-1.44.72-1.6a.64.64 0 0 1 .5-.04c.15.04.35.06.48.37.15.35.53 1.28.57 1.37.05.1.08.2.02.32-.05.1-.08.17-.17.27-.08.1-.18.22-.26.3-.09.08-.18.17-.08.34.1.17.47.77 1 1.25.7.62 1.28.82 1.47.91.18.09.29.08.4-.04.1-.12.45-.52.57-.7.12-.18.24-.15.4-.09.17.06 1.06.5 1.24.59.18.09.3.13.34.21.05.07.05.42-.14 1Z",
                     viewBox: "0 0 24 24" },
-                  { label: "TikTok", href: "https://www.tiktok.com/@kidstore.peru",
+                  { label: "TikTok", href: SOCIAL.tiktok,
                     d: "M16.6 5.82A4.28 4.28 0 0 1 13.6 2h-3v13.4a2.59 2.59 0 0 1-2.6 2.5 2.59 2.59 0 0 1-2.6-2.5A2.59 2.59 0 0 1 8 12.9c.28 0 .56.04.82.12V9.8A5.8 5.8 0 0 0 2 15.4a5.81 5.81 0 0 0 5.82 5.8 5.81 5.81 0 0 0 5.82-5.8V9.48a7.47 7.47 0 0 0 4.36 1.4V7.62a4.28 4.28 0 0 1-1.4-1.8Z",
                     viewBox: "0 0 20 22" },
-                  { label: "Instagram", href: "https://www.instagram.com/kidstore.peru",
+                  { label: "Instagram", href: SOCIAL.instagram,
                     d: "M12 2.16c3.2 0 3.58.01 4.85.07 3.25.15 4.77 1.7 4.92 4.92.06 1.27.07 1.65.07 4.85 0 3.2-.01 3.58-.07 4.85-.15 3.22-1.66 4.77-4.92 4.92-1.27.06-1.64.07-4.85.07-3.2 0-3.58-.01-4.85-.07-3.26-.15-4.77-1.7-4.92-4.92C2.17 15.58 2.16 15.2 2.16 12c0-3.2.01-3.58.07-4.85C2.38 3.86 3.9 2.31 7.15 2.16 8.42 2.17 8.8 2.16 12 2.16ZM12 0C8.74 0 8.33.01 7.05.07 2.7.27.27 2.7.07 7.05.01 8.33 0 8.74 0 12s.01 3.67.07 4.95c.2 4.36 2.62 6.78 6.98 6.98C8.33 23.99 8.74 24 12 24s3.67-.01 4.95-.07c4.35-.2 6.78-2.62 6.98-6.98.06-1.28.07-1.69.07-4.95s-.01-3.67-.07-4.95c-.2-4.35-2.62-6.78-6.98-6.98C15.67.01 15.26 0 12 0Zm0 5.84A6.16 6.16 0 1 0 18.16 12 6.16 6.16 0 0 0 12 5.84ZM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8Zm6.4-11.85a1.44 1.44 0 1 0 0 2.88 1.44 1.44 0 0 0 0-2.88Z",
                     viewBox: "0 0 24 24" },
-                  { label: "Facebook", href: "https://www.facebook.com/kidstore.gg",
+                  { label: "Facebook", href: SOCIAL.facebook,
                     d: "M24 12c0-6.63-5.37-12-12-12S0 5.37 0 12c0 5.99 4.39 10.95 10.13 11.85V15.47H7.08V12h3.05V9.36c0-3.01 1.79-4.67 4.53-4.67 1.31 0 2.68.23 2.68.23v2.95h-1.51c-1.49 0-1.95.92-1.95 1.87V12h3.33l-.53 3.47h-2.8v8.38C19.61 22.95 24 17.99 24 12Z",
                     viewBox: "0 0 24 24" },
-                  { label: "Discord", href: "https://discord.gg/kidstoreperu",
+                  { label: "Discord", href: SOCIAL.discord,
                     d: "M20.32 4.37A19.8 19.8 0 0 0 15.44 3c-.21.38-.46.89-.63 1.29a18.4 18.4 0 0 0-5.6 0A13 13 0 0 0 8.57 3 19.7 19.7 0 0 0 3.7 4.37 20.6 20.6 0 0 0 .1 17.77a19.9 19.9 0 0 0 6.07 3.06 14 14 0 0 0 1.27-2.07 12.9 12.9 0 0 1-2-.96l.49-.38a14.2 14.2 0 0 0 12.14 0l.49.38c-.64.38-1.31.7-2 .96.37.73.8 1.42 1.27 2.07a19.8 19.8 0 0 0 6.07-3.06A20.5 20.5 0 0 0 20.32 4.37ZM8.02 15.08c-1.18 0-2.15-1.09-2.15-2.42s.95-2.42 2.15-2.42 2.17 1.09 2.15 2.42c0 1.33-.95 2.42-2.15 2.42Zm7.97 0c-1.18 0-2.15-1.09-2.15-2.42s.95-2.42 2.15-2.42 2.17 1.09 2.15 2.42c0 1.33-.95 2.42-2.15 2.42Z",
                     viewBox: "0 0 24 24" },
                 ].map((s) => (
@@ -193,8 +195,8 @@ export default function Footer({ showExtras = false }: { showExtras?: boolean })
               <div className="space-y-3.5">
                 {[
                   { icon: <Clock size={14}/>,          label: t.footer.hoursValue,          color: "var(--brand-light)" },
-                  { icon: <Mail size={14}/>,           label: "contacto@kidstoreperu.com",  href: "mailto:contacto@kidstoreperu.com" },
-                  { icon: <MessageCircle size={14}/>,  label: "WhatsApp: +51 983 454 837", href: "https://wa.me/51983454837" },
+                  { icon: <Mail size={14}/>,           label: CONTACT_EMAIL, href: `mailto:${CONTACT_EMAIL}` },
+                  { icon: <MessageCircle size={14}/>,  label: `WhatsApp: ${WHATSAPP_DISPLAY}`, href: whatsappLink() },
                   { icon: <MapPin size={14}/>,         label: "Lima, Perú" },
                 ].map((c) => (
                   <div key={c.label} className="flex items-center gap-3">

@@ -43,7 +43,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="es" data-theme="light" suppressHydrationWarning>
+    <html lang="es" data-theme="light" data-scroll-behavior="smooth" suppressHydrationWarning>
       <body>
         <PreferencesProvider>
           <VisibilityProvider>

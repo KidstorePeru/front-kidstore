@@ -20,7 +20,7 @@ interface FaqItem {
 }
 
 /* ── Accordion Item ── */
-function FaqAccordion({ item, index }: { item: FaqItem; index: number }) {
+function FaqAccordion({ item }: { item: FaqItem }) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -117,8 +117,8 @@ export default function FaqPage() {
         ? "What games and products do you sell?"
         : "\u00bfQu\u00e9 juegos y productos venden?",
       a: isEN
-        ? "We sell in-game currency recharges and digital products for 12 games and platforms:\n\n\u2022 Fortnite (V-Bucks, Packs, Battle Pass, Club)\n\u2022 Roblox (Robux)\n\u2022 Genshin Impact (Genesis Crystals, Welkin)\n\u2022 Honkai Star Rail (Oneiric Shards)\n\u2022 Zenless Zone Zero (Monochrome)\n\u2022 Wuthering Waves (Lunite)\n\u2022 Marvel Rivals (Lattice)\n\u2022 Wild Rift (Wild Cores)\n\u2022 Pokemon GO (Pok\u00e9Coins)\n\u2022 Honor of Kings (Tokens)\n\u2022 Teamfight Tactics (TFT Coins)\n\u2022 Discord (Nitro, Server Boosts)"
-        : "Vendemos recargas de monedas in-game y productos digitales para 12 juegos y plataformas:\n\n\u2022 Fortnite (V-Bucks, Packs, Pase de Batalla, Club)\n\u2022 Roblox (Robux)\n\u2022 Genshin Impact (Cristales G\u00e9nesis, Welkin)\n\u2022 Honkai Star Rail (Esquirlas On\u00edricas)\n\u2022 Zenless Zone Zero (Monochrome)\n\u2022 Wuthering Waves (Lunita)\n\u2022 Marvel Rivals (Lattice)\n\u2022 Wild Rift (Wild Cores)\n\u2022 Pokemon GO (Pok\u00e9Monedas)\n\u2022 Honor of Kings (Tokens)\n\u2022 Teamfight Tactics (TFT Coins)\n\u2022 Discord (Nitro, Server Boosts)",
+        ? "We sell in-game currency recharges and digital products for 13 games and platforms:\n\n\u2022 Fortnite (V-Bucks, Packs, Battle Pass, Club)\n\u2022 Roblox (Robux)\n\u2022 Genshin Impact (Genesis Crystals, Welkin)\n\u2022 Honkai Star Rail (Oneiric Shards)\n\u2022 Zenless Zone Zero (Monochrome)\n\u2022 Wuthering Waves (Lunite)\n\u2022 Marvel Rivals (Lattice)\n\u2022 Wild Rift (Wild Cores)\n\u2022 Pokemon GO (Pok\u00e9Coins)\n\u2022 Honor of Kings (Tokens)\n\u2022 Teamfight Tactics (TFT Coins)\n\u2022 Discord (Nitro, Server Boosts)\n\u2022 Rocket League (Credits)"
+        : "Vendemos recargas de monedas in-game y productos digitales para 13 juegos y plataformas:\n\n\u2022 Fortnite (V-Bucks, Packs, Pase de Batalla, Club)\n\u2022 Roblox (Robux)\n\u2022 Genshin Impact (Cristales G\u00e9nesis, Welkin)\n\u2022 Honkai Star Rail (Esquirlas On\u00edricas)\n\u2022 Zenless Zone Zero (Monochrome)\n\u2022 Wuthering Waves (Lunita)\n\u2022 Marvel Rivals (Lattice)\n\u2022 Wild Rift (Wild Cores)\n\u2022 Pokemon GO (Pok\u00e9Monedas)\n\u2022 Honor of Kings (Tokens)\n\u2022 Teamfight Tactics (TFT Coins)\n\u2022 Discord (Nitro, Server Boosts)\n\u2022 Rocket League (Cr\u00e9ditos)",
     },
     {
       icon: <Clock size={17}/>,
@@ -137,8 +137,8 @@ export default function FaqPage() {
         ? "What information do I need to place an order?"
         : "\u00bfQu\u00e9 informaci\u00f3n necesito para hacer un pedido?",
       a: isEN
-        ? "It depends on the game:\n\n\u2022 Fortnite: Your Epic Display Name and the \u201cReceive Gifts\u201d option enabled\n\u2022 Genshin / Honkai / ZZZ / Wuthering Waves: Your HoYoverse account username or email and your server\n\u2022 Roblox: Your Roblox username\n\u2022 Marvel Rivals / Honor of Kings / Pokemon GO: Your UID or Player ID\n\u2022 Wild Rift / TFT: Your in-game name and access method\n\u2022 Discord: Your Discord email\n\nWe never ask for your password on the website. For products that need account access, we coordinate it with you privately on WhatsApp after payment. Each product page explains exactly what data is needed."
-        : "Depende del juego:\n\n\u2022 Fortnite: Tu Epic Display Name y la opci\u00f3n \u201cRecibir regalos\u201d activada\n\u2022 Genshin / Honkai / ZZZ / Wuthering Waves: El usuario o correo de tu cuenta HoYoverse y tu servidor\n\u2022 Roblox: Tu nombre de usuario de Roblox\n\u2022 Marvel Rivals / Honor of Kings / Pokemon GO: Tu UID o Player ID\n\u2022 Wild Rift / TFT: Tu nombre en el juego y el medio de acceso\n\u2022 Discord: Tu correo de Discord\n\nNunca pedimos tu contrase\u00f1a en la web. Para los productos que necesitan acceso a la cuenta, lo coordinamos contigo en privado por WhatsApp tras el pago. Cada p\u00e1gina de producto explica exactamente qu\u00e9 datos se necesitan.",
+        ? "It depends on the game:\n\n\u2022 Fortnite: Your Epic Display Name and the \u201cReceive Gifts\u201d option enabled\n\u2022 Genshin / Honkai / ZZZ / Wuthering Waves: Your HoYoverse account username or email and your server\n\u2022 Roblox: Your Roblox username\n\u2022 Marvel Rivals / Honor of Kings / Pokemon GO: Your UID or Player ID\n\u2022 Wild Rift / TFT / Rocket League: Your in-game name and access method\n\u2022 Discord: Your Discord email\n\nWe never ask for your password on the website. For products that need account access, we coordinate it with you privately on WhatsApp after payment. Each product page explains exactly what data is needed."
+        : "Depende del juego:\n\n\u2022 Fortnite: Tu Epic Display Name y la opci\u00f3n \u201cRecibir regalos\u201d activada\n\u2022 Genshin / Honkai / ZZZ / Wuthering Waves: El usuario o correo de tu cuenta HoYoverse y tu servidor\n\u2022 Roblox: Tu nombre de usuario de Roblox\n\u2022 Marvel Rivals / Honor of Kings / Pokemon GO: Tu UID o Player ID\n\u2022 Wild Rift / TFT / Rocket League: Tu nombre en el juego y el medio de acceso\n\u2022 Discord: Tu correo de Discord\n\nNunca pedimos tu contrase\u00f1a en la web. Para los productos que necesitan acceso a la cuenta, lo coordinamos contigo en privado por WhatsApp tras el pago. Cada p\u00e1gina de producto explica exactamente qu\u00e9 datos se necesitan.",
     },
     {
       icon: <CreditCard size={17}/>,
@@ -157,8 +157,8 @@ export default function FaqPage() {
         ? "How does the purchase process work?"
         : "\u00bfC\u00f3mo funciona el proceso de compra?",
       a: isEN
-        ? "1. Select the game and the product you want\n2. Fill in the required data for delivery (account, UID, etc.)\n3. Choose your payment method and complete the payment\n4. Send the receipt via WhatsApp or through the checkout form\n5. Our team verifies the payment and processes the delivery\n6. You receive the product in your game account"
-        : "1. Selecciona el juego y el producto que deseas\n2. Completa los datos requeridos para la entrega (cuenta, UID, etc.)\n3. Elige tu m\u00e9todo de pago y realiza el pago\n4. Env\u00eda el comprobante por WhatsApp o a trav\u00e9s del formulario de checkout\n5. Nuestro equipo verifica el pago y procesa la entrega\n6. Recibes el producto en tu cuenta del juego",
+        ? "1. Select the game and the product you want\n2. Fill in the required data for delivery (account, UID, etc.)\n3. Choose your payment method and complete the payment\n4. Send your payment receipt on WhatsApp (the button appears when you confirm the order)\n5. Our team verifies the payment and processes the delivery\n6. You receive the product in your game account"
+        : "1. Selecciona el juego y el producto que deseas\n2. Completa los datos requeridos para la entrega (cuenta, UID, etc.)\n3. Elige tu m\u00e9todo de pago y realiza el pago\n4. Env\u00eda tu comprobante de pago por WhatsApp (el bot\u00f3n aparece al confirmar el pedido)\n5. Nuestro equipo verifica el pago y procesa la entrega\n6. Recibes el producto en tu cuenta del juego",
     },
     {
       icon: <Shield size={17}/>,
@@ -304,7 +304,7 @@ export default function FaqPage() {
               </div>
             ) : (
               filtered.map((faq, i) => (
-                <FaqAccordion key={i} item={faq} index={i}/>
+                <FaqAccordion key={i} item={faq}/>
               ))
             )}
           </div>

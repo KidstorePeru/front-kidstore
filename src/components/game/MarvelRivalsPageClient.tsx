@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ShoppingCart, Check, ExternalLink } from "lucide-react";
+import { ShoppingCart } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { LATTICES, MarvelRivalsProduct } from "@/data/marvelrivals";
@@ -25,7 +25,7 @@ function ProductCard({ p }: { p: MarvelRivalsProduct }) {
       style={{ background:"var(--card)", border:"1px solid var(--border)" }}>
       <div className="relative w-full overflow-hidden"
         style={{ aspectRatio:"4/3", background:"linear-gradient(135deg,rgba(220,38,38,0.15),rgba(10,5,30,0.8))" }}>
-        <Image src={p.img} alt={lang==="EN" ? p.nameEN || p.name : p.name} fill
+        <Image src={p.img} alt={lang==="EN" ? p.nameEN || p.name : p.name} fill sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 300px"
           className="object-contain p-4 transition-transform duration-300 group-hover:scale-105"/>
         {p.badge && (
           <span className={`absolute top-2 right-2 px-2 py-0.5 rounded-full text-[10px] font-bold ${badgeStyle[p.badge] ?? "badge-popular"}`}>
@@ -170,7 +170,7 @@ export default function MarvelRivalsPageClient() {
 
         {/* Hero */}
         <section className="relative overflow-hidden" style={{ height:"60vh", minHeight:"420px" }}>
-          <Image src="/games/marvel-rivals.jpg" alt="Marvel Rivals" fill
+          <Image src="/games/marvel-rivals.jpg" alt="Marvel Rivals" fill sizes="100vw"
             className="object-cover object-top" priority/>
           <div className="absolute inset-0"
             style={{ background:"linear-gradient(to right,rgba(0,0,0,0.92) 0%,rgba(0,0,0,0.45) 60%,rgba(0,0,0,0.1) 100%)" }}/>

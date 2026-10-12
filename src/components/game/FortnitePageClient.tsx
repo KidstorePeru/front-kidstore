@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -60,7 +60,7 @@ function ProductCard({ name, subtitle, amount, description, price, priceOld, bad
       style={{ background:"var(--card)", border:"1px solid var(--border)" }}>
       <div className="relative w-full overflow-hidden"
         style={{ aspectRatio:"4/3", background:"linear-gradient(135deg,rgba(124,58,237,0.15),rgba(15,10,40,0.6))" }}>
-        <Image src={img} alt={name ?? amount ?? "producto"} fill
+        <Image src={img} alt={name ?? amount ?? "producto"} fill sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 300px"
           className="object-contain p-3 transition-transform duration-300 group-hover:scale-105" />
         {badge && (
           <span className={`absolute top-2 right-2 px-2 py-0.5 rounded-full text-[10px] font-bold ${badgeStyle[badge] ?? "badge-popular"}`}>
@@ -444,16 +444,13 @@ function FortnitePageInner({ TABS, pavos, paquetes, club, battlePasses }: {
   const searchParams = useSearchParams();
   const router       = useRouter();
   const tabParam     = searchParams.get("tab");
-  const [activeTab, setActiveTab] = useState(tabParam ?? "tienda");
+  // La pestaña activa sale de la URL (?tab=): enlaces directos y botón "atrás" funcionan.
+  const activeTab    = tabParam ?? "tienda";
 
-  useEffect(() => {
-    if (tabParam) setActiveTab(tabParam);
-  }, [tabParam]);
 
   const shownTab = TABS.some(tb => tb.id === activeTab) ? activeTab : (TABS[0]?.id ?? activeTab);
 
   function handleTabClick(id: string) {
-    setActiveTab(id);
     router.push(`/games/fortnite?tab=${id}`, { scroll: false });
   }
 
@@ -464,7 +461,7 @@ function FortnitePageInner({ TABS, pavos, paquetes, club, battlePasses }: {
 
         {/* HERO */}
         <section className="relative overflow-hidden" style={{ height:"65vh", minHeight:"460px" }}>
-          <Image src="/games/fortnite.jpg" alt="Fortnite" fill className="object-cover object-center" priority/>
+          <Image src="/games/fortnite.jpg" alt="Fortnite" fill sizes="100vw" className="object-cover object-center" priority/>
           <div className="absolute inset-0"
             style={{ background:"linear-gradient(to right,rgba(0,0,0,0.88) 0%,rgba(0,0,0,0.45) 55%,rgba(0,0,0,0.1) 100%)" }}/>
           <div className="absolute inset-0"

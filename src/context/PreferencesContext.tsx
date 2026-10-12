@@ -63,7 +63,9 @@ export function PreferencesProvider({ children }: { children: ReactNode }) {
   const [rates,      setRates]       = useState<Record<Currency, number>>(FALLBACK);
   const [ratesReady, setRatesReady]  = useState(false);
 
-  // Cargar preferencias guardadas al montar
+  // Cargar preferencias guardadas al montar (localStorage solo existe en el cliente; leerlo en
+  // el primer render provocaría un desajuste de hidratación con el HTML del servidor).
+  /* eslint-disable react-hooks/set-state-in-effect -- carga inicial desde localStorage */
   useEffect(() => {
     const savedLang     = localStorage.getItem("kidstore_lang")     as Lang     | null;
     const savedCurrency = localStorage.getItem("kidstore_currency") as Currency | null;
@@ -72,6 +74,7 @@ export function PreferencesProvider({ children }: { children: ReactNode }) {
     if (savedCurrency && ["PEN","USD","EUR"].includes(savedCurrency))   setCurrencyRaw(savedCurrency);
     if (savedTheme    && ["light","dark"].includes(savedTheme))         setThemeRaw(savedTheme);
   }, []);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   // Wrappers que persisten en localStorage
   const setLang     = (l: Lang)     => { setLangRaw(l);     localStorage.setItem("kidstore_lang",     l); };

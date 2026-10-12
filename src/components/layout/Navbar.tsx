@@ -25,6 +25,7 @@ function UserAvatar({ user, size, radius }: { user: { username: string; avatar?:
       }}
     >
       {user.avatar
+        // eslint-disable-next-line @next/next/no-img-element -- foto local en base64 (data URL)
         ? <img src={user.avatar} alt={user.username} className="w-full h-full object-cover" />
         : user.username[0]?.toUpperCase()}
     </div>
@@ -401,11 +402,12 @@ export default function Navbar() {
         {/* CATEGORÍAS */}
         <nav className="hidden md:block" style={{ borderTop: "1px solid var(--border)" }}>
           <div className="max-w-[1400px] mx-auto px-4 lg:px-6">
-            <ul className="flex items-center justify-center gap-0.5 h-10">
+            {/* En tablet la fila puede no caber: se desplaza dentro de sí misma (no la página entera). */}
+            <ul className="flex items-center lg:justify-center gap-0.5 h-10 overflow-x-auto" style={{ scrollbarWidth: "none" }}>
               <li>
                 <Link
                   href="/games"
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold transition-colors whitespace-nowrap"
+                  className="flex items-center gap-1.5 px-2.5 lg:px-3 py-1.5 rounded-md text-xs font-bold transition-colors whitespace-nowrap"
                   style={{ color: "var(--brand)" }}
                 >
                   🎮 {t.allGames}
@@ -416,7 +418,7 @@ export default function Navbar() {
                 <li key={cat.id}>
                   <Link
                     href={`/category/${cat.slug}`}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all whitespace-nowrap"
+                    className="flex items-center gap-1.5 px-2.5 lg:px-3 py-1.5 rounded-md text-xs font-medium transition-all whitespace-nowrap"
                     style={{ color: "var(--text-muted)" }}
                     onMouseEnter={(e) => {
                       (e.currentTarget as HTMLElement).style.color = "var(--text)";

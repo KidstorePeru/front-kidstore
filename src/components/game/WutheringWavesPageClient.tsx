@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -71,7 +71,7 @@ function ProductCard({ p }: { p: WWProduct }) {
         style={{ aspectRatio:"4/3", background:"linear-gradient(135deg,var(--ww-teal-bg),rgba(3,8,20,0.9))" }}
       >
         <Image
-          src={p.img} alt={lang==="EN" ? p.nameEN || p.name : p.name} fill
+          src={p.img} alt={lang==="EN" ? p.nameEN || p.name : p.name} fill sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 300px"
           className="object-contain p-4 transition-transform duration-300 group-hover:scale-105"
         />
         {p.badge && (
@@ -344,14 +344,13 @@ function WWPageInner({ tabs, lunita, pases }: {
   const searchParams = useSearchParams();
   const router       = useRouter();
   const tabParam     = searchParams.get("tab");
-  const [activeTab, setActiveTab] = useState(tabParam ?? "lunita");
+  // La pestaña activa sale de la URL (?tab=): enlaces directos y botón "atrás" funcionan.
+  const activeTab    = tabParam ?? "lunita";
 
-  useEffect(() => { if (tabParam) setActiveTab(tabParam); }, [tabParam]);
 
   const shownTab = tabs.some(tb => tb.id === activeTab) ? activeTab : (tabs[0]?.id ?? activeTab);
 
   function handleTab(id: string) {
-    setActiveTab(id);
     router.push(`/games/wuthering-waves?tab=${id}`, { scroll:false });
   }
 
@@ -366,7 +365,7 @@ function WWPageInner({ tabs, lunita, pases }: {
         {/* ── HERO ── */}
         <section className="relative overflow-hidden" style={{ height:"65vh", minHeight:"440px" }}>
           <Image
-            src="/games/wuthering-waves.jpg" alt="Wuthering Waves" fill
+            src="/games/wuthering-waves.jpg" alt="Wuthering Waves" fill sizes="100vw"
             className="object-cover object-top" priority
           />
           <div className="absolute inset-0"

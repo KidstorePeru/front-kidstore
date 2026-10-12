@@ -7,7 +7,7 @@ import {
   LayoutDashboard, ShoppingBag, Users, LogOut, Shield,
   Clock, Check, X, Search, ChevronDown, RefreshCw, Package,
   Menu, AlertCircle, Eye, EyeOff, CheckCircle, XCircle,
-  RotateCcw, Truck, Copy, CheckCheck, ExternalLink,
+  RotateCcw, Copy, CheckCheck, ExternalLink,
   Phone, Mail, Calendar, Hash, Bell, BellOff, MessageCircle,
 } from "lucide-react";
 import { useAdminAuth } from "@/context/AdminAuthContext";
@@ -166,6 +166,15 @@ const NAV = [
 // ══════════════════════════════════════════════════════════════
 // API
 // ══════════════════════════════════════════════════════════════
+// Formato de GET /admin/orders y GET /admin/users del backend.
+interface ApiOrder {
+  id?: string | number; orderId?: string | number; userEmail?: string;
+  total?: number | string; currency?: string; paymentMethod?: string; status: string;
+  formData?: Record<string, string>; createdAt: string; updatedAt?: string;
+  items?: { id: string; name: string; price: number; quantity: number; image?: string }[];
+}
+interface ApiUser { email?: string; fullName?: string; username?: string; phone?: string; createdAt: string }
+
 async function fetchOrders(): Promise<Order[]> {
   try {
     const res = await fetch(`/api/admin-orders`, { cache: "no-store" });
@@ -181,8 +190,8 @@ async function fetchOrders(): Promise<Order[]> {
 
     // Defensa: deduplicar por número de pedido + email (por si quedan filas
     // duplicadas antiguas). Se conserva la más reciente.
-    const seen = new Map<string, any>();
-    for (const o of raw) {
+    const seen = new Map<string, ApiOrder>();
+    for (const o of raw as ApiOrder[]) {
       const key = `${o.userEmail ?? ""}::${o.orderId ?? o.id}`;
       const prev = seen.get(key);
       if (!prev || new Date(o.updatedAt || o.createdAt) >= new Date(prev.updatedAt || prev.createdAt)) {
@@ -190,7 +199,7 @@ async function fetchOrders(): Promise<Order[]> {
       }
     }
 
-    return Array.from(seen.values()).map((o: any): Order => {
+    return Array.from(seen.values()).map((o): Order => {
       const fd = o.formData || {};
       return {
         dbId: String(o.id ?? o.orderId),
@@ -202,10 +211,10 @@ async function fetchOrders(): Promise<Order[]> {
         createdAt: o.createdAt,
         updatedAt: o.updatedAt,
         paymentMethod: o.paymentMethod || "",
-        total: typeof o.total === "number" ? o.total : parseFloat(o.total) || 0,
+        total: typeof o.total === "number" ? o.total : parseFloat(o.total ?? "") || 0,
         currency: (o.currency || "PEN").toUpperCase(),
         formData: fd,
-        items: (o.items || []).map((i: any): OrderItem => ({
+        items: (o.items || []).map((i): OrderItem => ({
           slug: i.id, name: i.name, img: i.image || "",
           price: i.price, quantity: i.quantity, total: `${i.price * i.quantity}`,
         })),
@@ -215,7 +224,7 @@ async function fetchOrders(): Promise<Order[]> {
 }
 
 async function fetchClientes(orders: Order[]): Promise<Cliente[]> {
-  let registered: any[] = [];
+  let registered: ApiUser[] = [];
   try {
     const res = await fetch(`/api/admin-users`, { cache: "no-store" });
     const json = await res.json();
@@ -345,32 +354,42 @@ export default function AdminDashboard() {
 
   const refresh = useCallback(async () => {
     const ords = await fetchOrders();
+    const clis = await fetchClientes(ords);
     setOrders(ords);
-    setClientes(await fetchClientes(ords));
+    setClientes(clis);
     setLastSync(new Date());
   }, []);
 
-  useEffect(() => { refresh(); }, [refresh]);
+  // Primera carga y refresco automático cada 10 s.
   useEffect(() => {
-    const iv = setInterval(refresh, 10000);
-    return () => clearInterval(iv);
-  }, [refresh]);
+    let alive = true;
+    const tick = async () => {
+      const ords = await fetchOrders();
+      const clis = await fetchClientes(ords);
+      if (!alive) return;
+      setOrders(ords);
+      setClientes(clis);
+      setLastSync(new Date());
+    };
+    tick();
+    const iv = setInterval(tick, 10000);
+    return () => { alive = false; clearInterval(iv); };
+  }, []);
 
   // ── Notificaciones ───────────────────────────────────────────
   const audioRef = useRef<AudioContext | null>(null);
   const knownIds = useRef<Set<string>>(new Set());
   const firstLoad = useRef(true);
   const [toast, setToast] = useState<Order | null>(null);
-  const [notifPerm, setNotifPerm] = useState<NotificationPermission | "unsupported">("unsupported");
+  const [notifPerm, setNotifPerm] = useState<NotificationPermission | "unsupported">(() =>
+    typeof window !== "undefined" && "Notification" in window ? Notification.permission : "unsupported");
 
   useEffect(() => {
-    if (typeof window !== "undefined" && "Notification" in window) {
-      setNotifPerm(Notification.permission);
-    }
     // Desbloquear el audio con la primera interacción (política de autoplay).
     const unlock = () => {
       if (!audioRef.current) {
-        try { audioRef.current = new (window.AudioContext || (window as any).webkitAudioContext)(); } catch {}
+        const Ctx = window.AudioContext || (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+        try { if (Ctx) audioRef.current = new Ctx(); } catch {}
       }
       audioRef.current?.resume().catch(() => {});
     };
@@ -407,7 +426,7 @@ export default function AdminDashboard() {
   }
 
   useEffect(() => {
-    if (orders.length === 0) return;
+    if (!lastSync) return; // aún sin la primera respuesta
     if (firstLoad.current) {
       orders.forEach(o => knownIds.current.add(o.dbId));
       firstLoad.current = false;
@@ -427,7 +446,7 @@ export default function AdminDashboard() {
     }
     setToast(latest);
     setTimeout(() => setToast(null), 25000);
-  }, [orders]);
+  }, [orders, lastSync]);
 
   if (loading || !admin) return (
     <div className="min-h-screen flex items-center justify-center" style={{ background: "#080C18" }}>
@@ -774,7 +793,11 @@ function TabPedidos({ orders, onRefresh }: { orders: Order[]; onRefresh: () => v
   const [busy, setBusy] = useState<string | null>(null);
 
   const RANGES: Record<string, number> = { hoy: 86400000, "7d": 7 * 86400000, "30d": 30 * 86400000, todos: 0 };
-  const now = Date.now();
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    const iv = setInterval(() => setNow(Date.now()), 60_000);
+    return () => clearInterval(iv);
+  }, []);
 
   const filtered = orders
     .filter(o => {
@@ -963,6 +986,7 @@ function TabPedidos({ orders, onRefresh }: { orders: Order[]; onRefresh: () => v
                         {order.items.map((item, i) => (
                           <div key={i} className="flex items-center gap-3 px-3 py-2.5 rounded-xl" style={cardInner}>
                             <div className="w-9 h-9 rounded-lg overflow-hidden flex-shrink-0" style={{ background: "rgba(255,255,255,0.05)" }}>
+                              {/* eslint-disable-next-line @next/next/no-img-element -- miniaturas de cualquier origen (catálogo o tienda de Fortnite) */}
                               {item.img && <img src={item.img} alt={item.name} className="w-full h-full object-contain p-1"
                                 onError={e => { (e.target as HTMLImageElement).style.display = "none"; }} />}
                             </div>
@@ -1072,7 +1096,7 @@ function TabClientes({ clientes, orders }: { clientes: Cliente[]; orders: Order[
           { label: "Registrados", value: clientes.filter(c => c.registered).length, color: "#22C55E" },
           { label: "Invitados", value: clientes.filter(c => !c.registered).length, color: "#60A5FA" },
         ].map(s => (
-          <button key={s.label} onClick={() => setFilter(s.label === "Total" ? "todos" : s.label.toLowerCase() as any)}
+          <button key={s.label} onClick={() => setFilter(s.label === "Total" ? "todos" : (s.label.toLowerCase() as "registrados" | "invitados"))}
             className="px-4 py-4 rounded-2xl text-left transition-all hover:opacity-90"
             style={{ ...card, ...(((filter === "todos" && s.label === "Total") || filter === s.label.toLowerCase()) ? { border: `1px solid ${s.color}44` } : {}) }}>
             <p className="text-[10px] font-bold uppercase tracking-[0.1em]" style={{ color: "rgba(255,255,255,0.35)" }}>{s.label}</p>
@@ -1333,7 +1357,7 @@ function TabVisibilidad() {
                   className="flex items-center gap-3 flex-1 min-w-0 text-left">
                   {gImg && (
                     <div className="relative w-10 h-10 rounded-xl overflow-hidden flex-shrink-0" style={{ border:"1px solid rgba(255,255,255,0.06)" }}>
-                      <Image src={gImg} alt={g.name} fill className="object-cover"/>
+                      <Image src={gImg} alt={g.name} fill sizes="80px" className="object-cover"/>
                     </div>
                   )}
                   <div className="flex-1 min-w-0">

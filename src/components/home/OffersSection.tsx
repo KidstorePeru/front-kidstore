@@ -56,7 +56,7 @@ export default function OffersSection() {
                 <Image
                   src={game.image}
                   alt={game.name}
-                  fill
+                  fill sizes="80px"
                   className="object-cover transition-transform duration-500 group-hover:scale-110"
                 />
               </div>

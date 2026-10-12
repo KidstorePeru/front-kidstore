@@ -154,7 +154,7 @@ export default function RefundsPage() {
                     ]
                   : [
                       "El pedido figura como entregado en tu cuenta del juego",
-                      "Se proporcionaron datos incorrectos y la entrega ya se efect\u00fa\u00f3",
+                      "Se proporcionaron datos incorrectos y la entrega ya se efectu\u00f3",
                       "Restricciones o sanciones impuestas por el desarrollador del juego",
                       "Arrepentimiento o cambio de opini\u00f3n una vez procesado",
                       "El producto ya fue usado o consumido dentro del juego",

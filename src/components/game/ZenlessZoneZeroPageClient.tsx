@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -73,7 +73,7 @@ function ProductCard({ p }: { p: ZZZProduct }) {
         style={{ aspectRatio:"4/3", background:"linear-gradient(135deg,var(--zzz-bg),rgba(5,5,15,0.85))" }}
       >
         <Image
-          src={p.img} alt={lang==="EN" ? p.nameEN || p.name : p.name} fill
+          src={p.img} alt={lang==="EN" ? p.nameEN || p.name : p.name} fill sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 300px"
           className="object-contain p-4 transition-transform duration-300 group-hover:scale-105"
         />
         {p.badge && (
@@ -286,15 +286,14 @@ function ZZZPageInner({ tabs, fotogramas, pases }: {
   const searchParams = useSearchParams();
   const router       = useRouter();
   const tabParam     = searchParams.get("tab");
-  const [activeTab, setActiveTab] = useState(tabParam ?? "fotogramas");
+  // La pestaña activa sale de la URL (?tab=): enlaces directos y botón "atrás" funcionan.
+  const activeTab    = tabParam ?? "fotogramas";
 
-  useEffect(() => { if (tabParam) setActiveTab(tabParam); }, [tabParam]);
 
   // Pestaña efectiva: si la activa está oculta, cae a la primera visible.
   const shownTab = tabs.some(tb => tb.id === activeTab) ? activeTab : (tabs[0]?.id ?? activeTab);
 
   function handleTab(id: string) {
-    setActiveTab(id);
     router.push(`/games/zenless-zone-zero?tab=${id}`, { scroll: false });
   }
 
@@ -309,7 +308,7 @@ function ZZZPageInner({ tabs, fotogramas, pases }: {
         {/* ── HERO ── */}
         <section className="relative overflow-hidden" style={{ height:"65vh", minHeight:"440px" }}>
           <Image
-            src="/games/zenless-zone-zero.jpg" alt="Zenless Zone Zero" fill
+            src="/games/zenless-zone-zero.jpg" alt="Zenless Zone Zero" fill sizes="100vw"
             className="object-cover object-top" priority
           />
           <div className="absolute inset-0"

@@ -79,7 +79,7 @@ function PlayerIDGuide({ onClose }: { onClose: () => void }) {
           <Image
             src="/honor-of-kings/mi-player-id.png"
             alt="Cómo encontrar tu Player ID en Honor of Kings"
-            fill
+            fill sizes="(max-width: 1024px) 90vw, 520px"
             className="object-contain"
             priority
           />
@@ -248,7 +248,7 @@ export default function HonorOfKingsProductClient({ slug }: { slug: string }) {
   function handleBuyNow() {
     if (!validate()) return;
     addItem({ slug:p.slug, name:p.name, img:p.img, price:p.price, priceOld:p.priceOld, region:p.region, format:p.format, tabLabel:p.tabLabel, orderData:buildOrderData() });
-    window.location.href = "/checkout";
+    router.push("/checkout");
   }
 
   function handleWishlist() {
@@ -303,7 +303,7 @@ export default function HonorOfKingsProductClient({ slug }: { slug: string }) {
             <div className="space-y-6">
               <div className="relative w-full rounded-2xl overflow-hidden"
                 style={{ aspectRatio:"1/1", background:"linear-gradient(135deg,var(--hok-bg),rgba(5,3,15,0.92))", border:"1px solid var(--border)" }}>
-                <Image src={p.img} alt={lang==="EN" ? p.nameEN || p.name : p.name} fill className="object-contain p-10" priority/>
+                <Image src={p.img} alt={lang==="EN" ? p.nameEN || p.name : p.name} fill sizes="(max-width: 1024px) 90vw, 520px" className="object-contain p-10" priority/>
 
                 {/* Bonus badge */}
                 {p.bonus && (

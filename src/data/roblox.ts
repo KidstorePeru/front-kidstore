@@ -135,7 +135,7 @@ export const VIA_GRUPO: RobloxProduct[] = [
   { id:"rg1", slug:"grupo-1000-robux", name:"1.000 Robux", nameEN:"1,000 Robux", robux:1000, badge:"", img:IMG,
     description:"Robux vía grupo. Requiere mínimo 14 días en el grupo antes de comprar.",
     descriptionEN:"Robux via group. Requires a minimum of 14 days in the group before purchasing.",
-    price:26.99, priceOld:34.90, format:"Digital", region:"Global", tab:"grupo", tabLabel:"Vía Grupo", tabLabelEN:"Via Group", productType:"grupo",
+    price:GRUPO_PRICE_PER_1000, priceOld:34.90, format:"Digital", region:"Global", tab:"grupo", tabLabel:"Vía Grupo", tabLabelEN:"Via Group", productType:"grupo",
     deliveryTime:"Inmediato (cumpliendo 14 días)", deliveryTimeEN:"Immediate (with 14-day requirement met)" },
 ];
 

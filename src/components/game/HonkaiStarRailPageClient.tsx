@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -66,7 +66,7 @@ function ProductCard({ p }: { p: HSRProduct }) {
       style={{ background:"var(--card)", border:"1px solid var(--border)" }}>
       <div className="relative w-full overflow-hidden"
         style={{ aspectRatio:"4/3", background:"linear-gradient(135deg,var(--hsr-bg),rgba(5,3,20,0.9))" }}>
-        <Image src={p.img} alt={lang==="EN" ? p.nameEN || p.name : p.name} fill
+        <Image src={p.img} alt={lang==="EN" ? p.nameEN || p.name : p.name} fill sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 300px"
           className="object-contain p-4 transition-transform duration-300 group-hover:scale-105"/>
         {p.badge && (
           <span className={`absolute top-2 right-2 px-2 py-0.5 rounded-full text-[10px] font-bold ${badgeStyle[p.badge] ?? "badge-popular"}`}>
@@ -213,14 +213,13 @@ function HSRPageInner({ tabDefs, esquirlas, pases }: {
   const searchParams = useSearchParams();
   const router       = useRouter();
   const tabParam     = searchParams.get("tab");
-  const [activeTab, setActiveTab] = useState(tabParam ?? "esquirla");
+  // La pestaña activa sale de la URL (?tab=): enlaces directos y botón "atrás" funcionan.
+  const activeTab    = tabParam ?? "esquirla";
 
-  useEffect(() => { if (tabParam) setActiveTab(tabParam); }, [tabParam]);
 
   const shownTab = tabDefs.some(tb => tb.id === activeTab) ? activeTab : (tabDefs[0]?.id ?? activeTab);
 
   function handleTab(id: string) {
-    setActiveTab(id);
     router.push(`/games/honkai-star-rail?tab=${id}`, { scroll: false });
   }
 
@@ -234,7 +233,7 @@ function HSRPageInner({ tabDefs, esquirlas, pases }: {
 
         {/* Hero */}
         <section className="relative overflow-hidden" style={{ height:"65vh", minHeight:"440px" }}>
-          <Image src="/games/honkai-star-rail.jpg" alt="Honkai: Star Rail" fill
+          <Image src="/games/honkai-star-rail.jpg" alt="Honkai: Star Rail" fill sizes="100vw"
             className="object-cover object-top" priority/>
           <div className="absolute inset-0"
             style={{ background:"linear-gradient(to right,rgba(0,0,0,0.93) 0%,rgba(0,0,0,0.48) 60%,rgba(0,0,0,0.08) 100%)" }}/>

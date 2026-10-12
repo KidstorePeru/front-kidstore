@@ -337,7 +337,7 @@ export default function RocketLeagueProductClient({ slug }: { slug: string }) {
         orderData: buildOrderData(),
       });
     }
-    window.location.href = "/checkout";
+    router.push("/checkout");
   }
 
   function handleWishlist() {
@@ -407,7 +407,7 @@ export default function RocketLeagueProductClient({ slug }: { slug: string }) {
             <div className="space-y-6">
               <div className="relative w-full rounded-2xl overflow-hidden"
                 style={{ aspectRatio:"4/3", background:"linear-gradient(135deg,rgba(234,88,12,0.18),rgba(15,10,40,0.7))", border:"1px solid var(--border)" }}>
-                <Image src={p.img} alt={displayName} fill className="object-contain p-8" priority/>
+                <Image src={p.img} alt={displayName} fill sizes="(max-width: 1024px) 90vw, 520px" className="object-contain p-8" priority/>
               </div>
               <div className="rounded-2xl p-6" style={{ background:"var(--card)", border:"1px solid var(--border)" }}>
                 <DescCredenciales />
@@ -621,8 +621,8 @@ export default function RocketLeagueProductClient({ slug }: { slug: string }) {
             </div>
             <div className="overflow-y-auto" style={{ background:"#0a0a0a" }}>
               <div className="space-y-2 p-2">
-                <img src="/rocket-league/referencia-1.png" alt="Referencia 1" className="w-full h-auto rounded-lg"/>
-                <img src="/rocket-league/referencia-2.png" alt="Referencia 2" className="w-full h-auto rounded-lg"/>
+                <Image src="/rocket-league/referencia-1.png" alt="Referencia 1" width={1472} height={942} sizes="(max-width: 768px) 100vw, 720px" className="w-full h-auto rounded-lg"/>
+                <Image src="/rocket-league/referencia-2.png" alt="Referencia 2" width={1472} height={828} sizes="(max-width: 768px) 100vw, 720px" className="w-full h-auto rounded-lg"/>
               </div>
             </div>
             <button onClick={() => setLightbox(false)}

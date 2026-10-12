@@ -1,7 +1,7 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { api } from "@/lib/api";
+import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from "react";
+import { api, getToken, setToken } from "@/lib/api";
 
 export interface User {
   id:        string | number;
@@ -39,30 +39,48 @@ function saveSession(user: User | null) {
   else localStorage.removeItem(SESSION_KEY);
 }
 
+// Respuesta de login / registro: el usuario y el token de sesión firmado por el backend.
+type SessionResponse = { success: boolean; user: User; token?: string };
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user,    setUser]    = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Restore session on mount
+  // Restaura la sesión al cargar. Las sesiones de antes del token (sin él) ya no sirven para
+  // las rutas privadas del backend: se cierran y el usuario vuelve a iniciar sesión.
   useEffect(() => {
     const saved = getSession();
-    if (saved) setUser(saved);
+    if (saved && getToken()) {
+      setUser(saved);
+    } else if (saved) {
+      saveSession(null);
+    }
     setLoading(false);
   }, []);
+
+  function startSession(res: SessionResponse) {
+    setToken(res.token ?? null);
+    setUser(res.user);
+    saveSession(res.user);
+  }
+
+  // Sesión caducada o cerrada desde otro dispositivo (el backend responde 401).
+  function expireSession(): never {
+    logout();
+    throw new Error("Tu sesión expiró. Vuelve a iniciar sesión.");
+  }
 
   // ── Login ──
   async function login(identifier: string, password: string) {
     setLoading(true);
     try {
-      const { data, error } = await api<{ success: boolean; user: User }>("/auth/login", {
+      const { data, error } = await api<SessionResponse>("/auth/login", {
         method: "POST",
         body: JSON.stringify({ identifier, password }),
       });
 
       if (error || !data?.success) throw new Error(error ?? "Login failed");
-
-      setUser(data.user);
-      saveSession(data.user);
+      startSession(data);
     } finally {
       setLoading(false);
     }
@@ -72,15 +90,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   async function register(username: string, email: string, password: string, fullName?: string) {
     setLoading(true);
     try {
-      const { data, error } = await api<{ success: boolean; user: User }>("/auth/register", {
+      const { data, error } = await api<SessionResponse>("/auth/register", {
         method: "POST",
         body: JSON.stringify({ username, email, password, fullName }),
       });
 
       if (error || !data?.success) throw new Error(error ?? "Registration failed");
-
-      setUser(data.user);
-      saveSession(data.user);
+      startSession(data);
     } finally {
       setLoading(false);
     }
@@ -111,10 +127,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   // ── Logout ──
-  function logout() {
+  // Estable (useCallback): se usa en dependencias de efectos.
+  const logout = useCallback(() => {
     setUser(null);
     saveSession(null);
-  }
+    setToken(null);
+  }, []);
 
   // ── Forgot password (send verification code) ──
   async function forgotPassword(email: string) {
@@ -147,16 +165,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!user) throw new Error("Not logged in");
     setLoading(true);
     try {
-      const { error } = await api("/auth/change-password", {
+      // El backend identifica al usuario por el token y devuelve uno nuevo (el anterior deja de
+      // valer porque lleva la huella de la contraseña vieja).
+      const { data, error, status } = await api<{ token?: string }>("/auth/change-password", {
         method: "POST",
-        body: JSON.stringify({
-          username: user.username,
-          currentPassword,
-          newPassword,
-        }),
+        body: JSON.stringify({ currentPassword, newPassword }),
       });
 
+      if (status === 401) expireSession();
       if (error) throw new Error(error);
+      if (data?.token) setToken(data.token);
     } finally {
       setLoading(false);
     }
@@ -169,19 +187,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!user) return;
     setLoading(true);
     try {
-      const body: Record<string, unknown> = { email: user.email };
+      // El backend identifica al usuario por el token de sesión.
+      const body: Record<string, unknown> = {};
       if (data.username !== undefined) body.username = data.username;
       if (data.phone    !== undefined) body.phone    = data.phone;
       if (data.fullName !== undefined) body.fullName = data.fullName;
       if (data.newEmail) body.newEmail = data.newEmail;
 
       // Si solo se cambia el avatar (local), no llamamos al backend.
-      const touchesBackend = Object.keys(body).length > 1;
-      if (touchesBackend) {
-        const { data: res, error } = await api<{ user?: User }>("/auth/update-profile", {
+      if (Object.keys(body).length > 0) {
+        const { data: res, error, status } = await api<{ user?: User }>("/auth/update-profile", {
           method: "PUT",
           body: JSON.stringify(body),
         });
+        if (status === 401) expireSession();
         if (error) throw new Error(error);
         // El backend devuelve el usuario actualizado (incl. email nuevo).
         const merged = { ...user, ...data, ...(res?.user ?? {}) };

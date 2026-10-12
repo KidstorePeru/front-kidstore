@@ -5,7 +5,7 @@ import { usePreferences } from "@/context/PreferencesContext";
 const PEN_PER_100_VBUCKS = 1.30;
 
 export function useFortniteExchangeRate() {
-  const { currency, rates } = usePreferences();
+  const { currency, rates, lang } = usePreferences();
 
   // Tasa de conversión activa (desde PreferencesContext que ya tiene la API)
   const activeRate = rates[currency] ?? 1;
@@ -31,7 +31,9 @@ export function useFortniteExchangeRate() {
   /** Nota referencial dinámica */
   const sym = currencySymbol();
   const baseInActiveCurrency = (PEN_PER_100_VBUCKS * activeRate).toFixed(2);
-  const referentialNote = `100 Pavos = ${sym} ${baseInActiveCurrency} · Precio base`;
+  const referentialNote = lang === "EN"
+    ? `100 V-Bucks = ${sym} ${baseInActiveCurrency} · Base price`
+    : `100 Pavos = ${sym} ${baseInActiveCurrency} · Precio base`;
 
   return { vbucksToSoles, vbucksToPen, currencySymbol, referentialNote };
 }

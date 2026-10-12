@@ -47,6 +47,8 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
   const [items, setItems]       = useState<WishlistItem[]>([]);
   const [hydrated, setHydrated] = useState(false);
 
+  // Carga inicial desde localStorage (solo en el cliente, tras la hidratación).
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- carga inicial desde localStorage
   useEffect(() => { setItems(load()); setHydrated(true); }, []);
   useEffect(() => { if (hydrated) save(items); }, [items, hydrated]);
 

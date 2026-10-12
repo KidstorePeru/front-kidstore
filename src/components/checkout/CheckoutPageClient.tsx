@@ -1,12 +1,10 @@
 "use client";
-// build: 2026-04-16-fix-orders
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
   ShoppingCart, ArrowLeft, Shield, Zap, MessageCircle,
-  ChevronRight, Check, AlertCircle, Lock,
-  Gamepad2, Smartphone, X, Copy, CheckCheck,
+  ChevronRight, Check, AlertCircle, X, Copy, CheckCheck,
   Trash2, Plus, Minus,
 } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
@@ -15,6 +13,8 @@ import { useCart, maxQuantity } from "@/context/CartContext";
 import { usePreferences } from "@/context/PreferencesContext";
 import { useAuth } from "@/context/AuthContext";
 import { useT } from "@/i18n";
+import { whatsappLink } from "@/config/site";
+import { api } from "@/lib/api";
 
 // ── Payment data ───────────────────────────────────────────────
 const PAYMENT_INFO = {
@@ -190,10 +190,10 @@ function CopyBtn({ text }: { text: string }) {
 }
 
 // ── Payment Modal ──────────────────────────────────────────────
-function PaymentModal({ paymentId, total, onConfirm, onClose, loading: confirmLoading }: {
-  paymentId: PaymentId; total: number; onConfirm: () => void; onClose: () => void; loading?: boolean;
+function PaymentModal({ paymentId, total, onConfirm, onClose, loading: confirmLoading, error }: {
+  paymentId: PaymentId; total: number; onConfirm: () => void; onClose: () => void; loading?: boolean; error?: string;
 }) {
-  const { formatPrice, lang } = usePreferences();
+  const { lang } = usePreferences();
   const t = useT();
   const info = PAYMENT_INFO[paymentId];
 
@@ -305,7 +305,7 @@ function PaymentModal({ paymentId, total, onConfirm, onClose, loading: confirmLo
                         <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color:"#F87171" }}>{t.checkout.mandatoryMsg}</p>
                       </div>
                       <div className="px-3 py-2" style={{ background:"var(--surface)" }}>
-                        <p className="text-[11px] italic mb-1.5" style={{ color:"var(--text-muted)" }}>"{t.checkout.paypalNote}"</p>
+                        <p className="text-[11px] italic mb-1.5" style={{ color:"var(--text-muted)" }}>&ldquo;{t.checkout.paypalNote}&rdquo;</p>
                         <CopyBtn text={t.checkout.paypalNote}/>
                       </div>
                     </div>
@@ -378,6 +378,13 @@ function PaymentModal({ paymentId, total, onConfirm, onClose, loading: confirmLo
 
         <div className="flex-shrink-0 p-4 space-y-2"
           style={{ borderTop:`1px solid ${info.borderColor}`, background:"var(--card)" }}>
+          {error && (
+            <div className="flex gap-2 px-3 py-2.5 rounded-xl text-[11px] leading-relaxed"
+              style={{ background:"rgba(239,68,68,0.08)", border:"1px solid rgba(239,68,68,0.3)", color:"#EF4444" }}>
+              <AlertCircle size={13} className="flex-shrink-0 mt-0.5"/>
+              <span>{error}</span>
+            </div>
+          )}
           <button onClick={onConfirm} disabled={confirmLoading}
             className="w-full py-3.5 rounded-xl text-sm font-black tracking-wide text-white transition-all hover:scale-[1.02] disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             style={{ background:`linear-gradient(135deg,${info.color},${info.colorLight})`, boxShadow:`0 4px 20px ${info.color}60` }}>
@@ -415,7 +422,6 @@ function SuccessScreen({ total, paymentMethod, items, contact, orderNumber, curr
   const { clearCart } = useCart();
   const t = useT();
   const pm = PAYMENT_INFO[paymentMethod];
-  const WHATSAPP_NUMBER = "51983454837";
 
   // Format total with the correct currency symbol (no double-conversion)
   const sym = currencyUsed === "USD" ? "$" : currencyUsed === "EUR" ? "€" : "S/";
@@ -465,7 +471,7 @@ function SuccessScreen({ total, paymentMethod, items, contact, orderNumber, curr
     `\uD83D\uDCC5 ${L.date}: ${fecha}`,
   ].join("\n");
 
-  const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(waMessage)}`;
+  const waUrl = whatsappLink(waMessage);
 
   return (
     <>
@@ -498,7 +504,7 @@ function SuccessScreen({ total, paymentMethod, items, contact, orderNumber, curr
               <div key={item.slug} className="flex items-center gap-3">
                 <div className="relative w-12 h-12 rounded-xl overflow-hidden flex-shrink-0"
                   style={{ background:"linear-gradient(135deg,rgba(124,58,237,0.15),rgba(15,10,40,0.5))" }}>
-                  <Image src={item.img} alt={item.name} fill className="object-contain p-1"/>
+                  <Image src={item.img} alt={item.name} fill sizes="80px" className="object-contain p-1"/>
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-xs font-bold truncate" style={{ color:"var(--text)" }}>
@@ -536,7 +542,7 @@ function SuccessScreen({ total, paymentMethod, items, contact, orderNumber, curr
 
 // ── Order Summary ──────────────────────────────────────────────
 function OrderSummary({ selectedMethod }: { selectedMethod: PaymentId }) {
-  const { formatPrice, currency, rates } = usePreferences();
+  const { formatPrice, rates } = usePreferences();
   const t = useT();
   const { items, totalPrice, totalItems, updateQty, removeItem } = useCart();
   const breakdown = calcBreakdown(totalPrice, selectedMethod, rates);
@@ -575,7 +581,7 @@ function OrderSummary({ selectedMethod }: { selectedMethod: PaymentId }) {
                 <div className="flex gap-3">
                   <div className="relative w-14 h-14 rounded-xl overflow-hidden flex-shrink-0"
                     style={{ background:"linear-gradient(135deg,rgba(124,58,237,0.15),rgba(15,10,40,0.5))" }}>
-                    <Image src={item.img} alt={item.name} fill className="object-contain p-1.5"/>
+                    <Image src={item.img} alt={item.name} fill sizes="80px" className="object-contain p-1.5"/>
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-bold truncate" style={{ color:"var(--text)" }}>{item.name}</p>
@@ -682,34 +688,30 @@ function CheckoutForm({ onOpenModal, onMethodChange }: {
   // ── Pre-fill con los "Datos de compra" de la cuenta ────────
   // Nombre completo (fullName), NO el username. Si aún no lo han guardado,
   // el campo queda vacío para que lo escriban.
+  // Mientras el cliente no toque un campo (null), se muestra el dato de su cuenta; así también
+  // se rellena si inicia sesión después de abrir el checkout.
   const { user } = useAuth();
-  const [name,   setName]   = useState(user?.fullName ?? "");
-  const [email,  setEmail]  = useState(user?.email    ?? "");
-  const [phone,  setPhone]  = useState(user?.phone ?? "");
+  const [nameRaw,  setName]  = useState<string | null>(null);
+  const [emailRaw, setEmail] = useState<string | null>(null);
+  const [phoneRaw, setPhone] = useState<string | null>(null);
+  const name  = nameRaw  ?? user?.fullName ?? "";
+  const email = emailRaw ?? user?.email    ?? "";
+  const phone = phoneRaw ?? user?.phone    ?? "";
   const [method, setMethod] = useState<PaymentId>("yape");
   const [errors, setErrors] = useState<Record<string, boolean>>({});
   const { items } = useCart();
   const t = useT();
 
-  // Sync if user logs in / updates their data after mount
-  useEffect(() => {
-    if (user) {
-      setName((n: string)  => n  || (user.fullName ?? ""));
-      setEmail((e: string) => e  || user.email);
-      setPhone((p: string) => p  || (user.phone ?? ""));
-    }
-  }, [user]);
-
   function validate() {
     const e: Record<string, boolean> = {};
-    if (!name.trim())                          e.name  = true;
-    if (!email.trim() || !email.includes("@")) e.email = true;
-    if (!phone.trim())                         e.phone = true;
+    if (!name.trim())                                    e.name  = true;
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) e.email = true;
+    if (phone.replace(/\D/g, "").length < 6)            e.phone = true;
     setErrors(e);
     return Object.keys(e).length === 0;
   }
 
-  const { currency, formatPrice, lang } = usePreferences();
+  const { currency, lang } = usePreferences();
 
   const ALL_METHODS: { id: PaymentId; icon: string; label: string; desc: string }[] = [
     { id:"yape",          icon:"💜", label:"Yape - QR",            desc:t.checkout.descYape            },
@@ -729,7 +731,7 @@ function CheckoutForm({ onOpenModal, onMethodChange }: {
   const validIds     = METHODS.map(m => m.id);
   const currentMethod = validIds.includes(method) ? method : validIds[0] as PaymentId;
 
-  useEffect(() => { onMethodChange(currentMethod); }, [currentMethod]);
+  useEffect(() => { onMethodChange(currentMethod); }, [currentMethod, onMethodChange]);
 
   return (
     <div className="space-y-6">
@@ -826,14 +828,15 @@ function CheckoutForm({ onOpenModal, onMethodChange }: {
       )}
 
       <button
-        onClick={() => { if (validate()) onOpenModal(currentMethod, { name, email, phone }); }}
-        className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl text-sm font-bold text-white transition-all hover:scale-[1.01]"
+        onClick={() => { if (validate()) onOpenModal(currentMethod, { name: name.trim(), email: email.trim(), phone: phone.trim() }); }}
+        disabled={items.length === 0}
+        className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl text-sm font-bold text-white transition-all hover:scale-[1.01] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
         style={{
           background:`linear-gradient(135deg,${PAYMENT_INFO[currentMethod].color},${PAYMENT_INFO[currentMethod].colorLight})`,
           boxShadow:`0 4px 24px ${PAYMENT_INFO[currentMethod].color}50`,
         }}>
         <Zap size={16}/>
-        {t.checkout.pay} {PAYMENT_INFO[currentMethod].label}
+        {t.checkout.pay} {lang === "EN" && "labelEN" in PAYMENT_INFO[currentMethod] ? PAYMENT_INFO.transferencia.labelEN : PAYMENT_INFO[currentMethod].label}
       </button>
 
       <div className="flex items-center justify-center gap-6">
@@ -854,9 +857,8 @@ function CheckoutForm({ onOpenModal, onMethodChange }: {
 
 // ── MAIN ───────────────────────────────────────────────────────
 export default function CheckoutPageClient() {
-  const { formatPrice, currency, rates, lang } = usePreferences();
+  const { rates, lang } = usePreferences();
   const { items, totalPrice, clearCart } = useCart();
-  const { user } = useAuth();
   const t = useT();
   const [modal,          setModal]          = useState<PaymentId | null>(null);
   const [selectedMethod, setSelectedMethod] = useState<PaymentId>("yape");
@@ -865,7 +867,11 @@ export default function CheckoutPageClient() {
   const [contact,        setContact]        = useState<ContactData>({ name:"", email:"", phone:"" });
   const [orderNumber,    setOrderNumber]    = useState("");
 
-  async function saveOrder(method: PaymentId, total: number, ordNum: string) {
+  const [saveError, setSaveError] = useState("");
+
+  // Guarda el pedido en el backend (que además envía los correos). Devuelve false si no se
+  // pudo: en ese caso NO se vacía el carrito ni se muestra la pantalla de éxito.
+  async function saveOrder(method: PaymentId, total: number, ordNum: string): Promise<boolean> {
     // Works for both logged-in users and guests — backend only needs email
     const orderItems = items.map(i => ({
       productId: i.slug, name: i.name, price: i.price, quantity: i.quantity, image: i.img,
@@ -888,7 +894,8 @@ export default function CheckoutPageClient() {
       if (od?.platform && !formData.platform)  formData.platform = od.platform;
     }
 
-    // Send to backend via Next.js proxy (avoids CORS) — retry up to 3 times
+    // Directo al backend (CORS permite la web): así su límite por IP cuenta la IP del cliente
+    // y no la del servidor de Next, que sumaría los pedidos de todos los clientes.
     const txCurrency = ["paypal","binance"].includes(method) ? "USD" : method === "bizum" ? "EUR" : "PEN";
 
     const orderPayload = {
@@ -912,18 +919,12 @@ export default function CheckoutPageClient() {
     for (let attempt = 0; attempt < 3 && !savedToBackend; attempt++) {
       try {
         if (attempt > 0) await new Promise(r => setTimeout(r, 1000 * attempt));
-        const orderRes = await fetch("/api/orders", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(orderPayload),
-        });
-        if (orderRes.ok) {
+        const { error, status } = await api("/orders", { method: "POST", body: JSON.stringify(orderPayload) });
+        if (!error) {
           savedToBackend = true;
-          console.log(`[checkout] Order ${ordNum} saved to backend`);
         } else {
-          const errText = await orderRes.text();
-          console.error(`[checkout] Order save attempt ${attempt + 1} — status ${orderRes.status}:`, errText);
-          if (orderRes.status >= 400 && orderRes.status < 500) break; // no reintentar
+          console.error(`[checkout] Order save attempt ${attempt + 1} — status ${status}:`, error);
+          if (status >= 400 && status < 500) break; // no reintentar
         }
       } catch (e) {
         console.error(`[checkout] Order save attempt ${attempt + 1} error:`, e);
@@ -931,23 +932,11 @@ export default function CheckoutPageClient() {
     }
 
     if (!savedToBackend) {
-      console.error("[checkout] Order save failed after retries — backend unreachable.");
+      console.error("[checkout] Order save failed after retries.");
     }
-
-    // Los correos (recibo al cliente + aviso al admin) los envía el backend al
-    // guardar el pedido, dentro de saveOrderController. Aquí ya no se llaman.
-
-    // Save to localStorage for profile page (only if logged in)
-    if (user) {
-      try {
-        const existing = JSON.parse(localStorage.getItem("kidstore_orders") ?? "[]");
-        localStorage.setItem("kidstore_orders", JSON.stringify([{
-          id: ordNum, userId: user.id, status: "Pendiente", paymentMethod: method,
-          total, createdAt: new Date().toISOString(), contact,
-          items: items.map(i => ({ slug:i.slug, name:i.name, img:i.img, price:i.price, quantity:i.quantity })),
-        }, ...existing]));
-      } catch {}
-    }
+    // Los correos (recibo al cliente + aviso al admin) los envía el backend al guardar el
+    // pedido. El historial del perfil lo lee del backend (GET /orders/me).
+    return savedToBackend;
   }
 
   const [confirming,     setConfirming]     = useState(false);
@@ -969,8 +958,15 @@ export default function CheckoutPageClient() {
     setSnapItems([...items]);
     setSnapTotal(finalTotal);
     setSnapCurrency(txCurrency);
+    setSaveError("");
     try {
-      await saveOrder(paidWith, finalTotal, orderNumber);
+      const saved = await saveOrder(paidWith, finalTotal, orderNumber);
+      if (!saved) {
+        setSaveError(lang === "EN"
+          ? "We couldn't register your order. Check your connection and press Confirm again, or message us on WhatsApp. Your cart is still saved."
+          : "No pudimos registrar tu pedido. Revisa tu conexión y pulsa Confirmar de nuevo, o escríbenos por WhatsApp. Tu carrito sigue guardado.");
+        return;
+      }
       clearCart();
       setModal(null);
       setSuccess(true);
@@ -1021,6 +1017,7 @@ export default function CheckoutPageClient() {
               setPaidWith(m);
               setContact(c);
               setOrderNumber(genOrderNumber());
+              setSaveError("");
               setModal(m);
             }}/>
             <div className="lg:sticky lg:top-[90px]">
@@ -1038,6 +1035,7 @@ export default function CheckoutPageClient() {
           onConfirm={handleConfirm}
           onClose={() => !confirming && setModal(null)}
           loading={confirming}
+          error={saveError}
         />
       )}
     </>
