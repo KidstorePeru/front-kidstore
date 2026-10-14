@@ -8,13 +8,14 @@ import {
   Clock, Check, X, Search, ChevronDown, RefreshCw, Package,
   Menu, AlertCircle, Eye, EyeOff, CheckCircle, XCircle,
   RotateCcw, Copy, CheckCheck, ExternalLink,
-  Phone, Mail, Calendar, Hash, Bell, BellOff, MessageCircle,
+  Phone, Mail, Calendar, Hash, Bell, BellOff, MessageCircle, Sparkles,
 } from "lucide-react";
 import { useAdminAuth } from "@/context/AdminAuthContext";
 import { useVisibility } from "@/context/VisibilityContext";
 import { gameKey, tabKey, productKey, isVisible as isVisibleBase } from "@/config/visibility";
 import { CATALOG } from "@/config/catalog";
 import { games } from "@/data";
+import TabTemporada from "@/components/admin/TabTemporada";
 import Link from "next/link";
 
 // ══════════════════════════════════════════════════════════════
@@ -161,6 +162,7 @@ const NAV = [
   { id: "pedidos",     icon: <ShoppingBag size={16} />,     label: "Pedidos" },
   { id: "clientes",    icon: <Users size={16} />,           label: "Clientes" },
   { id: "visibilidad", icon: <EyeOff size={16} />,          label: "Visibilidad" },
+  { id: "temporada",   icon: <Sparkles size={16} />,        label: "Temporada" },
 ];
 
 // ══════════════════════════════════════════════════════════════
@@ -590,6 +592,7 @@ export default function AdminDashboard() {
           {tab === "pedidos"     && <TabPedidos orders={orders} onRefresh={refresh} />}
           {tab === "clientes"    && <TabClientes clientes={clientes} orders={orders} />}
           {tab === "visibilidad" && <TabVisibilidad />}
+          {tab === "temporada"   && <TabTemporada />}
         </main>
       </div>
     </div>

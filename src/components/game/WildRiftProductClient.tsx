@@ -234,7 +234,7 @@ export default function WildRiftProductClient({ slug }: { slug: string }) {
 
             {/* LEFT */}
             <div className="space-y-6">
-              <div className="relative w-full rounded-2xl overflow-hidden"
+              <div className="relative w-full rounded-2xl overflow-hidden season-product"
                 style={{ aspectRatio:"4/3", background:"linear-gradient(135deg,rgba(14,165,233,0.18),rgba(5,10,40,0.8))", border:"1px solid var(--border)" }}>
                 <Image src={p.img} alt={lang==="EN" ? p.nameEN || p.name : p.name} fill sizes="(max-width: 1024px) 90vw, 520px" className="object-contain p-8" priority/>
               </div>

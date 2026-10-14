@@ -10,6 +10,7 @@ import { useVisibility } from "@/context/VisibilityContext";
 import { gameKey } from "@/config/visibility";
 import { useT } from "@/i18n";
 import { gameMatches } from "@/lib/search";
+import { SeasonSky } from "@/seasons/decor";
 
 export default function AllGamesClient() {
   const t = useT();
@@ -38,8 +39,9 @@ export default function AllGamesClient() {
         <div className="max-w-[1400px] mx-auto px-4 lg:px-8 py-10">
 
           {/* Header */}
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold" style={{ color: "var(--text)" }}>
+          <div className="mb-8 season-band season-band--pad">
+            <SeasonSky variant="band" />
+            <h1 className="text-3xl font-bold season-title" style={{ color: "var(--text)" }}>
               {t.nav.allGames}
             </h1>
             <p className="text-sm mt-1" style={{ color: "var(--text-muted)" }}>
@@ -55,7 +57,7 @@ export default function AllGamesClient() {
           </div>
 
           {/* Filtros por categoría */}
-          <div className="flex flex-wrap gap-2 mb-8">
+          <div className="flex flex-wrap gap-2 mb-8 season-filter">
             <button
               onClick={() => setActive("all")}
               className="px-4 py-2 rounded-xl text-xs font-bold transition-all"
@@ -97,7 +99,7 @@ export default function AllGamesClient() {
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 season-section season-grid">
               {filtered.map((game) => (
                 <GameCard key={game.id} game={game} />
               ))}

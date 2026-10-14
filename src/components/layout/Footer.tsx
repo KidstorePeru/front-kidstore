@@ -10,6 +10,7 @@ import {
   Zap, Shield, Clock, Mail, MessageCircle, MapPin,
   Gamepad2, CreditCard, ArrowRight,
 } from "lucide-react";
+import { SeasonGreeting } from "@/seasons/decor";
 
 /* ── Payment logos from /public/*.png ── */
 const PAYMENTS = [
@@ -117,7 +118,7 @@ export default function Footer({ showExtras = false }: { showExtras?: boolean })
       </div>
 
       {/* ═══ Main footer ═══ */}
-      <div className="relative overflow-hidden"
+      <div className="relative overflow-hidden season-footer"
         style={{ background: "var(--surface)", borderTop: "1px solid var(--border)", transition: "background 0.35s ease" }}>
 
         {/* Subtle decorative gradient */}
@@ -222,6 +223,8 @@ export default function Footer({ showExtras = false }: { showExtras?: boolean })
               </div>
             </div>
           </div>
+
+          <SeasonGreeting />
 
           {/* ── Bottom bar ── */}
           <div className="mt-10 pt-6 flex flex-col md:flex-row items-center justify-between gap-4"

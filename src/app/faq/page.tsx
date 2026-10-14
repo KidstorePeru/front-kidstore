@@ -11,6 +11,7 @@ import {
   UserCheck, Package, RefreshCw, Headphones,
   Zap, Shield, Search,
 } from "lucide-react";
+import { SeasonSky } from "@/seasons/decor";
 
 interface FaqItem {
   icon: React.ReactNode;
@@ -214,8 +215,9 @@ export default function FaqPage() {
       <main style={{ background: "var(--bg)", minHeight: "100vh" }}>
 
         {/* ═══ Hero ═══ */}
-        <div className="relative overflow-hidden"
+        <div className="relative overflow-hidden season-band"
           style={{ background: "var(--brand-panel)" }}>
+          <SeasonSky variant="band" />
           {/* Patterns */}
           <div className="absolute inset-0 pointer-events-none"
             style={{ backgroundImage: "radial-gradient(rgba(255,255,255,0.06) 1px,transparent 1px)", backgroundSize: "28px 28px" }}/>
@@ -229,7 +231,7 @@ export default function FaqPage() {
               style={{ background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.15)", backdropFilter: "blur(8px)" }}>
               <HelpCircle size={30} className="text-white"/>
             </div>
-            <h1 className="text-3xl md:text-4xl font-bold text-white mb-3">
+            <h1 className="text-3xl md:text-4xl font-bold text-white mb-3 season-title">
               {isEN ? "Frequently Asked Questions" : "Preguntas Frecuentes"}
             </h1>
             <p className="text-sm md:text-base text-white/60 max-w-md mx-auto mb-8">

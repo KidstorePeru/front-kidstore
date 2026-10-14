@@ -7,6 +7,7 @@ import Image from "next/image";
 import { Lock, Eye, EyeOff, CheckCircle, AlertCircle, ArrowRight } from "lucide-react";
 import { api } from "@/lib/api";
 import { usePreferences } from "@/context/PreferencesContext";
+import { SeasonSky } from "@/seasons/decor";
 
 export default function ResetPasswordPage() {
   const router = useRouter();
@@ -81,6 +82,7 @@ export default function ResetPasswordPage() {
     <div data-theme="dark" className="min-h-screen flex items-center justify-center p-4"
       style={{ background: "linear-gradient(135deg, #10121C 0%, #161020 100%)", color: "var(--text)" }}>
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <SeasonSky variant="auth" />
         <div className="absolute -left-40 -top-40 w-96 h-96 rounded-full"
           style={{ background: "radial-gradient(circle,rgba(124,104,214,0.15),transparent 70%)" }}/>
         <div className="absolute -right-40 -bottom-40 w-96 h-96 rounded-full"

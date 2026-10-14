@@ -16,6 +16,7 @@ import { useWishlist, type WishlistItem } from "@/context/WishlistContext";
 import { useCart } from "@/context/CartContext";
 import { usePreferences } from "@/context/PreferencesContext";
 import { api } from "@/lib/api";
+import { SeasonSky } from "@/seasons/decor";
 
 type Tab = "perfil" | "seguridad" | "pedidos" | "wishlist";
 const TAB_IDS: Tab[] = ["perfil", "seguridad", "pedidos", "wishlist"];
@@ -58,8 +59,9 @@ function ProfilePageInner() {
         <div className="max-w-[1100px] mx-auto px-4 lg:px-8 py-8">
 
           {/* Header */}
-          <div className="flex items-center gap-4 mb-6 p-5 rounded-2xl"
+          <div className="flex items-center gap-4 mb-6 p-5 rounded-2xl season-band"
             style={{ background:"var(--card)", border:"1px solid var(--border)" }}>
+            <SeasonSky variant="band" />
             <div className="w-14 h-14 rounded-2xl overflow-hidden flex items-center justify-center text-2xl font-black text-[var(--on-primary)] flex-shrink-0"
               style={{ background:"var(--primary)" }}>
               {user.avatar

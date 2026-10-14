@@ -17,6 +17,7 @@ import { useT, useBadge } from "@/i18n";
 import { useCart } from "@/context/CartContext";
 import { useVisibility } from "@/context/VisibilityContext";
 import { useGameVisibility } from "@/hooks/useGameVisibility";
+import { SeasonSky } from "@/seasons/decor";
 
 const SLUG = "rocket-league";
 
@@ -75,7 +76,7 @@ function ProductCard({ name, amount, description, price, priceOld, badge, img, s
   return (
     <Link
       href={`/games/rocket-league/${slug}`}
-      className="group lift flex flex-col rounded-2xl overflow-hidden h-full"
+      className="group lift flex flex-col rounded-2xl overflow-hidden h-full season-card"
       style={{
         background: "var(--card)",
         border: `1px solid ${featured ? `${BRAND}66` : "var(--border)"}`,
@@ -472,8 +473,9 @@ function RocketLeaguePageInner({ TABS, creditos, bulkVisible }: {
       <main style={{ background:"var(--bg)", minHeight:"100vh" }}>
 
         {/* HERO */}
-        <section className="relative overflow-hidden" style={{ height:"65vh", minHeight:"460px" }}>
+        <section className="relative overflow-hidden season-game-hero" style={{ height:"65vh", minHeight:"460px" }}>
           <Image src="/games/rocket-league.jpg" alt="Rocket League" fill sizes="100vw" className="object-cover object-center kenburns" priority/>
+          <SeasonSky variant="game" />
           <div className="absolute inset-0"
             style={{ background:"linear-gradient(to right,rgba(0,0,0,0.88) 0%,rgba(0,0,0,0.45) 55%,rgba(0,0,0,0.1) 100%)" }}/>
           <div className="absolute inset-0"

@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { usePreferences } from "@/context/PreferencesContext";
+import { SeasonSky, SeasonChip } from "@/seasons/decor";
 
 const slides = [
   {
@@ -93,7 +94,7 @@ export default function HeroBanner() {
   const isEN = lang === "EN";
 
   return (
-    <section className="relative overflow-hidden" style={{ minHeight: "460px" }}>
+    <section className="relative overflow-hidden season-hero" style={{ minHeight: "460px" }}>
 
       {/* Game background image */}
       <div className="absolute inset-0 transition-opacity duration-700">
@@ -134,6 +135,9 @@ export default function HeroBanner() {
         }}
       />
 
+      {/* Temporada (Halloween): cielo de noche sobre la imagen, bajo los textos */}
+      <SeasonSky variant="hero" />
+
       {/* Content */}
       <div className="relative z-10 max-w-[1400px] mx-auto px-6 lg:px-8 flex items-center min-h-[460px]">
         <div
@@ -141,6 +145,8 @@ export default function HeroBanner() {
           className="max-w-xl py-16"
           style={{ animation: "fadeSlideIn 0.5s cubic-bezier(0.16,1,0.3,1) forwards" }}
         >
+          <div className="mb-4 empty:hidden"><SeasonChip /></div>
+
           {/* Label */}
           <div className="flex items-center gap-2 mb-5">
             <div className="w-6 h-[2px] rounded-full" style={{ background: s.accent }} />
@@ -160,7 +166,7 @@ export default function HeroBanner() {
           {/* RECHARGE now — brand claim, intentionally in English */}
           <div className="flex items-baseline gap-3 mb-6">
             <span
-              className="text-3xl md:text-4xl font-bold tracking-wide uppercase"
+              className="text-3xl md:text-4xl font-bold tracking-wide uppercase season-hero-word"
               style={{ color: s.accent }}
             >
               RECHARGE

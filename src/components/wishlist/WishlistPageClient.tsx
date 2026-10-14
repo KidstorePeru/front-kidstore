@@ -24,6 +24,7 @@ const TABLABEL_EN: Record<string, string> = {
   "Créditos": "Credits",
 };
 import { useState } from "react";
+import { SeasonSky } from "@/seasons/decor";
 
 function WishCard({ item, onRemove, onAddCart, inCart }: {
   item: WishlistItem;
@@ -149,14 +150,15 @@ export default function WishlistPage() {
         <div className="max-w-[1400px] mx-auto px-4 lg:px-8 py-10">
 
           {/* Header */}
-          <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
+          <div className="flex items-center justify-between mb-8 flex-wrap gap-4 season-band season-band--pad">
+            <SeasonSky variant="band" />
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-2xl flex items-center justify-center"
                 style={{ background:"rgba(239,68,68,0.1)", border:"1.5px solid rgba(239,68,68,0.25)" }}>
                 <Heart size={20} fill="#EF4444" style={{ color:"#EF4444" }}/>
               </div>
               <div>
-                <h1 className="text-xl font-bold" style={{ color:"var(--text)" }}>{t.wishlist.title}</h1>
+                <h1 className="text-xl font-bold season-title" style={{ color:"var(--text)" }}>{t.wishlist.title}</h1>
                 <p className="text-xs" style={{ color:"var(--text-subtle)" }}>{savedLabel}</p>
               </div>
             </div>

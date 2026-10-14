@@ -12,6 +12,7 @@ import { usePreferences } from "@/context/PreferencesContext";
 import { useVisibility } from "@/context/VisibilityContext";
 import { gameKey } from "@/config/visibility";
 import { useT } from "@/i18n";
+import { SeasonSky } from "@/seasons/decor";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -35,10 +36,11 @@ export default function CategoryPage({ params }: Props) {
         <div className="max-w-[1400px] mx-auto px-4 lg:px-8 py-10">
 
           {/* Header */}
-          <div className="mb-8">
+          <div className="mb-8 season-band season-band--pad">
+            <SeasonSky variant="band" />
             <div className="flex items-center gap-3 mb-2">
               <span className="text-3xl">{cat.icon}</span>
-              <h1 className="text-3xl font-bold" style={{ color: "var(--text)" }}>{lang === "EN" ? cat.nameEN : cat.name}</h1>
+              <h1 className="text-3xl font-bold season-title" style={{ color: "var(--text)" }}>{lang === "EN" ? cat.nameEN : cat.name}</h1>
             </div>
             <p className="text-sm" style={{ color: "var(--text-muted)" }}>
               {filtered.length} {filtered.length === 1 ? t.category.gameAvailable : t.category.gamesAvailable}
@@ -46,7 +48,7 @@ export default function CategoryPage({ params }: Props) {
           </div>
 
           {/* Filtros */}
-          <div className="flex flex-wrap gap-2 mb-8">
+          <div className="flex flex-wrap gap-2 mb-8 season-filter">
             <Link
               href="/games"
               className="px-4 py-2 rounded-xl text-xs font-semibold transition-all hover:opacity-80"
@@ -85,7 +87,7 @@ export default function CategoryPage({ params }: Props) {
               </Link>
             </div>
           ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 season-section season-grid">
               {filtered.map(game => {
                 const minPrice = Math.min(...game.products.map(p => p.price));
                 const count    = game.products.length;

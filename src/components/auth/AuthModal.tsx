@@ -14,6 +14,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useT } from "@/i18n";
 import { usePreferences } from "@/context/PreferencesContext";
 import { games } from "@/data";
+import { SeasonSky } from "@/seasons/decor";
 
 // ══════════════════════════════════════════════
 // Context — useAuthModal() disponible en toda la app
@@ -354,6 +355,7 @@ function AuthModal({
           className="hidden lg:flex flex-col justify-between p-10 relative overflow-hidden flex-shrink-0"
           style={{ width: isRegister ? 370 : 420, background:"var(--hero-bg)" }}
         >
+          <SeasonSky variant="auth" />
           {/* Grid */}
           <div className="absolute inset-0 pointer-events-none" style={{ backgroundImage:[
             "repeating-linear-gradient(0deg,rgba(124,104,214,0.05) 0,rgba(124,104,214,0.05) 1px,transparent 1px,transparent 36px)",

@@ -9,6 +9,7 @@ import { LATTICES, MarvelRivalsProduct } from "@/data/marvelrivals";
 import { useGameVisibility } from "@/hooks/useGameVisibility";
 import { usePreferences } from "@/context/PreferencesContext";
 import { useT, useBadge } from "@/i18n";
+import { SeasonSky } from "@/seasons/decor";
 
 const badgeStyle: Record<string, string> = {
   "Popular":"badge-popular", "Oferta":"badge-oferta", "Mejor valor":"badge-valor",
@@ -21,7 +22,7 @@ function ProductCard({ p }: { p: MarvelRivalsProduct }) {
   const badge = useBadge();
     const disc = Math.round((1 - p.price / p.priceOld) * 100);
   return (
-    <div className="rounded-2xl overflow-hidden flex flex-col transition-all duration-200 hover:-translate-y-1 group"
+    <div className="rounded-2xl overflow-hidden flex flex-col transition-all duration-200 hover:-translate-y-1 group season-card"
       style={{ background:"var(--card)", border:"1px solid var(--border)" }}>
       <div className="relative w-full overflow-hidden"
         style={{ aspectRatio:"4/3", background:"linear-gradient(135deg,rgba(220,38,38,0.15),rgba(10,5,30,0.8))" }}>
@@ -169,9 +170,10 @@ export default function MarvelRivalsPageClient() {
       <main style={{ background:"var(--bg)", minHeight:"100vh" }}>
 
         {/* Hero */}
-        <section className="relative overflow-hidden" style={{ height:"60vh", minHeight:"420px" }}>
+        <section className="relative overflow-hidden season-game-hero" style={{ height:"60vh", minHeight:"420px" }}>
           <Image src="/games/marvel-rivals.jpg" alt="Marvel Rivals" fill sizes="100vw"
             className="object-cover object-top" priority/>
+          <SeasonSky variant="game" />
           <div className="absolute inset-0"
             style={{ background:"linear-gradient(to right,rgba(0,0,0,0.92) 0%,rgba(0,0,0,0.45) 60%,rgba(0,0,0,0.1) 100%)" }}/>
           <div className="absolute inset-0"

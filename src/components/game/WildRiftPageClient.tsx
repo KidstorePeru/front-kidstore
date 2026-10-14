@@ -11,6 +11,7 @@ import { WILD_CORES, BUNDLES, WildRiftProduct } from "@/data/wildrift";
 import { useGameVisibility } from "@/hooks/useGameVisibility";
 import { usePreferences } from "@/context/PreferencesContext";
 import { useT, useBadge } from "@/i18n";
+import { SeasonSky } from "@/seasons/decor";
 
 const SLUG = "wild-rift";
 
@@ -37,7 +38,7 @@ function ProductCard({ p }: { p: WildRiftProduct }) {
 
   return (
     <div
-      className="rounded-2xl overflow-hidden flex flex-col transition-all duration-200 hover:-translate-y-1 group"
+      className="rounded-2xl overflow-hidden flex flex-col transition-all duration-200 hover:-translate-y-1 group season-card"
       style={{ background:"var(--card)", border:"1px solid var(--border)" }}
     >
       <div
@@ -243,11 +244,12 @@ function WildRiftPageInner({ tabs, cores, bundles }: {
       <main style={{ background:"var(--bg)", minHeight:"100vh" }}>
 
         {/* ── HERO ── */}
-        <section className="relative overflow-hidden" style={{ height:"60vh", minHeight:"420px" }}>
+        <section className="relative overflow-hidden season-game-hero" style={{ height:"60vh", minHeight:"420px" }}>
           <Image
             src="/games/wild-rift.jpg" alt="Wild Rift" fill sizes="100vw"
             className="object-cover object-center" priority
           />
+          <SeasonSky variant="game" />
           <div className="absolute inset-0"
             style={{ background:"linear-gradient(to right,rgba(0,0,0,0.92) 0%,rgba(0,0,0,0.45) 60%,rgba(0,0,0,0.1) 100%)" }}
           />

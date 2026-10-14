@@ -21,7 +21,7 @@ export default function OffersSection() {
   if (offerGames.length === 0) return null;
 
   return (
-    <section className="py-8">
+    <section className="py-8 season-section">
       <div className="flex items-center justify-between mb-5">
         <h2 className="section-title">
           {t.home.featuredDeals}

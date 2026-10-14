@@ -9,6 +9,7 @@ import {
   MessageCircle, Clock, HelpCircle, ArrowRight,
   ChevronRight,
 } from "lucide-react";
+import { SeasonSky } from "@/seasons/decor";
 
 export default function ContactPage() {
   const { lang } = usePreferences();
@@ -59,12 +60,13 @@ export default function ContactPage() {
         <div className="max-w-[860px] mx-auto px-4 lg:px-8 py-12">
 
           {/* ── Header ── */}
-          <div className="text-center mb-12">
+          <div className="text-center mb-12 season-band season-band--pad">
+            <SeasonSky variant="band" />
             <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-5"
               style={{ background: "rgba(124,104,214,0.1)", border: "1px solid rgba(124,104,214,0.15)" }}>
               <MessageCircle size={26} style={{ color: "var(--primary)" }}/>
             </div>
-            <h1 className="text-2xl md:text-3xl font-bold mb-3" style={{ color: "var(--text)" }}>
+            <h1 className="text-2xl md:text-3xl font-bold mb-3 season-title" style={{ color: "var(--text)" }}>
               {isEN ? "How can we help you?" : "\u00bfC\u00f3mo podemos ayudarte?"}
             </h1>
             <p className="text-sm max-w-md mx-auto leading-relaxed" style={{ color: "var(--text-muted)" }}>

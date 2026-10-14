@@ -10,6 +10,7 @@ import { TOKENS, HOKProduct } from "@/data/honorofkings";
 import { useGameVisibility } from "@/hooks/useGameVisibility";
 import { usePreferences } from "@/context/PreferencesContext";
 import { useT, useBadge } from "@/i18n";
+import { SeasonSky } from "@/seasons/decor";
 
 /*
   HOK brand: gold / amber
@@ -50,7 +51,7 @@ function ProductCard({ p }: { p: HOKProduct }) {
   const total  = p.bonus ? p.tokens + p.bonus : p.tokens;
 
   return (
-    <div className="rounded-2xl overflow-hidden flex flex-col transition-all duration-200 hover:-translate-y-1 group"
+    <div className="rounded-2xl overflow-hidden flex flex-col transition-all duration-200 hover:-translate-y-1 group season-card"
       style={{ background:"var(--card)", border:"1px solid var(--border)" }}>
 
       {/* Imagen */}
@@ -207,9 +208,10 @@ function HOKPageInner({ tokens }: { tokens: HOKProduct[] }) {
       <main style={{ background:"var(--bg)", minHeight:"100vh" }}>
 
         {/* Hero */}
-        <section className="relative overflow-hidden" style={{ height:"65vh", minHeight:"440px" }}>
+        <section className="relative overflow-hidden season-game-hero" style={{ height:"65vh", minHeight:"440px" }}>
           <Image src="/games/honor-of-kings.jpg" alt="Honor of Kings" fill sizes="100vw"
             className="object-cover object-top" priority/>
+          <SeasonSky variant="game" />
           <div className="absolute inset-0"
             style={{ background:"linear-gradient(to right,rgba(0,0,0,0.93) 0%,rgba(0,0,0,0.48) 60%,transparent 100%)" }}/>
           <div className="absolute inset-0"

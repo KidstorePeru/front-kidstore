@@ -5,6 +5,12 @@ import Slanted from "./Slanted";
 import type { Offer, ShopGroup, ShopSection as Section } from "./model";
 import type { ShopText } from "./i18n";
 
+// Secciones de terror de la tienda oficial (Fortnite: Pesadillas, Casillero del terror, Five
+// Nights at Freddy's, Poppy Playtime, Monstruos de Universal…). Solo añade una clase: el estilo
+// (🎃 y brillo naranja) está en public/seasons/halloween.css y no cambia el orden de la tienda.
+const SPOOKY = /pesadilla|nightmare|fortnitemares|terror|horror|miedo|scary|spooky|freddy|poppy playtime|monstruo|monster|universal|halloween|zombi|fantasma|ghost|calabaza|pumpkin|vampir|bruja|witch|muert|undead|99 nights|stranger things/i;
+const isSpooky = (s: Section) => SPOOKY.test(`${s.name} ${s.category ?? ""}`);
+
 // Ofertas visibles en un grupo "expandableList" (pistas) antes de pulsar "Ver todo".
 const LIST_PREVIEW = 4;
 
@@ -34,7 +40,7 @@ function OfferGroup({ group, forceExpanded, ...card }: CardProps & { group: Shop
 
 function ShopSection({ section, filtering, ...card }: CardProps & { section: Section; filtering: boolean }) {
   return (
-    <section id={section.domId} className="fns-section" aria-labelledby={`${section.domId}-title`}>
+    <section id={section.domId} className={isSpooky(section) ? "fns-section is-season" : "fns-section"} aria-labelledby={`${section.domId}-title`}>
       <h2 id={`${section.domId}-title`} className="fns-section__title">
         <Slanted text={section.name} />
       </h2>

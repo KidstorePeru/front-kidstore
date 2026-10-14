@@ -11,6 +11,7 @@ import { ESQUIRLAS, PASES, HSRProduct } from "@/data/honkaistarrail";
 import { usePreferences } from "@/context/PreferencesContext";
 import { useGameVisibility } from "@/hooks/useGameVisibility";
 import { useT, useBadge } from "@/i18n";
+import { SeasonSky } from "@/seasons/decor";
 
 const SLUG = "honkai-star-rail";
 
@@ -62,7 +63,7 @@ function ProductCard({ p }: { p: HSRProduct }) {
   const badge = useBadge();
   const disc = p.priceOld > p.price ? Math.round((1 - p.price / p.priceOld) * 100) : 0;
   return (
-    <div className="rounded-2xl overflow-hidden flex flex-col transition-all duration-200 hover:-translate-y-1 group"
+    <div className="rounded-2xl overflow-hidden flex flex-col transition-all duration-200 hover:-translate-y-1 group season-card"
       style={{ background:"var(--card)", border:"1px solid var(--border)" }}>
       <div className="relative w-full overflow-hidden"
         style={{ aspectRatio:"4/3", background:"linear-gradient(135deg,var(--hsr-bg),rgba(5,3,20,0.9))" }}>
@@ -232,9 +233,10 @@ function HSRPageInner({ tabDefs, esquirlas, pases }: {
       <main style={{ background:"var(--bg)", minHeight:"100vh" }}>
 
         {/* Hero */}
-        <section className="relative overflow-hidden" style={{ height:"65vh", minHeight:"440px" }}>
+        <section className="relative overflow-hidden season-game-hero" style={{ height:"65vh", minHeight:"440px" }}>
           <Image src="/games/honkai-star-rail.jpg" alt="Honkai: Star Rail" fill sizes="100vw"
             className="object-cover object-top" priority/>
+          <SeasonSky variant="game" />
           <div className="absolute inset-0"
             style={{ background:"linear-gradient(to right,rgba(0,0,0,0.93) 0%,rgba(0,0,0,0.48) 60%,rgba(0,0,0,0.08) 100%)" }}/>
           <div className="absolute inset-0"

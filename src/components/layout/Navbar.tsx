@@ -138,7 +138,8 @@ export default function Navbar() {
   return (
     <>
       <header
-        className="sticky top-0 z-50 w-full"
+        className="sticky top-0 z-50 w-full season-header"
+        data-menu-open={menuOpen}
         style={{
           background: "var(--navbar-bg)",
           backdropFilter: "blur(16px)",
@@ -160,7 +161,7 @@ export default function Navbar() {
         <div className="max-w-[1400px] mx-auto px-4 lg:px-6 h-16 grid grid-cols-[auto_1fr_auto] items-center gap-3">
 
           {/* Logo */}
-          <Link href="/" className="flex items-center">
+          <Link href="/" className="flex items-center season-logo">
             <Image
               src="/brand/kidstore-imagotipo.png"
               alt="KidStore"

@@ -40,7 +40,7 @@ export default function HomePageClient() {
           </Reveal>
 
           {/* ── Categorías ── */}
-          <section className="py-8">
+          <section className="py-8 season-section">
             <Reveal as="h2" className="section-title mb-5">
               {t.home.categories}
             </Reveal>
@@ -65,7 +65,7 @@ export default function HomePageClient() {
           </section>
 
           {/* ── Más populares ── */}
-          <section className="py-8">
+          <section className="py-8 season-section">
             <Reveal className="flex items-center justify-between mb-5">
               <h2 className="section-title">{t.home.mostPopular}</h2>
               <Link
@@ -87,7 +87,7 @@ export default function HomePageClient() {
           </section>
 
           {/* ── Todos los juegos ── */}
-          <section className="py-8">
+          <section className="py-8 season-section">
             <Reveal className="flex items-center justify-between mb-5">
               <h2 className="section-title">
                 {t.home.allGames}

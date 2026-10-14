@@ -11,6 +11,7 @@ import { LUNITA, PASES, WWProduct } from "@/data/wutheringwaves";
 import { usePreferences } from "@/context/PreferencesContext";
 import { useGameVisibility } from "@/hooks/useGameVisibility";
 import { useT, useBadge } from "@/i18n";
+import { SeasonSky } from "@/seasons/decor";
 
 const SLUG = "wuthering-waves";
 
@@ -62,7 +63,7 @@ function ProductCard({ p }: { p: WWProduct }) {
 
   return (
     <div
-      className="rounded-2xl overflow-hidden flex flex-col transition-all duration-200 hover:-translate-y-1 group"
+      className="rounded-2xl overflow-hidden flex flex-col transition-all duration-200 hover:-translate-y-1 group season-card"
       style={{ background:"var(--card)", border:"1px solid var(--border)" }}
     >
       {/* Image */}
@@ -363,11 +364,12 @@ function WWPageInner({ tabs, lunita, pases }: {
       <main style={{ background:"var(--bg)", minHeight:"100vh" }}>
 
         {/* ── HERO ── */}
-        <section className="relative overflow-hidden" style={{ height:"65vh", minHeight:"440px" }}>
+        <section className="relative overflow-hidden season-game-hero" style={{ height:"65vh", minHeight:"440px" }}>
           <Image
             src="/games/wuthering-waves.jpg" alt="Wuthering Waves" fill sizes="100vw"
             className="object-cover object-top" priority
           />
+          <SeasonSky variant="game" />
           <div className="absolute inset-0"
             style={{ background:"linear-gradient(to right,rgba(0,0,0,0.93) 0%,rgba(0,0,0,0.48) 60%,transparent 100%)" }}
           />

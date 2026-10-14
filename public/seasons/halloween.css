@@ -1,0 +1,474 @@
+/* ═══════════════════════════════════════════════════════════════════════════════
+   TEMPORADA DE HALLOWEEN — kidstoreperu.com
+   Se carga SOLO durante la temporada (lo añade src/seasons/bootScript.ts / SeasonContext.tsx).
+   Todo cuelga de <html data-season="halloween">: el diseño base no se modifica.
+   Adornos: SVG/CSS decorativos (aria-hidden); los emojis de CSS no los lee el lector de
+   pantalla (content: "🎃" / ""). Sin animaciones en celulares ni con «reducir movimiento».
+   Letra: Creepster (Google Fonts, licencia OFL).
+═══════════════════════════════════════════════════════════════════════════════ */
+@import url("https://fonts.googleapis.com/css2?family=Creepster&display=swap");
+
+[data-season="halloween"] {
+  --hw-sky: radial-gradient(ellipse 50% 70% at 80% 18%, rgba(249,115,22,.16), transparent 65%), linear-gradient(180deg, var(--hw-night-1) 0%, var(--hw-night-2) 55%, var(--hw-night-3) 100%);
+  /* Botones: violeta principal de la marca → naranja oscuro (texto blanco legible). */
+  --hw-gradient-btn: linear-gradient(135deg, #6846C5 0%, #8E3FA8 50%, #C2410C 100%);
+  --hw-orange: #F97316;
+  --hw-orange-deep: #C2410C;
+  --hw-orange-ink: #9A3412;
+  --hw-orange-soft: rgba(249,115,22,.12);
+  --hw-night-1: #0b0718;
+  --hw-night-2: #1a0f38;
+  --hw-night-3: #2c1660;
+  --hw-web-tl-light: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20100%20100%22%3E%3Cpath%20d%3D%22M0%200L100.0%200.0M0%200L92.4%2038.3M0%200L70.7%2070.7M0%200L38.3%2092.4M0%200L0.0%20100.0M22.0%200.0Q17.3%203.4%2020.3%208.4Q14.6%209.8%2015.6%2015.6Q9.8%2014.6%208.4%2020.3Q3.4%2017.3%200.0%2022.0M42.0%200.0Q33.0%206.6%2038.8%2016.1Q27.9%2018.7%2029.7%2029.7Q18.7%2027.9%2016.1%2038.8Q6.6%2033.0%200.0%2042.0M62.0%200.0Q48.6%209.7%2057.3%2023.7Q41.2%2027.6%2043.8%2043.8Q27.6%2041.2%2023.7%2057.3Q9.7%2048.6%200.0%2062.0M82.0%200.0Q64.3%2012.8%2075.8%2031.4Q54.5%2036.4%2058.0%2058.0Q36.4%2054.5%2031.4%2075.8Q12.8%2064.3%200.0%2082.0%22%20fill%3D%22none%22%20stroke%3D%22%236846C5%22%20stroke-opacity%3D%220.32%22%20stroke-width%3D%221.1%22%2F%3E%3C%2Fsvg%3E);
+  --hw-web-tr-light: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20100%20100%22%3E%3Cpath%20d%3D%22M0%200L100.0%200.0M0%200L92.4%2038.3M0%200L70.7%2070.7M0%200L38.3%2092.4M0%200L0.0%20100.0M22.0%200.0Q17.3%203.4%2020.3%208.4Q14.6%209.8%2015.6%2015.6Q9.8%2014.6%208.4%2020.3Q3.4%2017.3%200.0%2022.0M42.0%200.0Q33.0%206.6%2038.8%2016.1Q27.9%2018.7%2029.7%2029.7Q18.7%2027.9%2016.1%2038.8Q6.6%2033.0%200.0%2042.0M62.0%200.0Q48.6%209.7%2057.3%2023.7Q41.2%2027.6%2043.8%2043.8Q27.6%2041.2%2023.7%2057.3Q9.7%2048.6%200.0%2062.0M82.0%200.0Q64.3%2012.8%2075.8%2031.4Q54.5%2036.4%2058.0%2058.0Q36.4%2054.5%2031.4%2075.8Q12.8%2064.3%200.0%2082.0%22%20fill%3D%22none%22%20stroke%3D%22%236846C5%22%20stroke-opacity%3D%220.32%22%20stroke-width%3D%221.1%22%20transform%3D%22translate(100%200)%20scale(-1%201)%22%2F%3E%3C%2Fsvg%3E");
+  --hw-web-tl-dark: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20100%20100%22%3E%3Cpath%20d%3D%22M0%200L100.0%200.0M0%200L92.4%2038.3M0%200L70.7%2070.7M0%200L38.3%2092.4M0%200L0.0%20100.0M22.0%200.0Q17.3%203.4%2020.3%208.4Q14.6%209.8%2015.6%2015.6Q9.8%2014.6%208.4%2020.3Q3.4%2017.3%200.0%2022.0M42.0%200.0Q33.0%206.6%2038.8%2016.1Q27.9%2018.7%2029.7%2029.7Q18.7%2027.9%2016.1%2038.8Q6.6%2033.0%200.0%2042.0M62.0%200.0Q48.6%209.7%2057.3%2023.7Q41.2%2027.6%2043.8%2043.8Q27.6%2041.2%2023.7%2057.3Q9.7%2048.6%200.0%2062.0M82.0%200.0Q64.3%2012.8%2075.8%2031.4Q54.5%2036.4%2058.0%2058.0Q36.4%2054.5%2031.4%2075.8Q12.8%2064.3%200.0%2082.0%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.3%22%20stroke-width%3D%221.1%22%2F%3E%3C%2Fsvg%3E);
+  --hw-web-tr-dark: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20100%20100%22%3E%3Cpath%20d%3D%22M0%200L100.0%200.0M0%200L92.4%2038.3M0%200L70.7%2070.7M0%200L38.3%2092.4M0%200L0.0%20100.0M22.0%200.0Q17.3%203.4%2020.3%208.4Q14.6%209.8%2015.6%2015.6Q9.8%2014.6%208.4%2020.3Q3.4%2017.3%200.0%2022.0M42.0%200.0Q33.0%206.6%2038.8%2016.1Q27.9%2018.7%2029.7%2029.7Q18.7%2027.9%2016.1%2038.8Q6.6%2033.0%200.0%2042.0M62.0%200.0Q48.6%209.7%2057.3%2023.7Q41.2%2027.6%2043.8%2043.8Q27.6%2041.2%2023.7%2057.3Q9.7%2048.6%200.0%2062.0M82.0%200.0Q64.3%2012.8%2075.8%2031.4Q54.5%2036.4%2058.0%2058.0Q36.4%2054.5%2031.4%2075.8Q12.8%2064.3%200.0%2082.0%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.3%22%20stroke-width%3D%221.1%22%20transform%3D%22translate(100%200)%20scale(-1%201)%22%2F%3E%3C%2Fsvg%3E");
+  --hw-graveyard: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%201440%20140%22%20preserveAspectRatio%3D%22xMidYMax%20slice%22%3E%3Cg%20fill%3D%22%230b0718%22%3E%0A%3Cpath%20d%3D%22M0%20140V108Q120%2092%20260%20104T560%20100T860%20106T1160%2098T1440%20104V140Z%22%2F%3E%0A%3Cpath%20d%3D%22M70%20112v-25a15%2015%200%200%201%2030%200v25zM150%20112v-19a11%2011%200%200%201%2022%200v19zM232%20112v-46h7v12h9v7h-9v27zM330%20112v-29a17%2017%200%200%201%2034%200v29zM426%2098h148v4h-148zM430%20112v-26l3%20-6l3%206v26zM446%20112v-26l3%20-6l3%206v26zM462%20112v-26l3%20-6l3%206v26zM478%20112v-26l3%20-6l3%206v26zM494%20112v-26l3%20-6l3%206v26zM510%20112v-26l3%20-6l3%206v26zM526%20112v-26l3%20-6l3%206v26zM542%20112v-26l3%20-6l3%206v26zM558%20112v-26l3%20-6l3%206v26zM640%20112v-23a13%2013%200%200%201%2026%200v23zM712%20112v-40h7v10h9v7h-9v23zM800%20112v-28a16%2016%200%200%201%2032%200v28zM1000%20112v-20a12%2012%200%200%201%2024%200v20zM1300%20112v-50h7v13h9v7h-9v30zM1370%20112v-23a15%2015%200%200%201%2030%200v23z%22%2F%3E%0A%3Cpath%20d%3D%22M1150%20112c2-20%201-38-4-56M1147%2076l-18-14M1147%2066l16-16M1141%2086l-14%202M1145%2058l-8-18M1149%2050l10-12%22%20stroke%3D%22%230b0718%22%20stroke-width%3D%226%22%20stroke-linecap%3D%22round%22%20fill%3D%22none%22%2F%3E%0A%3Cpath%20d%3D%22M1146%20112c3-24%202-44-2-60%22%20stroke%3D%22%230b0718%22%20stroke-width%3D%2211%22%20stroke-linecap%3D%22round%22%20fill%3D%22none%22%2F%3E%0A%3C%2Fg%3E%3C%2Fsvg%3E);
+  --hw-garland: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20120%2024%22%3E%3Cpath%20d%3D%22M0%202Q30%209%2060%203T120%202%22%20fill%3D%22none%22%20stroke%3D%22%236b5a8e%22%20stroke-width%3D%221%22%2F%3E%3Cpath%20d%3D%22M6%205h18l-9%2013z%22%20fill%3D%22%23F97316%22%2F%3E%3Cpath%20d%3D%22M34%205.5h18l-9%2013z%22%20fill%3D%22%237C68D6%22%2F%3E%3Cpath%20d%3D%22M62%203h18l-9%2013z%22%20fill%3D%22%231f1240%22%2F%3E%3Cpath%20d%3D%22M90%204h18l-9%2013z%22%20fill%3D%22%23F59E0B%22%2F%3E%3C%2Fsvg%3E);
+  --hw-spider-light: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2030%20150%22%3E%3Cpath%20d%3D%22M15%200V122%22%20stroke%3D%22%232c1660%22%20stroke-opacity%3D%22.55%22%20stroke-width%3D%22.8%22%2F%3E%3Cg%20stroke%3D%22%232c1660%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20fill%3D%22none%22%3E%3Cpath%20d%3D%22M15%20128L5%20120M15%20130H3M15%20132L5%20140M15%20134L8%20146M15%20128L25%20120M15%20130H27M15%20132L25%20140M15%20134L22%20146%22%2F%3E%3C%2Fg%3E%3Ccircle%20cx%3D%2215%22%20cy%3D%22132%22%20r%3D%226%22%20fill%3D%22%232c1660%22%2F%3E%3Ccircle%20cx%3D%2215%22%20cy%3D%22124.5%22%20r%3D%223.6%22%20fill%3D%22%232c1660%22%2F%3E%3C%2Fsvg%3E);
+  --hw-spider-dark: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2030%20150%22%3E%3Cpath%20d%3D%22M15%200V122%22%20stroke%3D%22%23e9e3ff%22%20stroke-opacity%3D%22.55%22%20stroke-width%3D%22.8%22%2F%3E%3Cg%20stroke%3D%22%23e9e3ff%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20fill%3D%22none%22%3E%3Cpath%20d%3D%22M15%20128L5%20120M15%20130H3M15%20132L5%20140M15%20134L8%20146M15%20128L25%20120M15%20130H27M15%20132L25%20140M15%20134L22%20146%22%2F%3E%3C%2Fg%3E%3Ccircle%20cx%3D%2215%22%20cy%3D%22132%22%20r%3D%226%22%20fill%3D%22%23e9e3ff%22%2F%3E%3Ccircle%20cx%3D%2215%22%20cy%3D%22124.5%22%20r%3D%223.6%22%20fill%3D%22%23e9e3ff%22%2F%3E%3C%2Fsvg%3E);
+  --hw-wallpaper-light: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20320%20260%22%20width%3D%22320%22%20height%3D%22260%22%3E%3Cg%20fill%3D%22%236846C5%22%20fill-opacity%3D%220.06%22%3E%0A%3Cpath%20transform%3D%22translate(30%2036)%20scale(1.6)%22%20d%3D%22M12%203L13%201.5L13.6%203.4C15%202.6%2016.8%202.2%2018.5%202.6C20.5%203%2022.5%204.4%2024%206.5C22.6%205.9%2021.2%206%2020.2%206.8C19.2%206.3%2017.9%206.6%2017.3%207.6C16.2%207.1%2014.9%207.6%2014.4%208.7C13.6%208.9%2012.7%209.6%2012%2010.8C11.3%209.6%2010.4%208.9%209.6%208.7C9.1%207.6%207.8%207.1%206.7%207.6C6.1%206.6%204.8%206.3%203.8%206.8C2.8%206%201.4%205.9%200%206.5C1.5%204.4%203.5%203%205.5%202.6C7.2%202.2%209%202.6%2010.4%203.4L11%201.5Z%22%2F%3E%0A%3Cpath%20transform%3D%22translate(220%20170)%20scale(1.1)%22%20d%3D%22M12%203L13%201.5L13.6%203.4C15%202.6%2016.8%202.2%2018.5%202.6C20.5%203%2022.5%204.4%2024%206.5C22.6%205.9%2021.2%206%2020.2%206.8C19.2%206.3%2017.9%206.6%2017.3%207.6C16.2%207.1%2014.9%207.6%2014.4%208.7C13.6%208.9%2012.7%209.6%2012%2010.8C11.3%209.6%2010.4%208.9%209.6%208.7C9.1%207.6%207.8%207.1%206.7%207.6C6.1%206.6%204.8%206.3%203.8%206.8C2.8%206%201.4%205.9%200%206.5C1.5%204.4%203.5%203%205.5%202.6C7.2%202.2%209%202.6%2010.4%203.4L11%201.5Z%22%2F%3E%0A%3Ccircle%20cx%3D%22180%22%20cy%3D%2260%22%20r%3D%221.6%22%2F%3E%3Ccircle%20cx%3D%2290%22%20cy%3D%22200%22%20r%3D%221.3%22%2F%3E%3Ccircle%20cx%3D%22280%22%20cy%3D%2240%22%20r%3D%221.1%22%2F%3E%0A%3Cpath%20transform%3D%22translate(120%20112)%22%20d%3D%22M18%206c-2-4%200-6%203-6l1%202c-2%200-3%201-2%204zM18%207C8%207%202%2012%202%2019s6%2012%2016%2012%2016-5%2016-12S28%207%2018%207z%22%2F%3E%0A%3C%2Fg%3E%3C%2Fsvg%3E");
+  --hw-wallpaper-dark: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20320%20260%22%20width%3D%22320%22%20height%3D%22260%22%3E%3Cg%20fill%3D%22%23aa91ff%22%20fill-opacity%3D%220.06%22%3E%0A%3Cpath%20transform%3D%22translate(30%2036)%20scale(1.6)%22%20d%3D%22M12%203L13%201.5L13.6%203.4C15%202.6%2016.8%202.2%2018.5%202.6C20.5%203%2022.5%204.4%2024%206.5C22.6%205.9%2021.2%206%2020.2%206.8C19.2%206.3%2017.9%206.6%2017.3%207.6C16.2%207.1%2014.9%207.6%2014.4%208.7C13.6%208.9%2012.7%209.6%2012%2010.8C11.3%209.6%2010.4%208.9%209.6%208.7C9.1%207.6%207.8%207.1%206.7%207.6C6.1%206.6%204.8%206.3%203.8%206.8C2.8%206%201.4%205.9%200%206.5C1.5%204.4%203.5%203%205.5%202.6C7.2%202.2%209%202.6%2010.4%203.4L11%201.5Z%22%2F%3E%0A%3Cpath%20transform%3D%22translate(220%20170)%20scale(1.1)%22%20d%3D%22M12%203L13%201.5L13.6%203.4C15%202.6%2016.8%202.2%2018.5%202.6C20.5%203%2022.5%204.4%2024%206.5C22.6%205.9%2021.2%206%2020.2%206.8C19.2%206.3%2017.9%206.6%2017.3%207.6C16.2%207.1%2014.9%207.6%2014.4%208.7C13.6%208.9%2012.7%209.6%2012%2010.8C11.3%209.6%2010.4%208.9%209.6%208.7C9.1%207.6%207.8%207.1%206.7%207.6C6.1%206.6%204.8%206.3%203.8%206.8C2.8%206%201.4%205.9%200%206.5C1.5%204.4%203.5%203%205.5%202.6C7.2%202.2%209%202.6%2010.4%203.4L11%201.5Z%22%2F%3E%0A%3Ccircle%20cx%3D%22180%22%20cy%3D%2260%22%20r%3D%221.6%22%2F%3E%3Ccircle%20cx%3D%2290%22%20cy%3D%22200%22%20r%3D%221.3%22%2F%3E%3Ccircle%20cx%3D%22280%22%20cy%3D%2240%22%20r%3D%221.1%22%2F%3E%0A%3Cpath%20transform%3D%22translate(120%20112)%22%20d%3D%22M18%206c-2-4%200-6%203-6l1%202c-2%200-3%201-2%204zM18%207C8%207%202%2012%202%2019s6%2012%2016%2012%2016-5%2016-12S28%207%2018%207z%22%2F%3E%0A%3C%2Fg%3E%3C%2Fsvg%3E");
+  --hw-wallpaper-night: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20320%20260%22%20width%3D%22320%22%20height%3D%22260%22%3E%3Cg%20fill%3D%22%23ffffff%22%20fill-opacity%3D%220.08%22%3E%0A%3Cpath%20transform%3D%22translate(30%2036)%20scale(1.6)%22%20d%3D%22M12%203L13%201.5L13.6%203.4C15%202.6%2016.8%202.2%2018.5%202.6C20.5%203%2022.5%204.4%2024%206.5C22.6%205.9%2021.2%206%2020.2%206.8C19.2%206.3%2017.9%206.6%2017.3%207.6C16.2%207.1%2014.9%207.6%2014.4%208.7C13.6%208.9%2012.7%209.6%2012%2010.8C11.3%209.6%2010.4%208.9%209.6%208.7C9.1%207.6%207.8%207.1%206.7%207.6C6.1%206.6%204.8%206.3%203.8%206.8C2.8%206%201.4%205.9%200%206.5C1.5%204.4%203.5%203%205.5%202.6C7.2%202.2%209%202.6%2010.4%203.4L11%201.5Z%22%2F%3E%0A%3Cpath%20transform%3D%22translate(220%20170)%20scale(1.1)%22%20d%3D%22M12%203L13%201.5L13.6%203.4C15%202.6%2016.8%202.2%2018.5%202.6C20.5%203%2022.5%204.4%2024%206.5C22.6%205.9%2021.2%206%2020.2%206.8C19.2%206.3%2017.9%206.6%2017.3%207.6C16.2%207.1%2014.9%207.6%2014.4%208.7C13.6%208.9%2012.7%209.6%2012%2010.8C11.3%209.6%2010.4%208.9%209.6%208.7C9.1%207.6%207.8%207.1%206.7%207.6C6.1%206.6%204.8%206.3%203.8%206.8C2.8%206%201.4%205.9%200%206.5C1.5%204.4%203.5%203%205.5%202.6C7.2%202.2%209%202.6%2010.4%203.4L11%201.5Z%22%2F%3E%0A%3Ccircle%20cx%3D%22180%22%20cy%3D%2260%22%20r%3D%221.6%22%2F%3E%3Ccircle%20cx%3D%2290%22%20cy%3D%22200%22%20r%3D%221.3%22%2F%3E%3Ccircle%20cx%3D%22280%22%20cy%3D%2240%22%20r%3D%221.1%22%2F%3E%0A%3Cpath%20transform%3D%22translate(120%20112)%22%20d%3D%22M18%206c-2-4%200-6%203-6l1%202c-2%200-3%201-2%204zM18%207C8%207%202%2012%202%2019s6%2012%2016%2012%2016-5%2016-12S28%207%2018%207z%22%2F%3E%0A%3C%2Fg%3E%3C%2Fsvg%3E");
+  --hw-witch: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20120%2064%22%3E%3Cg%20fill%3D%22%230b0718%22%3E%0A%3Cpath%20d%3D%22M4%2050L104%2033%22%20stroke%3D%22%230b0718%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22%2F%3E%0A%3Cpath%20d%3D%22M100%2032L119%2022L120%2036L117%2047Z%22%2F%3E%0A%3Cpath%20d%3D%22M40%2046L58%2020L76%2042Z%22%2F%3E%0A%3Cpath%20d%3D%22M58%2022Q80%2016%2094%2030L76%2036Z%22%2F%3E%0A%3Ccircle%20cx%3D%2257%22%20cy%3D%2217%22%20r%3D%225.5%22%2F%3E%0A%3Cpath%20d%3D%22M47%2013L68%2012L52%20-1Z%22%2F%3E%0A%3Cpath%20d%3D%22M44%2013.5h27v2.5h-27z%22%2F%3E%0A%3Cpath%20d%3D%22M56%2024L36%2042%22%20stroke%3D%22%230b0718%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22%2F%3E%0A%3C%2Fg%3E%3C%2Fsvg%3E);
+  --hw-bat-on-light: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2012%22%3E%3Cpath%20d%3D%22M12%203L13%201.5L13.6%203.4C15%202.6%2016.8%202.2%2018.5%202.6C20.5%203%2022.5%204.4%2024%206.5C22.6%205.9%2021.2%206%2020.2%206.8C19.2%206.3%2017.9%206.6%2017.3%207.6C16.2%207.1%2014.9%207.6%2014.4%208.7C13.6%208.9%2012.7%209.6%2012%2010.8C11.3%209.6%2010.4%208.9%209.6%208.7C9.1%207.6%207.8%207.1%206.7%207.6C6.1%206.6%204.8%206.3%203.8%206.8C2.8%206%201.4%205.9%200%206.5C1.5%204.4%203.5%203%205.5%202.6C7.2%202.2%209%202.6%2010.4%203.4L11%201.5Z%22%20fill%3D%22%232b1559%22%20fill-opacity%3D%220.55%22%2F%3E%3C%2Fsvg%3E);
+  --hw-bat-on-dark: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2012%22%3E%3Cpath%20d%3D%22M12%203L13%201.5L13.6%203.4C15%202.6%2016.8%202.2%2018.5%202.6C20.5%203%2022.5%204.4%2024%206.5C22.6%205.9%2021.2%206%2020.2%206.8C19.2%206.3%2017.9%206.6%2017.3%207.6C16.2%207.1%2014.9%207.6%2014.4%208.7C13.6%208.9%2012.7%209.6%2012%2010.8C11.3%209.6%2010.4%208.9%209.6%208.7C9.1%207.6%207.8%207.1%206.7%207.6C6.1%206.6%204.8%206.3%203.8%206.8C2.8%206%201.4%205.9%200%206.5C1.5%204.4%203.5%203%205.5%202.6C7.2%202.2%209%202.6%2010.4%203.4L11%201.5Z%22%20fill%3D%22%23ffffff%22%20fill-opacity%3D%220.5%22%2F%3E%3C%2Fsvg%3E);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   COLORES Y BOTONES
+══════════════════════════════════════════════════════════════════════════════ */
+[data-season="halloween"] ::selection { background: rgba(249,115,22,.35); }
+
+/* Tema oscuro: superficies teñidas de noche morada. */
+[data-season="halloween"][data-theme="dark"] {
+  --bg: #0f0b1b;
+  --surface: #140f24;
+  --card: #1b1530;
+  --card-hover: #231b3c;
+  --border: #382c57;
+  --navbar-bg: rgba(15,11,27,.94);
+  --trust-bg: #140f24;
+  --hw-orange-ink: #FDBA74;
+}
+
+/* Botones principales: degradado violeta de la marca → naranja oscuro, texto blanco. */
+[data-season="halloween"] :is(.btn-primary, [style*="background: var(--primary)"], [style*="background:var(--primary)"]) {
+  --on-primary: #fff;
+  background-color: #6846C5 !important;
+  background-image: var(--hw-gradient-btn) !important;
+  color: #fff !important;
+}
+[data-season="halloween"] :is(button, a):is(.btn-primary, [style*="background: var(--primary)"], [style*="background:var(--primary)"]) {
+  box-shadow: 0 4px 18px rgba(194,65,12,.32), inset 0 1px rgba(255,255,255,.18) !important;
+}
+
+/* Barras de desplazamiento con un toque naranja. */
+[data-season="halloween"] html::-webkit-scrollbar-thumb:hover,
+[data-season="halloween"] body::-webkit-scrollbar-thumb:hover { background: var(--hw-orange); }
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   TODA LA WEB: fondo, menú con guirnalda, sombrero en el logo, títulos, fantasma
+══════════════════════════════════════════════════════════════════════════════ */
+[data-season="halloween"] body {
+  background-image: radial-gradient(ellipse 70% 340px at 50% 0, rgba(249,115,22,.10), transparent 70%), var(--hw-wallpaper-light);
+  background-repeat: no-repeat, repeat;
+  background-size: auto, 320px 260px;
+}
+[data-season="halloween"][data-theme="dark"] body {
+  background-image: radial-gradient(ellipse 70% 340px at 50% 0, rgba(249,115,22,.12), transparent 70%), var(--hw-wallpaper-dark);
+}
+/* Las páginas pintan su <main> con var(--bg): se deja ver el fondo de murciélagos. */
+[data-season="halloween"] main[style*="var(--bg)"] { background: transparent !important; }
+
+[data-season="halloween"] .season-header { box-shadow: inset 0 -1px rgba(249,115,22,.35); }
+[data-season="halloween"] .season-header::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; top: 100%;
+  height: 20px;
+  background: var(--hw-garland) repeat-x 0 0 / 120px 20px;
+  pointer-events: none;
+}
+[data-season="halloween"] .season-header[data-menu-open="true"]::after { display: none; }
+
+[data-season="halloween"] .season-logo { position: relative; }
+[data-season="halloween"] .season-logo::before {
+  content: "";
+  position: absolute;
+  left: 4px; top: -13px;
+  width: 30px; height: 27px;
+  background: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2056%22%3E%3Cpath%20d%3D%22M30%202C26%2014%2020%2030%2014%2044h40C46%2034%2040%2022%2030%202z%22%20fill%3D%22%232c1660%22%20stroke%3D%22%238f7be8%22%20stroke-width%3D%221.6%22%20stroke-linejoin%3D%22round%22%2F%3E%3Cpath%20d%3D%22M30%202c6%204%2014%206%2022%204-8%204-14%206-18%204z%22%20fill%3D%22%232c1660%22%20stroke%3D%22%238f7be8%22%20stroke-width%3D%221.2%22%20stroke-linejoin%3D%22round%22%2F%3E%3Cellipse%20cx%3D%2234%22%20cy%3D%2246%22%20rx%3D%2231%22%20ry%3D%227%22%20fill%3D%22%231d0f3f%22%20stroke%3D%22%238f7be8%22%20stroke-width%3D%221.6%22%2F%3E%3Cpath%20d%3D%22M15%2039h38l1.6%205H13.4z%22%20fill%3D%22%23ea580c%22%2F%3E%3Crect%20x%3D%2229%22%20y%3D%2238.6%22%20width%3D%228%22%20height%3D%226%22%20rx%3D%221%22%20fill%3D%22none%22%20stroke%3D%22%23fde68a%22%20stroke-width%3D%221.4%22%2F%3E%3C%2Fsvg%3E") no-repeat center / contain;
+  transform: rotate(-14deg);
+  transform-origin: 50% 90%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+[data-season="halloween"] {
+  --hw-font-spooky: "Creepster", "Luckiest Guy", Impact, system-ui, cursive;
+}
+[data-season="halloween"] :is(.section-title, .season-title) {
+  font-family: var(--hw-font-spooky);
+  font-weight: 400;
+  letter-spacing: .04em;
+}
+[data-season="halloween"] .section-title { color: var(--hw-orange-ink); font-size: clamp(1.55rem, 2.6vw, 2rem); }
+[data-season="halloween"] .section-title::before {
+  content: "🎃";
+  content: "🎃" / "";
+  width: auto; height: auto;
+  background: none;
+  font-family: system-ui, sans-serif;
+  font-size: .8em;
+}
+
+/* Fantasma flotando (solo pantallas grandes, nunca en el panel: allí no hay data-season). */
+[data-season="halloween"] body::after {
+  content: "";
+  position: fixed;
+  left: 18px; bottom: 22px;
+  width: 56px; height: 66px;
+  z-index: 40;
+  pointer-events: none;
+  background: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2056%2066%22%3E%3Cpath%20d%3D%22M28%203C14%203%206%2014%206%2028v32l7-6%207%206%208-6%208%206%207-6%207%206V28C50%2014%2042%203%2028%203z%22%20fill%3D%22%23f8f7ff%22%20stroke%3D%22%23c4b5fd%22%20stroke-width%3D%221.6%22%2F%3E%3Cellipse%20cx%3D%2221%22%20cy%3D%2227%22%20rx%3D%223.6%22%20ry%3D%225%22%20fill%3D%22%231a0f38%22%2F%3E%3Cellipse%20cx%3D%2235%22%20cy%3D%2227%22%20rx%3D%223.6%22%20ry%3D%225%22%20fill%3D%22%231a0f38%22%2F%3E%3Cellipse%20cx%3D%2216%22%20cy%3D%2236%22%20rx%3D%223.6%22%20ry%3D%222.2%22%20fill%3D%22%23f97316%22%20opacity%3D%22.35%22%2F%3E%3Cellipse%20cx%3D%2240%22%20cy%3D%2236%22%20rx%3D%223.6%22%20ry%3D%222.2%22%20fill%3D%22%23f97316%22%20opacity%3D%22.35%22%2F%3E%3Cpath%20d%3D%22M24%2039q4%204%208%200%22%20fill%3D%22none%22%20stroke%3D%22%231a0f38%22%20stroke-width%3D%221.8%22%20stroke-linecap%3D%22round%22%2F%3E%3C%2Fsvg%3E") no-repeat center / contain;
+}
+@media (max-width: 1399px) { [data-season="halloween"] body::after { display: none; } }
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   CIELO DE NOCHE (componente HalloweenSky): luna, estrellas, bruja, murciélagos,
+   telarañas, araña, neblina, cementerio y calabazas
+══════════════════════════════════════════════════════════════════════════════ */
+.hw-sky { position: absolute; inset: 0; z-index: 5; pointer-events: none; overflow: hidden; }
+.hw-sky--hero { background: linear-gradient(90deg, rgba(11,7,24,.55) 0%, rgba(26,15,56,.30) 55%, rgba(44,22,96,.12) 100%); }
+.hw-sky--game { background: linear-gradient(180deg, rgba(11,7,24,.45) 0%, rgba(26,15,56,.22) 50%, rgba(44,22,96,.35) 100%); }
+.hw-stars {
+  position: absolute; inset: 0; opacity: .6;
+  background-image:
+    radial-gradient(1.4px 1.4px at 18px 26px, #fff, transparent 70%),
+    radial-gradient(1px 1px at 92px 70px, #fff, transparent 70%),
+    radial-gradient(1.6px 1.6px at 160px 18px, #FDE68A, transparent 70%),
+    radial-gradient(1px 1px at 205px 112px, #fff, transparent 70%),
+    radial-gradient(1.2px 1.2px at 58px 132px, #fff, transparent 70%),
+    radial-gradient(1px 1px at 132px 150px, #C4B5FD, transparent 70%);
+  background-size: 230px 170px;
+}
+.hw-moon {
+  position: absolute; top: 9%; right: 7%;
+  width: clamp(72px, 9vw, 124px); height: auto;
+  filter: drop-shadow(0 0 22px rgba(253,230,138,.55)) drop-shadow(0 0 60px rgba(249,115,22,.35));
+}
+.hw-bat { position: absolute; width: 48px; }
+.hw-bat svg { display: block; width: 100%; height: auto; fill: #241447; filter: drop-shadow(0 0 2px rgba(196,181,253,.95)) drop-shadow(0 0 6px rgba(249,115,22,.35)); }
+.hw-bat-1 { top: 12%; left: 55%; }
+.hw-bat-2 { top: 30%; left: 72%; width: 34px; }
+.hw-bat-3 { top: 15%; right: 9%; left: auto; width: 40px; }
+.hw-bat-4 { top: 46%; left: 48%; width: 28px; }
+.hw-bat-5 { top: 22%; left: 36%; width: 30px; }
+.hw-web { position: absolute; top: 0; width: clamp(84px, 10vw, 140px); height: auto; fill: none; stroke: rgba(255,255,255,.3); stroke-width: .7; }
+.hw-web-tl { left: 0; }
+.hw-web-tr { right: 0; transform: scaleX(-1); }
+.hw-spider { position: absolute; top: 0; left: 52%; width: 28px; }
+.hw-spider svg { display: block; width: 100%; height: auto; }
+.hw-spider-thread { stroke: rgba(255,255,255,.45); stroke-width: .6; }
+.hw-spider-body circle { fill: #1a1030; stroke: rgba(255,255,255,.55); stroke-width: .6; }
+.hw-spider-body path { fill: none; stroke: rgba(255,255,255,.55); stroke-width: 1.1; stroke-linecap: round; }
+.hw-fog {
+  position: absolute; left: -10%; right: -10%; bottom: -24px; height: 150px;
+  background: radial-gradient(ellipse 40% 60% at 25% 70%, rgba(255,255,255,.10), transparent 70%), radial-gradient(ellipse 45% 55% at 72% 80%, rgba(196,181,253,.13), transparent 70%);
+}
+.hw-graveyard { position: absolute; left: 0; right: 0; bottom: 0; height: 110px; background: var(--hw-graveyard) no-repeat center bottom / 100% 100%; }
+.hw-pumpkins { position: absolute; right: 4%; bottom: 3%; display: flex; align-items: flex-end; gap: 6px; }
+.hw-pumpkin { display: block; height: auto; }
+.hw-pumpkin-a { width: 72px; }
+.hw-pumpkin-b { width: 50px; }
+.hw-pumpkin-face { fill: #FDE68A; filter: drop-shadow(0 0 4px #FBBF24); }
+.hw-witch {
+  position: absolute; top: 15%; right: 5%;
+  width: 86px; height: 46px;
+  background: var(--hw-witch) no-repeat center / contain;
+  filter: drop-shadow(0 0 2px rgba(253,230,138,.6));
+}
+
+/* Portada: la bruja cruza por delante de la luna; las calabazas sobre el cementerio. */
+.hw-sky--hero .hw-moon { top: 12%; right: 12%; }
+.hw-sky--hero .hw-witch { top: 17%; right: 9%; }
+.hw-sky--hero .hw-pumpkins { right: 8%; }
+
+/* Cabecera de cada juego: los adornos a la derecha y arriba, lejos del nombre y los textos. */
+.hw-sky--game .hw-moon { top: 18%; right: 6%; width: clamp(64px, 7vw, 104px); }
+.hw-sky--game .hw-witch { top: 22%; right: 3%; width: 72px; }
+.hw-sky--game .hw-graveyard { height: 84px; opacity: .95; }
+.hw-sky--game .hw-spider { left: auto; right: 30%; }
+.hw-sky--game .hw-pumpkins { right: 3%; bottom: 8px; }
+.hw-sky--game .hw-pumpkin-a { width: 58px; }
+.hw-sky--game .hw-pumpkin-b { width: 40px; }
+.hw-sky--game .hw-bat-1 { top: 14%; left: 62%; }
+.hw-sky--game .hw-bat-4 { top: 38%; left: 70%; }
+
+/* Franja de cabecera (cuenta, pedidos, contacto, ayuda, legales, catálogo). */
+.hw-sky--band .hw-moon { top: 14px; right: 18px; width: 56px; }
+.hw-sky--band .hw-web { width: 90px; }
+.hw-sky--band .hw-graveyard { height: 56px; opacity: .9; }
+.hw-sky--band .hw-bat-1 { top: 16%; left: auto; right: 120px; width: 38px; }
+.hw-sky--band .hw-bat-2 { top: 54%; left: auto; right: 70px; width: 30px; }
+.hw-sky--band .hw-bat-3 { top: 12%; left: auto; right: 220px; width: 28px; }
+
+/* Ingresar / crear cuenta / nueva contraseña: luna y cementerio (el formulario queda claro). */
+.hw-sky--auth { z-index: 0; }
+.hw-sky--auth .hw-moon { top: 6%; right: 8%; width: 70px; }
+.hw-sky--auth .hw-graveyard { height: 90px; }
+.hw-sky--auth .hw-bat-1 { top: 20%; left: auto; right: 34%; width: 34px; }
+.hw-sky--auth .hw-bat-2 { top: 34%; left: auto; right: 14%; width: 26px; }
+.hw-sky--auth .hw-bat-3 { top: 10%; left: 12%; right: auto; width: 24px; }
+
+@media (max-width: 980px) {
+  .hw-sky--hero .hw-moon { top: 16px; right: 16px; width: 64px; }
+  .hw-sky--hero .hw-witch { top: 46px; right: 8px; width: 60px; }
+  .hw-sky--hero .hw-bat-1 { left: 60%; top: 5%; width: 34px; }
+  .hw-sky--hero .hw-bat-2 { left: 74%; top: 20%; width: 26px; }
+  .hw-sky--hero .hw-bat-3 { top: 30px; right: 30px; width: 26px; }
+  .hw-sky--hero .hw-bat-4 { display: none; }
+  .hw-sky--hero .hw-bat-5 { left: 44%; top: 3%; width: 24px; }
+  .hw-spider { left: auto; right: 34%; width: 22px; }
+  .hw-pumpkins { right: 12px; bottom: 10px; }
+  .hw-pumpkin-a { width: 46px; }
+  .hw-pumpkin-b { width: 32px; }
+  .hw-web { width: 76px; }
+  .hw-graveyard { height: 70px; }
+  .hw-sky--game .hw-moon { top: 70px; right: 12px; width: 52px; }
+  .hw-sky--game .hw-witch, .hw-sky--game .hw-bat-4 { display: none; }
+}
+@media (max-width: 640px) {
+  .hw-sky--band .hw-moon { width: 40px; top: 10px; right: 12px; }
+  .hw-sky--band .hw-bat-3 { display: none; }
+  .hw-sky--band .hw-bat-1 { right: 70px; }
+  .hw-sky--band .hw-bat-2 { right: 40px; top: 62%; }
+  .hw-sky--game .hw-pumpkins, .hw-sky--hero .hw-pumpkins { display: none; }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   PORTADA
+══════════════════════════════════════════════════════════════════════════════ */
+.hw-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  width: fit-content;
+  padding: 5px 13px;
+  border-radius: 100px;
+  background: rgba(249,115,22,.18);
+  border: 1px solid rgba(249,115,22,.45);
+  color: #FED7AA;
+  font-size: .74rem; font-weight: 800; letter-spacing: .02em;
+}
+[data-season="halloween"] .season-hero-word {
+  font-family: var(--hw-font-spooky);
+  font-weight: 400;
+  letter-spacing: .05em;
+  background: linear-gradient(135deg, #F97316 0%, #FDE047 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: none;
+}
+[data-season="halloween"] .season-hero p { color: rgba(255,255,255,.82); }
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   SECCIONES: fondo cálido, telarañas en las esquinas y una araña colgando
+══════════════════════════════════════════════════════════════════════════════ */
+[data-season="halloween"] .season-section {
+  position: relative;
+  border-radius: 24px;
+  padding-left: 18px; padding-right: 18px;
+  background-color: #FFF8F1;
+  background-image: linear-gradient(180deg, rgba(249,115,22,.07), rgba(124,104,214,.06)), var(--hw-wallpaper-light);
+  background-size: auto, 320px 260px;
+  border: 1px solid rgba(249,115,22,.18);
+  margin-bottom: 18px;
+}
+[data-season="halloween"][data-theme="dark"] .season-section {
+  background-color: #120c22;
+  background-image: radial-gradient(ellipse 60% 55% at 50% 0, rgba(249,115,22,.11), transparent 70%), var(--hw-wallpaper-dark);
+  border-color: rgba(249,115,22,.16);
+}
+[data-season="halloween"] .season-section > :not(.absolute):not(.fixed) { position: relative; z-index: 2; }
+[data-season="halloween"] .season-grid { padding-top: 22px; padding-bottom: 22px; }
+[data-season="halloween"] .season-section::after {
+  content: "";
+  position: absolute; left: 0; right: 0; top: 0;
+  height: 130px;
+  border-radius: 24px 24px 0 0;
+  pointer-events: none; z-index: 1;
+  background: var(--hw-web-tl-light) no-repeat left top / 110px, var(--hw-web-tr-light) no-repeat right top / 110px;
+}
+[data-season="halloween"][data-theme="dark"] .season-section::after { background-image: var(--hw-web-tl-dark), var(--hw-web-tr-dark); }
+[data-season="halloween"] .season-section::before {
+  content: "";
+  position: absolute; top: 0; right: 18%;
+  width: 24px; height: 96px;
+  pointer-events: none; z-index: 1;
+  background: var(--hw-spider-light) no-repeat center bottom / 24px auto;
+}
+[data-season="halloween"][data-theme="dark"] .season-section::before { background-image: var(--hw-spider-dark); }
+[data-season="halloween"] .season-section:nth-of-type(2n)::before { right: auto; left: 14%; height: 78px; }
+@media (max-width: 640px) {
+  [data-season="halloween"] .season-section { padding-left: 12px; padding-right: 12px; border-radius: 18px; }
+  [data-season="halloween"] .season-section::after { background-size: 72px, 72px; height: 80px; }
+  [data-season="halloween"] .season-section::before { height: 58px; width: 18px; background-size: 18px auto; }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   CATÁLOGO Y TARJETAS
+══════════════════════════════════════════════════════════════════════════════ */
+[data-season="halloween"] :is(.game-card, .season-card) { position: relative; }
+[data-season="halloween"] :is(.game-card, .season-card)::after {
+  content: "";
+  position: absolute; top: 0; right: 0;
+  width: 46px; height: 46px;
+  pointer-events: none; z-index: 3;
+  background: var(--hw-web-tl-light) no-repeat top right / contain;
+  transform: scaleX(-1);
+}
+[data-season="halloween"][data-theme="dark"] :is(.game-card, .season-card)::after { background-image: var(--hw-web-tl-dark); }
+/* Las tarjetas empiezan con imagen: telaraña clara para que se vea sobre ella. */
+[data-season="halloween"] :is(.game-card, .season-card)::after { background-image: var(--hw-web-tl-dark); }
+[data-season="halloween"] .season-card { border-color: rgba(249,115,22,.30) !important; }
+[data-season="halloween"] :is(.game-card, .season-card):hover {
+  border-color: rgba(249,115,22,.75) !important;
+  box-shadow: 0 0 0 1px rgba(249,115,22,.45), 0 14px 34px rgba(249,115,22,.25) !important;
+}
+[data-season="halloween"] .season-filter :is(a, button) { border-color: rgba(249,115,22,.35) !important; }
+[data-season="halloween"] .season-filter > :first-child::before { content: "🎃 "; content: "🎃 " / ""; }
+
+/* Producto elegido (página de compra): telaraña, brillo de calabaza y 🎃. */
+[data-season="halloween"] .season-product {
+  border-color: rgba(249,115,22,.55) !important;
+  box-shadow: 0 0 0 1px rgba(249,115,22,.35), 0 16px 40px rgba(249,115,22,.22);
+}
+[data-season="halloween"] .season-product::after {
+  content: "";
+  position: absolute; top: 0; right: 0;
+  width: 64px; height: 64px;
+  pointer-events: none; z-index: 3;
+  background: var(--hw-web-tl-dark) no-repeat top right / contain;
+  transform: scaleX(-1);
+}
+[data-season="halloween"] .season-product::before {
+  content: "🎃";
+  content: "🎃" / "";
+  position: absolute; top: 10px; left: 10px; z-index: 3;
+  width: 34px; height: 34px;
+  display: grid; place-items: center;
+  border-radius: 999px;
+  background: rgba(11,7,24,.55);
+  border: 1px solid rgba(249,115,22,.55);
+  font-size: 18px;
+  pointer-events: none;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   CABECERAS DE NOCHE (resto de páginas) Y PIE DE PÁGINA
+══════════════════════════════════════════════════════════════════════════════ */
+/* Tokens de noche: los textos y tarjetas de la zona pasan a claros sobre la noche. */
+[data-season="halloween"] :is(.season-band, .season-footer) {
+  --bg: #0b0718;
+  --surface: rgba(255,255,255,.04);
+  --card: rgba(255,255,255,.07);
+  --card-hover: rgba(255,255,255,.11);
+  --border: rgba(255,255,255,.14);
+  --text: #F3F5FB;
+  --text-muted: #CEC8EA;
+  --text-subtle: #ADA6CF;
+  --primary: #C4B2FF;
+  --on-primary: #161020;
+  color-scheme: dark;
+}
+[data-season="halloween"] .season-band {
+  position: relative;
+  overflow: hidden;
+  background: radial-gradient(ellipse 50% 70% at 80% 18%, rgba(249,115,22,.16), transparent 65%), linear-gradient(180deg, var(--hw-night-1) 0%, var(--hw-night-2) 55%, var(--hw-night-3) 100%) !important;
+  border-color: rgba(249,115,22,.3) !important;
+}
+/* Contenido por encima del cielo (las capas decorativas absolutas de la cabecera se quedan como están). */
+[data-season="halloween"] .season-band > :not(.hw-sky):not(.absolute):not(.fixed) { position: relative; z-index: 6; }
+/* Cabeceras que normalmente no tienen fondo: en temporada ganan aire y esquinas redondas. */
+[data-season="halloween"] .season-band--pad { padding: 28px 24px; border-radius: 24px; border: 1px solid rgba(249,115,22,.3); }
+@media (max-width: 640px) { [data-season="halloween"] .season-band--pad { padding: 22px 16px; border-radius: 18px; } }
+[data-season="halloween"] .season-band :is(h1, h2).season-title { color: #FDBA74; text-shadow: 0 0 22px rgba(249,115,22,.4); }
+
+[data-season="halloween"] .season-footer {
+  background: var(--hw-web-tl-dark) no-repeat left top / 120px, var(--hw-web-tr-dark) no-repeat right top / 120px, var(--hw-wallpaper-night) repeat 0 0 / 320px 260px, linear-gradient(180deg, #140b2c, #0b0718) !important;
+  border-top-color: rgba(249,115,22,.35) !important;
+}
+.hw-greeting {
+  display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap;
+  margin: 18px 0 0;
+  padding: 18px 16px 4px;
+  text-align: center;
+  font-family: var(--hw-font-spooky, system-ui);
+  font-weight: 400;
+  letter-spacing: .04em;
+  font-size: 1.35rem;
+  color: #FDBA74;
+  border-top: 1px solid rgba(249,115,22,.3);
+  text-shadow: 0 0 16px rgba(249,115,22,.35);
+}
+.hw-greeting-pumpkin { width: 30px; }
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   TIENDA DE FORTNITE: secciones de terror marcadas (sin cambiar el orden)
+══════════════════════════════════════════════════════════════════════════════ */
+[data-season="halloween"] .fns-section.is-season { position: relative; }
+[data-season="halloween"] .fns-section.is-season::after {
+  content: "";
+  position: absolute; top: -6px; right: 0;
+  width: 72px; height: 72px;
+  pointer-events: none;
+  background: var(--hw-web-tl-dark) no-repeat top right / contain;
+  transform: scaleX(-1);
+}
+[data-season="halloween"] .fns-section.is-season .fns-section__title { text-shadow: 0 0 18px rgba(249,115,22,.65), 0 2px 16px rgba(0,0,0,.3); }
+[data-season="halloween"] .fns-section.is-season .fns-section__title::before { content: "🎃 "; content: "🎃 " / ""; font-style: normal; }
+[data-season="halloween"] .fns-section.is-season .fns-card:hover { box-shadow: 0 0 0 2px rgba(249,115,22,.6), 0 12px 32px rgba(249,115,22,.28); }
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   MOVIMIENTO: solo en computadora y sin «reducir movimiento». En celulares (hover: none)
+   nada se anima y no hay filtros (rendimiento).
+══════════════════════════════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: no-preference) and (hover: hover) {
+  .hw-bat, .hw-bat-wings, .hw-spider, .hw-fog, .hw-witch,
+  [data-season="halloween"] .season-logo::before,
+  [data-season="halloween"] .season-section::before,
+  [data-season="halloween"] body::after { will-change: transform; }
+  .hw-pumpkin-face { will-change: opacity; }
+  .hw-bat { animation: hw-drift 9s ease-in-out infinite; }
+  .hw-bat-2 { animation-duration: 11s; animation-delay: -3s; }
+  .hw-bat-3 { animation-duration: 13s; animation-delay: -6s; }
+  .hw-bat-4 { animation-duration: 8s; animation-delay: -2s; }
+  .hw-bat-5 { animation-duration: 12s; animation-delay: -5s; }
+  .hw-bat-wings { animation: hw-flap .3s ease-in-out infinite alternate; transform-origin: 50% 40%; }
+  .hw-bat-2 .hw-bat-wings { animation-duration: .26s; }
+  .hw-spider { animation: hw-bob 4.5s ease-in-out infinite; }
+  .hw-fog { animation: hw-fog 16s ease-in-out infinite alternate; }
+  .hw-pumpkin-face { animation: hw-flicker 3.2s infinite; }
+  .hw-witch { animation: hw-witch 26s linear infinite; }
+  [data-season="halloween"] .season-logo::before { animation: hw-tilt 5s ease-in-out infinite; }
+  [data-season="halloween"] .season-section::before { animation: hw-bob 5s ease-in-out infinite; }
+  [data-season="halloween"] .season-section:nth-of-type(2n)::before { animation-delay: -2s; }
+  [data-season="halloween"] body::after { animation: hw-ghost 5.5s ease-in-out infinite; }
+}
+@media (hover: none) {
+  .hw-moon, .hw-bat svg, .hw-pumpkin-face, .hw-witch { filter: none; }
+}
+@keyframes hw-drift { 0%, 100% { transform: translate(0, 0); } 25% { transform: translate(18px, -10px); } 50% { transform: translate(34px, 4px); } 75% { transform: translate(12px, 12px); } }
+@keyframes hw-flap { 0% { transform: scaleY(1); } 100% { transform: scaleY(.6); } }
+@keyframes hw-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(16px); } }
+@keyframes hw-fog { 0% { transform: translateX(-4%); } 100% { transform: translateX(4%); } }
+@keyframes hw-flicker { 0%, 100% { opacity: 1; } 44% { opacity: .72; } 50% { opacity: .96; } 56% { opacity: .68; } }
+@keyframes hw-tilt { 0%, 100% { transform: rotate(-14deg); } 50% { transform: rotate(-8deg); } }
+@keyframes hw-witch {
+  0% { transform: translate(160px, 18px); opacity: 0; }
+  3% { opacity: 1; }
+  42% { transform: translate(-62vw, -26px); opacity: 1; }
+  46%, 100% { transform: translate(-66vw, -30px); opacity: 0; }
+}
+@keyframes hw-ghost { 0%, 100% { transform: translate(0, 0) rotate(-4deg); opacity: .9; } 50% { transform: translate(6px, -16px) rotate(4deg); opacity: .75; } }

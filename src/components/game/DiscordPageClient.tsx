@@ -11,6 +11,7 @@ import { NITRO, MEJORAS, TIENDA, DiscordProduct } from "@/data/discord";
 import { usePreferences } from "@/context/PreferencesContext";
 import { useGameVisibility } from "@/hooks/useGameVisibility";
 import { useT, useBadge } from "@/i18n";
+import { SeasonSky } from "@/seasons/decor";
 
 const SLUG = "discord";
 
@@ -46,7 +47,7 @@ function ProductCard({ p }: { p: DiscordProduct }) {
   const badge = useBadge();
   const disc = Math.round((1 - p.price / p.priceOld) * 100);
   return (
-    <div className="rounded-2xl overflow-hidden flex flex-col transition-all duration-200 hover:-translate-y-1 group"
+    <div className="rounded-2xl overflow-hidden flex flex-col transition-all duration-200 hover:-translate-y-1 group season-card"
       style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
       <div className="relative w-full overflow-hidden"
         style={{ aspectRatio: "4/3", background: `linear-gradient(135deg,rgba(${ACCENT_GLOW},0.18),rgba(5,5,20,0.75))` }}>
@@ -244,8 +245,9 @@ function DiscordPageInner({ tabDefs, nitro, mejoras, tienda }: {
       <main style={{ background: "var(--bg)", minHeight: "100vh" }}>
 
         {/* HERO */}
-        <section className="relative overflow-hidden" style={{ height: "60vh", minHeight: "420px" }}>
+        <section className="relative overflow-hidden season-game-hero" style={{ height: "60vh", minHeight: "420px" }}>
           <Image src="/games/discord.jpg" alt="Discord" fill sizes="100vw" className="object-cover object-center" priority />
+          <SeasonSky variant="game" />
           <div className="absolute inset-0"
             style={{ background: "linear-gradient(to right,rgba(0,0,0,0.92) 0%,rgba(0,0,0,0.45) 60%,rgba(0,0,0,0.1) 100%)" }} />
           <div className="absolute inset-0"

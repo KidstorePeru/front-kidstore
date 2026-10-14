@@ -1,5 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import { createHash } from "node:crypto";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 
 import { PreferencesProvider } from "@/context/PreferencesContext";
 import { VisibilityProvider } from "@/context/VisibilityContext";
@@ -7,6 +10,18 @@ import { AuthProvider } from "@/context/AuthContext";
 import { WishlistProvider } from "@/context/WishlistContext";
 import { CartProvider } from "@/context/CartContext";
 import { AuthModalProvider } from "@/components/auth/AuthModal";
+import { SeasonProvider } from "@/seasons/SeasonContext";
+import { seasonBootScript } from "@/seasons/bootScript";
+
+// Versión de las hojas de temporada (public/seasons/*.css) según su contenido, para que el
+// navegador no use una copia vieja tras publicar cambios.
+const SEASON_CSS_VERSION = (() => {
+  try {
+    return createHash("sha1").update(readFileSync(join(process.cwd(), "public", "seasons", "halloween.css"))).digest("hex").slice(0, 10);
+  } catch {
+    return "1";
+  }
+})();
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.kidstoreperu.com"),
@@ -52,7 +67,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es" data-theme="light" data-scroll-behavior="smooth" suppressHydrationWarning>
+      <head>
+        {/* Temporada (Halloween…) decidida antes de pintar; ver src/seasons/bootScript.ts */}
+        <script dangerouslySetInnerHTML={{ __html: seasonBootScript(SEASON_CSS_VERSION) }} />
+      </head>
       <body>
+        <SeasonProvider cssVersion={SEASON_CSS_VERSION}>
         <PreferencesProvider>
           <VisibilityProvider>
             <AuthProvider>
@@ -64,6 +84,7 @@ export default function RootLayout({
             </AuthProvider>
           </VisibilityProvider>
         </PreferencesProvider>
+        </SeasonProvider>
       </body>
     </html>
   );

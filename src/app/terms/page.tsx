@@ -5,6 +5,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { usePreferences } from "@/context/PreferencesContext";
 import { Shield, FileText, CreditCard, Package, Truck, RefreshCw, Mail, AlertCircle, Gamepad2, UserCheck, ArrowRight } from "lucide-react";
+import { SeasonSky } from "@/seasons/decor";
 
 export default function TermsPage() {
   const { lang } = usePreferences();
@@ -16,8 +17,9 @@ export default function TermsPage() {
       <main style={{ background: "var(--bg)", minHeight: "100vh" }}>
 
         {/* ═══ Hero ═══ */}
-        <div className="relative overflow-hidden"
+        <div className="relative overflow-hidden season-band"
           style={{ background: "var(--brand-panel)" }}>
+          <SeasonSky variant="band" />
           <div className="absolute inset-0 pointer-events-none"
             style={{ backgroundImage: "radial-gradient(rgba(255,255,255,0.06) 1px,transparent 1px)", backgroundSize: "28px 28px" }}/>
           <div className="absolute -left-32 top-0 w-80 h-80 rounded-full pointer-events-none"
@@ -30,7 +32,7 @@ export default function TermsPage() {
               style={{ background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.15)", backdropFilter: "blur(8px)" }}>
               <Shield size={30} className="text-white"/>
             </div>
-            <h1 className="text-3xl md:text-4xl font-bold text-white mb-3">
+            <h1 className="text-3xl md:text-4xl font-bold text-white mb-3 season-title">
               {isEN ? "Terms & Conditions" : "T\u00e9rminos y Condiciones"}
             </h1>
             <p className="text-sm text-white/50">

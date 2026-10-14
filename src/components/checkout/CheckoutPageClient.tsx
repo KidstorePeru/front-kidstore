@@ -15,6 +15,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useT } from "@/i18n";
 import { whatsappLink } from "@/config/site";
 import { api } from "@/lib/api";
+import { SeasonSky } from "@/seasons/decor";
 
 // ── Payment data ───────────────────────────────────────────────
 const PAYMENT_INFO = {
@@ -994,7 +995,8 @@ export default function CheckoutPageClient() {
       <Navbar />
       <main style={{ background:"var(--bg)", minHeight:"100vh" }}>
         <div className="max-w-[1200px] mx-auto px-4 lg:px-8 py-10">
-          <div className="flex items-center gap-3 mb-8">
+          <div className="flex items-center gap-3 mb-8 season-band season-band--pad">
+            <SeasonSky variant="band" />
             <Link href="/games"
               className="w-9 h-9 rounded-xl flex items-center justify-center hover:opacity-70 transition-all"
               style={{ background:"var(--card)", border:"1px solid var(--border)", color:"var(--text-muted)" }}>
