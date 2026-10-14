@@ -32,8 +32,8 @@ const slides = [
     ctaEN: "Recharge Genshin",
     href: "/games/genshin-impact",
     image: "/games/genshin-impact.jpg",
-    accent: "#A78BFA",
-    glow: "124,58,237",
+    accent: "#AA91FF",
+    glow: "124,104,214",
   },
   {
     id: 3,

@@ -76,13 +76,13 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
         <div className="flex items-center justify-between px-5 py-4 flex-shrink-0"
           style={{ borderBottom: "1px solid var(--border)" }}>
           <div className="flex items-center gap-2.5">
-            <ShoppingCart size={18} style={{ color: "var(--brand-light)" }} />
+            <ShoppingCart size={18} style={{ color: "var(--primary)" }} />
             <p className="text-sm font-bold" style={{ color: "var(--text)" }}>
               {t.cart.title}
             </p>
             {totalItems > 0 && (
-              <span className="px-2 py-0.5 rounded-full text-[11px] font-bold text-white"
-                style={{ background: "var(--brand)" }}>
+              <span className="px-2 py-0.5 rounded-full text-[11px] font-bold text-[var(--on-primary)]"
+                style={{ background: "var(--primary)" }}>
                 {totalItems}
               </span>
             )}
@@ -110,8 +110,8 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
             /* Empty state */
             <div className="flex flex-col items-center justify-center h-full gap-4 px-6 py-16 text-center">
               <div className="w-20 h-20 rounded-2xl flex items-center justify-center"
-                style={{ background: "rgba(124,58,237,0.08)", border: "1px solid rgba(124,58,237,0.15)" }}>
-                <ShoppingCart size={32} style={{ color: "var(--brand-light)", opacity: 0.5 }} />
+                style={{ background: "rgba(124,104,214,0.08)", border: "1px solid rgba(124,104,214,0.15)" }}>
+                <ShoppingCart size={32} style={{ color: "var(--primary)", opacity: 0.5 }} />
               </div>
               <div>
                 <p className="text-sm font-bold mb-1" style={{ color: "var(--text)" }}>
@@ -122,8 +122,8 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                 </p>
               </div>
               <button onClick={onClose}
-                className="px-5 py-2.5 rounded-xl text-xs font-bold text-white transition-all hover:scale-105"
-                style={{ background: "linear-gradient(135deg,#7C3AED,#5B21B6)" }}>
+                className="px-5 py-2.5 rounded-xl text-xs font-bold text-[var(--on-primary)] transition-all hover:scale-105"
+                style={{ background: "var(--primary)" }}>
                 {t.cart.keepShopping}
               </button>
             </div>
@@ -137,7 +137,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
 
                   {/* Image */}
                   <div className="relative w-16 h-16 rounded-xl overflow-hidden flex-shrink-0"
-                    style={{ background: "linear-gradient(135deg,rgba(124,58,237,0.15),rgba(15,10,40,0.5))" }}>
+                    style={{ background: "linear-gradient(135deg,rgba(124,104,214,0.15),rgba(22,16,32,0.5))" }}>
                     <Image src={item.img} alt={item.name} fill sizes="80px" className="object-contain p-1.5" />
                   </div>
 
@@ -148,7 +148,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                     </p>
                     <div className="flex items-center gap-1.5 mb-2 flex-wrap">
                       <span className="text-[10px] px-1.5 py-0.5 rounded-md font-medium"
-                        style={{ background: "rgba(124,58,237,0.1)", color: "var(--brand-light)" }}>
+                        style={{ background: "rgba(124,104,214,0.1)", color: "var(--primary)" }}>
                         {lang === "EN" ? (TABLABEL_EN[item.tabLabel] ?? item.tabLabel) : item.tabLabel}
                       </span>
                       <span className="text-[10px]" style={{ color: "var(--text-subtle)" }}>
@@ -159,7 +159,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                     {/* Price + controls */}
                     <div className="flex items-center justify-between gap-2">
                       <div>
-                        <p className="text-sm font-bold" style={{ color: "var(--brand-light)" }}>
+                        <p className="text-sm font-bold" style={{ color: "var(--primary)" }}>
                           {formatPrice(item.price * item.quantity)}
                         </p>
                         {item.quantity > 1 && (
@@ -216,7 +216,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
               <div className="flex justify-between text-sm font-bold pt-1"
                 style={{ borderTop: "1px solid var(--border)", color: "var(--text)", paddingTop: "8px" }}>
                 <span>{t.cart.total}</span>
-                <span style={{ color: "var(--brand-light)" }}>{formatPrice(totalPrice)}</span>
+                <span style={{ color: "var(--primary)" }}>{formatPrice(totalPrice)}</span>
               </div>
             </div>
 
@@ -228,8 +228,8 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                 {t.cart.keepShopping}
               </button>
               <Link href="/checkout" onClick={onClose}
-                className="flex items-center justify-center gap-1.5 py-3 rounded-xl text-xs font-bold text-white transition-all hover:scale-[1.02]"
-                style={{ background:"linear-gradient(135deg,#7C3AED,#5B21B6)", boxShadow:"0 4px 16px rgba(124,58,237,0.4)" }}>
+                className="flex items-center justify-center gap-1.5 py-3 rounded-xl text-xs font-bold text-[var(--on-primary)] transition-all hover:scale-[1.02]"
+                style={{ background:"var(--primary)", boxShadow:"0 4px 16px rgba(124,104,214,0.4)" }}>
                 <Zap size={13}/> {t.cart.checkout}
               </Link>
             </div>

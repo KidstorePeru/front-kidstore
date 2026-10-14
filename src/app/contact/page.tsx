@@ -61,8 +61,8 @@ export default function ContactPage() {
           {/* ── Header ── */}
           <div className="text-center mb-12">
             <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-5"
-              style={{ background: "rgba(124,58,237,0.1)", border: "1px solid rgba(124,58,237,0.15)" }}>
-              <MessageCircle size={26} style={{ color: "var(--brand-light)" }}/>
+              style={{ background: "rgba(124,104,214,0.1)", border: "1px solid rgba(124,104,214,0.15)" }}>
+              <MessageCircle size={26} style={{ color: "var(--primary)" }}/>
             </div>
             <h1 className="text-2xl md:text-3xl font-bold mb-3" style={{ color: "var(--text)" }}>
               {isEN ? "How can we help you?" : "\u00bfC\u00f3mo podemos ayudarte?"}
@@ -76,7 +76,7 @@ export default function ContactPage() {
             {/* Hours badge */}
             <div className="inline-flex items-center gap-2.5 mt-6 px-5 py-2.5 rounded-full"
               style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
-              <Clock size={14} style={{ color: "var(--brand-light)" }}/>
+              <Clock size={14} style={{ color: "var(--primary)" }}/>
               <span className="text-xs font-semibold" style={{ color: "var(--text-muted)" }}>
                 {isEN
                   ? "Monday \u2013 Sunday \u00b7 12:00 AM \u2013 9:00 AM (Peru time)"
@@ -124,19 +124,19 @@ export default function ContactPage() {
           {/* ── FAQ CTA ── */}
           <div className="rounded-2xl p-8 text-center relative overflow-hidden"
             style={{
-              background: "linear-gradient(135deg, rgba(124,58,237,0.06), rgba(124,58,237,0.02))",
+              background: "linear-gradient(135deg, rgba(124,104,214,0.06), rgba(124,104,214,0.02))",
               border: "1px solid var(--border)",
             }}>
             {/* Decorative glow */}
             <div className="absolute -right-10 -top-10 w-40 h-40 rounded-full pointer-events-none"
-              style={{ background: "radial-gradient(circle,rgba(124,58,237,0.08),transparent 70%)" }}/>
+              style={{ background: "radial-gradient(circle,rgba(124,104,214,0.08),transparent 70%)" }}/>
             <div className="absolute -left-10 -bottom-10 w-32 h-32 rounded-full pointer-events-none"
-              style={{ background: "radial-gradient(circle,rgba(234,88,12,0.06),transparent 70%)" }}/>
+              style={{ background: "radial-gradient(circle,rgba(206,116,58,0.06),transparent 70%)" }}/>
 
             <div className="relative z-10">
               <div className="w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-4"
-                style={{ background: "rgba(124,58,237,0.1)", border: "1px solid rgba(124,58,237,0.12)" }}>
-                <HelpCircle size={22} style={{ color: "var(--brand-light)" }}/>
+                style={{ background: "rgba(124,104,214,0.1)", border: "1px solid rgba(124,104,214,0.12)" }}>
+                <HelpCircle size={22} style={{ color: "var(--primary)" }}/>
               </div>
               <h3 className="text-lg font-bold mb-2" style={{ color: "var(--text)" }}>
                 {isEN ? "Have a common question?" : "\u00bfTienes una pregunta frecuente?"}
@@ -147,8 +147,8 @@ export default function ContactPage() {
                   : "Revisa nuestras preguntas frecuentes antes de contactarnos."}
               </p>
               <Link href="/faq"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold text-white transition-all hover:scale-105 hover:-translate-y-0.5"
-                style={{ background: "var(--brand)", boxShadow: "0 4px 20px rgba(124,58,237,0.3)" }}>
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold text-[var(--on-primary)] transition-all hover:scale-105 hover:-translate-y-0.5"
+                style={{ background: "var(--primary)", boxShadow: "0 4px 20px rgba(124,104,214,0.3)" }}>
                 {isEN ? "View FAQ" : "Ver FAQ"}
                 <ArrowRight size={15}/>
               </Link>

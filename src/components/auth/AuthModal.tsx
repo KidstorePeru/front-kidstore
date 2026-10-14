@@ -60,16 +60,16 @@ export function AuthModalProvider({ children }: { children: ReactNode }) {
 // ══════════════════════════════════════════════
 interface Pixel { w:number; h:number; bg:string; op:number; top?:string; left?:string; bottom?:string; right?:string; }
 const PIXELS: Pixel[] = [
-  { w:8,  h:8,  bg:"#1D4ED8", op:.4,  top:"9%",    left:"6%"    },
-  { w:5,  h:5,  bg:"#60A5FA", op:.3,  top:"16%",   left:"20%"   },
-  { w:10, h:10, bg:"#1E3A8A", op:.18, top:"22%",   left:"3%"    },
-  { w:8,  h:8,  bg:"#FF6B1A", op:.4,  top:"11%",   right:"9%"   },
-  { w:6,  h:6,  bg:"#E53E3E", op:.35, top:"26%",   right:"4%"   },
-  { w:10, h:10, bg:"#7C3AED", op:.22, top:"7%",    right:"22%"  },
-  { w:5,  h:5,  bg:"#F97316", op:.3,  top:"32%",   right:"15%"  },
-  { w:7,  h:7,  bg:"#3B82F6", op:.18, bottom:"25%",left:"8%"    },
-  { w:5,  h:5,  bg:"#A855F7", op:.22, bottom:"17%",right:"7%"   },
-  { w:4,  h:4,  bg:"#FCD34D", op:.18, top:"40%",   right:"30%"  },
+  { w:8,  h:8,  bg:"#7C68D6", op:.4,  top:"9%",    left:"6%"    },
+  { w:5,  h:5,  bg:"#AA91FF", op:.3,  top:"16%",   left:"20%"   },
+  { w:10, h:10, bg:"var(--primary)", op:.18, top:"22%",   left:"3%"    },
+  { w:8,  h:8,  bg:"#CE743A", op:.4,  top:"11%",   right:"9%"   },
+  { w:6,  h:6,  bg:"#CE743A", op:.35, top:"26%",   right:"4%"   },
+  { w:10, h:10, bg:"var(--primary)", op:.22, top:"7%",    right:"22%"  },
+  { w:5,  h:5,  bg:"var(--primary)", op:.3,  top:"32%",   right:"15%"  },
+  { w:7,  h:7,  bg:"#7C68D6", op:.18, bottom:"25%",left:"8%"    },
+  { w:5,  h:5,  bg:"#AA91FF", op:.22, bottom:"17%",right:"7%"   },
+  { w:4,  h:4,  bg:"#CE743A", op:.18, top:"40%",   right:"30%"  },
 ];
 
 // ══════════════════════════════════════════════
@@ -292,14 +292,14 @@ function AuthModal({
   const isRegister = view === "register";
 
   // ── Panel izquierdo copy ──
-  const gradOrange = "linear-gradient(135deg,#FCA5A5 0%,#F97316 45%,#FCD34D 100%)";
-  const gradBlue   = "linear-gradient(135deg,#60A5FA 0%,#F97316 55%,#FCD34D 100%)";
+  const gradOrange = "linear-gradient(135deg,#C9BBFF 0%,#AA91FF 55%,#CE743A 100%)";
+  const gradBlue   = "linear-gradient(135deg,#AA91FF 0%,#7C68D6 100%)";
   const gradStyle  = (g: string) => ({ background:g, WebkitBackgroundClip:"text" as const, WebkitTextFillColor:"transparent", backgroundClip:"text" as const });
 
   const leftCopy = {
     login: {
-      badge:    <><span className="w-1.5 h-1.5 rounded-full bg-orange-400 animate-pulse"/> {isEN ? "Instant delivery" : "Entrega instantánea"}</>,
-      badgeCls: "rgba(249,115,22,0.1)", badgeBdr: "rgba(249,115,22,0.2)", badgeColor: "#FB923C",
+      badge:    <><span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background:"var(--accent)" }}/> {isEN ? "Instant delivery" : "Entrega instantánea"}</>,
+      badgeCls: "rgba(206,116,58,0.1)", badgeBdr: "rgba(206,116,58,0.2)", badgeColor: "var(--accent)",
       title:    isEN
         ? <>Recharge your<br/>games<br/><span style={gradStyle(gradOrange)}>at the best price</span></>
         : <>Recarga tus<br/>juegos<br/><span style={gradStyle(gradOrange)}>al mejor precio</span></>,
@@ -313,7 +313,7 @@ function AuthModal({
     },
     forgot: {
       badge:    <>{isEN ? "📧 Recover your access" : "📧 Recupera tu acceso"}</>,
-      badgeCls: "rgba(234,88,12,0.1)", badgeBdr: "rgba(234,88,12,0.2)", badgeColor: "#F97316",
+      badgeCls: "rgba(206,116,58,0.1)", badgeBdr: "rgba(206,116,58,0.2)", badgeColor: "var(--primary)",
       title:    isEN
         ? <>Recover<br/>your access<br/><span style={gradStyle(gradOrange)}>easily</span></>
         : <>Recupera<br/>tu acceso<br/><span style={gradStyle(gradOrange)}>fácilmente</span></>,
@@ -350,17 +350,18 @@ function AuthModal({
 
         {/* ══ PANEL IZQUIERDO ══ */}
         <div
+          data-theme="dark"
           className="hidden lg:flex flex-col justify-between p-10 relative overflow-hidden flex-shrink-0"
-          style={{ width: isRegister ? 370 : 420, background:"#080C18" }}
+          style={{ width: isRegister ? 370 : 420, background:"var(--hero-bg)" }}
         >
           {/* Grid */}
           <div className="absolute inset-0 pointer-events-none" style={{ backgroundImage:[
-            "repeating-linear-gradient(0deg,rgba(30,58,138,0.05) 0,rgba(30,58,138,0.05) 1px,transparent 1px,transparent 36px)",
-            "repeating-linear-gradient(90deg,rgba(30,58,138,0.05) 0,rgba(30,58,138,0.05) 1px,transparent 1px,transparent 36px)",
+            "repeating-linear-gradient(0deg,rgba(124,104,214,0.05) 0,rgba(124,104,214,0.05) 1px,transparent 1px,transparent 36px)",
+            "repeating-linear-gradient(90deg,rgba(124,104,214,0.05) 0,rgba(124,104,214,0.05) 1px,transparent 1px,transparent 36px)",
           ].join(",")}}/>
           {/* Glows */}
-          <div className="absolute pointer-events-none" style={{ top:"-70px",right:"-50px",width:"280px",height:"280px",background:"radial-gradient(circle,rgba(234,88,12,0.14),transparent 65%)",borderRadius:"50%"}}/>
-          <div className="absolute pointer-events-none" style={{ bottom:"-50px",left:"-25px",width:"220px",height:"220px",background:"radial-gradient(circle,rgba(30,58,138,0.18),transparent 65%)",borderRadius:"50%"}}/>
+          <div className="absolute pointer-events-none" style={{ top:"-70px",right:"-50px",width:"280px",height:"280px",background:"radial-gradient(circle,rgba(206,116,58,0.14),transparent 65%)",borderRadius:"50%"}}/>
+          <div className="absolute pointer-events-none" style={{ bottom:"-50px",left:"-25px",width:"220px",height:"220px",background:"radial-gradient(circle,rgba(124,104,214,0.18),transparent 65%)",borderRadius:"50%"}}/>
           {/* Pixels */}
           {PIXELS.map((px, i) => (
             <div key={i} className="absolute pointer-events-none rounded-sm" style={{
@@ -372,9 +373,8 @@ function AuthModal({
 
           {/* Logo */}
           <div className="relative z-10">
-            <Image src="/logo/imagotipo-kidstore.png" alt="KidStore"
-              width={180} height={68} className="object-contain"
-              style={{ filter:"brightness(0) invert(1)" }} priority/>
+            <Image src="/brand/kidstore-imagotipo.png" alt="KidStore"
+              width={180} height={47} className="object-contain" priority/>
           </div>
 
           {/* Copy */}
@@ -386,7 +386,7 @@ function AuthModal({
             <h2 className="text-3xl font-black text-white leading-tight" style={{ letterSpacing:"-.02em" }}>
               {leftCopy.title}
             </h2>
-            <p className="text-sm" style={{ color:"rgba(255,255,255,0.3)" }}>
+            <p className="text-sm" style={{ color:"rgba(255,255,255,0.55)" }}>
               {isEN ? "V-Bucks, Robux, Nitro, TFT Coins and more." : "V-Bucks, Robux, Nitro, TFT Coins y más."}
             </p>
           </div>
@@ -394,10 +394,10 @@ function AuthModal({
           {/* Trust chips */}
           <div className="relative z-10 space-y-2">
             {[
-              { icon:<Zap size={13}/>,           color:"#F97316", bg:"rgba(249,115,22,0.1)",  bdr:"rgba(249,115,22,0.2)",  text: isEN ? "Guaranteed delivery in minutes" : "Entrega garantizada en minutos" },
-              { icon:<Shield size={13}/>,         color:"#60A5FA", bg:"rgba(96,165,250,0.1)",  bdr:"rgba(96,165,250,0.2)",  text: isEN ? "100% secure payment with SSL"  : "Pago 100% seguro con SSL" },
-              { icon:<MessageCircle size={13}/>,  color:"#A78BFA", bg:"rgba(167,139,250,0.1)", bdr:"rgba(167,139,250,0.2)", text: isEN ? "Real support via WhatsApp"     : "Soporte real por WhatsApp" },
-              { icon:<span className="text-xs font-black">{gameCount}</span>, color:"#4ADE80", bg:"rgba(74,222,128,0.1)", bdr:"rgba(74,222,128,0.2)", text: isEN ? "games available" : "juegos disponibles" },
+              { icon:<Zap size={13}/>,           color:"var(--accent)", bg:"rgba(206,116,58,0.1)",  bdr:"rgba(206,116,58,0.2)",  text: isEN ? "Guaranteed delivery in minutes" : "Entrega garantizada en minutos" },
+              { icon:<Shield size={13}/>,         color:"#AA91FF", bg:"rgba(170,145,255,0.1)", bdr:"rgba(170,145,255,0.2)",  text: isEN ? "100% secure payment with SSL"  : "Pago 100% seguro con SSL" },
+              { icon:<MessageCircle size={13}/>,  color:"#4ADE80", bg:"rgba(74,222,128,0.1)",  bdr:"rgba(74,222,128,0.2)", text: isEN ? "Real support via WhatsApp"     : "Soporte real por WhatsApp" },
+              { icon:<span className="text-xs font-black">{gameCount}</span>, color:"#AA91FF", bg:"rgba(170,145,255,0.1)", bdr:"rgba(170,145,255,0.2)", text: isEN ? "games available" : "juegos disponibles" },
             ].map((c, i) => (
               <div key={i} className="flex items-center gap-3 px-3 py-2 rounded-xl"
                 style={{ background:c.bg, border:`1px solid ${c.bdr}` }}>
@@ -415,8 +415,8 @@ function AuthModal({
 
             {/* Logo mobile */}
             <div className="flex justify-center mb-6 lg:hidden">
-              <Image src="/logo/imagotipo-kidstore.png" alt="KidStore"
-                width={150} height={56} className="object-contain"/>
+              <Image src="/brand/kidstore-imagotipo.png" alt="KidStore"
+                width={165} height={43} className="object-contain"/>
             </div>
 
             {/* ── LOGIN ── */}
@@ -446,7 +446,7 @@ function AuthModal({
                       value={identifier} onChange={e => { setIdentifier(e.target.value); setLoginErrs(p => ({...p, id:false})); }}
                       className="w-full px-4 py-3 rounded-xl text-sm"
                       style={inp(loginErrs.id)}
-                      onFocus={e  => (e.currentTarget.style.borderColor = loginErrs.id ? "#EF4444" : "#1E3A8A")}
+                      onFocus={e  => (e.currentTarget.style.borderColor = loginErrs.id ? "#EF4444" : "var(--primary)")}
                       onBlur={e   => (e.currentTarget.style.borderColor = loginErrs.id ? "#EF4444" : "var(--border)")}
                     />
                   </div>
@@ -458,7 +458,7 @@ function AuthModal({
                       </label>
                       <button type="button" onClick={() => onChange("forgot")}
                         className="text-[11px] font-semibold hover:opacity-70 transition-opacity"
-                        style={{ color:"#1E3A8A" }}>
+                        style={{ color:"var(--primary)" }}>
                         {t.auth.forgotPassword}
                       </button>
                     </div>
@@ -467,7 +467,7 @@ function AuthModal({
                         value={loginPass} onChange={e => { setLoginPass(e.target.value); setLoginErrs(p => ({...p, pass:false})); }}
                         className="w-full px-4 py-3 pr-11 rounded-xl text-sm"
                         style={inp(loginErrs.pass)}
-                        onFocus={e => (e.currentTarget.style.borderColor = loginErrs.pass ? "#EF4444" : "#1E3A8A")}
+                        onFocus={e => (e.currentTarget.style.borderColor = loginErrs.pass ? "#EF4444" : "var(--primary)")}
                         onBlur={e  => (e.currentTarget.style.borderColor = loginErrs.pass ? "#EF4444" : "var(--border)")}
                       />
                       <button type="button" onClick={() => setShowLogin(!showLogin)}
@@ -478,10 +478,10 @@ function AuthModal({
                     </div>
                   </div>
                   <button type="submit" disabled={loading}
-                    className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl text-sm font-bold text-white transition-all hover:opacity-90 active:scale-[.99] disabled:opacity-60"
-                    style={{ background:"linear-gradient(135deg,#1E3A8A,#EA580C)", boxShadow:"0 4px 20px rgba(234,88,12,0.3)" }}>
+                    className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl text-sm font-bold text-[var(--on-primary)] transition-all hover:opacity-90 active:scale-[.99] disabled:opacity-60"
+                    style={{ background:"var(--primary)", boxShadow:"0 4px 20px rgba(206,116,58,0.3)" }}>
                     {loading
-                      ? <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"/>
+                      ? <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"/>
                       : <>{t.auth.loginBtn} <ArrowRight size={15}/></>}
                   </button>
                 </form>
@@ -520,8 +520,8 @@ function AuthModal({
                   <form onSubmit={handleVerifyRegister} className="space-y-4 py-1">
                     <div className="text-center">
                       <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-3"
-                        style={{ background:"rgba(124,58,237,0.1)", border:"1px solid rgba(124,58,237,0.2)" }}>
-                        <Shield size={24} style={{ color:"var(--brand-light)" }}/>
+                        style={{ background:"rgba(124,104,214,0.1)", border:"1px solid rgba(124,104,214,0.2)" }}>
+                        <Shield size={24} style={{ color:"var(--primary)" }}/>
                       </div>
                       <h2 className="text-lg font-black mb-1" style={{ color:"var(--text)" }}>{t.auth.verifyEmailTitle}</h2>
                       <p className="text-xs" style={{ color:"var(--text-muted)" }}>
@@ -533,10 +533,10 @@ function AuthModal({
                       className="w-full px-4 py-4 rounded-xl text-2xl font-black text-center tracking-[0.4em] outline-none"
                       style={{ background:"var(--surface)", border:"1.5px solid var(--border)", color:"var(--text)" }}/>
                     <button type="submit" disabled={regCode.length < 6 || loading}
-                      className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl text-sm font-bold text-white transition-all hover:opacity-90 disabled:opacity-50"
-                      style={{ background:"linear-gradient(135deg,#1E3A8A,#EA580C)", boxShadow:"0 4px 16px rgba(234,88,12,0.25)" }}>
+                      className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl text-sm font-bold text-[var(--on-primary)] transition-all hover:opacity-90 disabled:opacity-50"
+                      style={{ background:"var(--primary)", boxShadow:"0 4px 16px rgba(206,116,58,0.25)" }}>
                       {loading
-                        ? <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"/>
+                        ? <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"/>
                         : <>{t.auth.verifyAndCreate} <ArrowRight size={15}/></>}
                     </button>
                     <div className="flex items-center justify-between text-xs">
@@ -549,7 +549,7 @@ function AuthModal({
                         {regResendIn > 0
                           ? <span>{t.auth.resendIn} {regResendIn}s</span>
                           : <button type="button" onClick={handleResendRegisterCode} disabled={regSending}
-                              className="font-semibold" style={{ color:"var(--brand-light)" }}>{t.auth.resend}</button>}
+                              className="font-semibold" style={{ color:"var(--primary)" }}>{t.auth.resend}</button>}
                       </span>
                     </div>
                   </form>
@@ -569,7 +569,7 @@ function AuthModal({
                       value={username} onChange={e => { setUsername(e.target.value); setRegErrs(p => ({...p, username:false})); setRegTaken(p => ({...p, username:false})); setRegErr(""); }}
                       className="w-full px-4 py-3 rounded-xl text-sm"
                       style={inp(regErrs.username || regTaken.username)}
-                      onFocus={e => (e.currentTarget.style.borderColor = (regErrs.username || regTaken.username) ? "#EF4444" : "#1E3A8A")}
+                      onFocus={e => (e.currentTarget.style.borderColor = (regErrs.username || regTaken.username) ? "#EF4444" : "var(--primary)")}
                       onBlur={e  => (e.currentTarget.style.borderColor = (regErrs.username || regTaken.username) ? "#EF4444" : "var(--border)")}
                     />
                   </div>
@@ -581,7 +581,7 @@ function AuthModal({
                     <input type="text" placeholder={t.auth.fullNamePlaceholder}
                       value={regFullName} onChange={e => setRegFullName(e.target.value)}
                       className="w-full px-4 py-3 rounded-xl text-sm" style={inp(false)}
-                      onFocus={e => (e.currentTarget.style.borderColor = "#1E3A8A")}
+                      onFocus={e => (e.currentTarget.style.borderColor = "var(--primary)")}
                       onBlur={e  => (e.currentTarget.style.borderColor = "var(--border)")}
                     />
                   </div>
@@ -598,7 +598,7 @@ function AuthModal({
                       value={regEmail} onChange={e => { setRegEmail(e.target.value); setRegErrs(p => ({...p, email:false})); setRegTaken(p => ({...p, email:false})); setRegErr(""); }}
                       className="w-full px-4 py-3 rounded-xl text-sm"
                       style={inp(regErrs.email || regTaken.email)}
-                      onFocus={e => (e.currentTarget.style.borderColor = (regErrs.email || regTaken.email) ? "#EF4444" : "#1E3A8A")}
+                      onFocus={e => (e.currentTarget.style.borderColor = (regErrs.email || regTaken.email) ? "#EF4444" : "var(--primary)")}
                       onBlur={e  => (e.currentTarget.style.borderColor = (regErrs.email || regTaken.email) ? "#EF4444" : "var(--border)")}
                     />
                   </div>
@@ -614,7 +614,7 @@ function AuthModal({
                         value={regPass} onChange={e => { setRegPass(e.target.value); setRegErrs(p => ({...p, password:false})); }}
                         className="w-full px-4 py-3 pr-11 rounded-xl text-sm"
                         style={inp(regErrs.password)}
-                        onFocus={e => (e.currentTarget.style.borderColor = regErrs.password ? "#EF4444" : "#1E3A8A")}
+                        onFocus={e => (e.currentTarget.style.borderColor = regErrs.password ? "#EF4444" : "var(--primary)")}
                         onBlur={e  => (e.currentTarget.style.borderColor = regErrs.password ? "#EF4444" : "var(--border)")}
                       />
                       <button type="button" onClick={() => setShowReg(!showReg)}
@@ -646,16 +646,16 @@ function AuthModal({
                       value={regConfirm} onChange={e => { setRegConfirm(e.target.value); setRegErrs(p => ({...p, confirm:false})); }}
                       className="w-full px-4 py-3 rounded-xl text-sm"
                       style={inp(regErrs.confirm)}
-                      onFocus={e => (e.currentTarget.style.borderColor = regErrs.confirm ? "#EF4444" : "#1E3A8A")}
+                      onFocus={e => (e.currentTarget.style.borderColor = regErrs.confirm ? "#EF4444" : "var(--primary)")}
                       onBlur={e  => (e.currentTarget.style.borderColor = regErrs.confirm ? "#EF4444" : "var(--border)")}
                     />
                   </div>
 
                   <button type="submit" disabled={regSending}
-                    className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl text-sm font-bold text-white transition-all hover:opacity-90 disabled:opacity-60"
-                    style={{ background:"linear-gradient(135deg,#1E3A8A,#EA580C)", boxShadow:"0 4px 20px rgba(234,88,12,0.3)" }}>
+                    className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl text-sm font-bold text-[var(--on-primary)] transition-all hover:opacity-90 disabled:opacity-60"
+                    style={{ background:"var(--primary)", boxShadow:"0 4px 20px rgba(206,116,58,0.3)" }}>
                     {regSending
-                      ? <>{t.auth.sendingCode} <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"/></>
+                      ? <>{t.auth.sendingCode} <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"/></>
                       : <>{t.auth.continueBtn} <ArrowRight size={15}/></>}
                   </button>
                   <p className="text-[10px] text-center" style={{ color:"var(--text-subtle)" }}>
@@ -685,8 +685,8 @@ function AuthModal({
                   <form onSubmit={handleVerifyForgot} className="space-y-5 py-2">
                     <div className="text-center">
                       <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-3"
-                        style={{ background:"rgba(124,58,237,0.1)", border:"1px solid rgba(124,58,237,0.2)" }}>
-                        <Shield size={24} style={{ color:"var(--brand-light)" }}/>
+                        style={{ background:"rgba(124,104,214,0.1)", border:"1px solid rgba(124,104,214,0.2)" }}>
+                        <Shield size={24} style={{ color:"var(--primary)" }}/>
                       </div>
                       <h2 className="text-lg font-black mb-1" style={{ color:"var(--text)" }}>
                         {isEN ? "Enter verification code" : "Ingresa el código de verificación"}
@@ -710,15 +710,15 @@ function AuthModal({
                       style={{ background:"var(--surface)", border:"1.5px solid var(--border)", borderRadius:12, color:"var(--text)", outline:"none" }}/>
 
                     <button type="submit" disabled={forgotCode.length < 6 || loading}
-                      className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl text-sm font-bold text-white transition-all hover:opacity-90 disabled:opacity-50"
-                      style={{ background:"linear-gradient(135deg,#1E3A8A,#EA580C)", boxShadow:"0 4px 16px rgba(234,88,12,0.25)" }}>
+                      className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl text-sm font-bold text-[var(--on-primary)] transition-all hover:opacity-90 disabled:opacity-50"
+                      style={{ background:"var(--primary)", boxShadow:"0 4px 16px rgba(206,116,58,0.25)" }}>
                       {isEN ? "Verify code" : "Verificar código"} →
                     </button>
 
                     <p className="text-center text-xs" style={{ color:"var(--text-subtle)" }}>
                       {isEN ? "Didn't receive it? " : "¿No llegó? "}
                       <button type="button" onClick={() => { setForgotSent(false); setForgotCode(""); }}
-                        className="font-semibold" style={{ color:"var(--brand-light)" }}>
+                        className="font-semibold" style={{ color:"var(--primary)" }}>
                         {isEN ? "Resend" : "Reenviar"}
                       </button>
                     </p>
@@ -750,15 +750,15 @@ function AuthModal({
                           value={forgotEmail} onChange={e => { setForgotEmail(e.target.value); setForgotInvalid(false); }}
                           className="w-full px-4 py-3 rounded-xl text-sm"
                           style={inp(forgotInvalid)}
-                          onFocus={e => (e.currentTarget.style.borderColor = forgotInvalid ? "#EF4444" : "#1E3A8A")}
+                          onFocus={e => (e.currentTarget.style.borderColor = forgotInvalid ? "#EF4444" : "var(--primary)")}
                           onBlur={e  => (e.currentTarget.style.borderColor = forgotInvalid ? "#EF4444" : "var(--border)")}
                         />
                       </div>
                       <button type="submit" disabled={loading}
-                        className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl text-sm font-bold text-white transition-all hover:opacity-90 disabled:opacity-60"
-                        style={{ background:"linear-gradient(135deg,#1E3A8A,#EA580C)", boxShadow:"0 4px 20px rgba(234,88,12,0.3)" }}>
+                        className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl text-sm font-bold text-[var(--on-primary)] transition-all hover:opacity-90 disabled:opacity-60"
+                        style={{ background:"var(--primary)", boxShadow:"0 4px 20px rgba(206,116,58,0.3)" }}>
                         {loading
-                          ? <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"/>
+                          ? <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"/>
                           : <>{t.auth.sendResetLink} <ArrowRight size={15}/></>}
                       </button>
                     </form>

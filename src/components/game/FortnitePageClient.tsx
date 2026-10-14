@@ -59,7 +59,7 @@ function ProductCard({ name, subtitle, amount, description, price, priceOld, bad
     <div className="rounded-2xl overflow-hidden flex flex-col transition-all duration-200 hover:-translate-y-1 group"
       style={{ background:"var(--card)", border:"1px solid var(--border)" }}>
       <div className="relative w-full overflow-hidden"
-        style={{ aspectRatio:"4/3", background:"linear-gradient(135deg,rgba(124,58,237,0.15),rgba(15,10,40,0.6))" }}>
+        style={{ aspectRatio:"4/3", background:"linear-gradient(135deg,rgba(124,104,214,0.15),rgba(22,16,32,0.6))" }}>
         <Image src={img} alt={name ?? amount ?? "producto"} fill sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 300px"
           className="object-contain p-3 transition-transform duration-300 group-hover:scale-105" />
         {badge && (
@@ -71,19 +71,19 @@ function ProductCard({ name, subtitle, amount, description, price, priceOld, bad
       <div className="p-4 flex flex-col flex-1">
         {name     && <p className="text-sm font-bold leading-tight mb-0.5" style={{ color:"var(--text)" }}>{name}</p>}
         {subtitle && <p className="text-[11px] mb-1" style={{ color:"var(--text-subtle)" }}>{subtitle}</p>}
-        {amount   && <p className="text-xs font-semibold mb-2" style={{ color:"var(--brand-light)" }}>{amount}</p>}
+        {amount   && <p className="text-xs font-semibold mb-2" style={{ color:"var(--primary)" }}>{amount}</p>}
         <p className="text-xs leading-relaxed mb-4 flex-1" style={{ color:"var(--text-muted)" }}>{description}</p>
         <div className="flex items-end justify-between gap-3 mt-auto">
           <div>
             {!fromPrice && <p className="text-[11px] line-through" style={{ color:"var(--text-subtle)" }}>{fmt(priceOld)}</p>}
-            <p className="text-xl font-bold" style={{ color:"var(--brand-light)" }}>
+            <p className="text-xl font-bold" style={{ color:"var(--primary)" }}>
               {fromPrice ? (lang === "EN" ? "From " : "Desde ") : ""}{fmt(price)}
             </p>
             {fromPrice && <p className="text-[10px]" style={{ color:"var(--text-subtle)" }}>{lang === "EN" ? "1 to 6 months" : "1 a 6 meses"}</p>}
           </div>
           <Link href={`/games/fortnite/${slug}`}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white transition-all hover:scale-105 whitespace-nowrap"
-            style={{ background:"linear-gradient(135deg,#7C3AED,#5B21B6)", boxShadow:"0 2px 12px rgba(124,58,237,0.35)" }}>
+            className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-[var(--on-primary)] transition-all hover:scale-105 whitespace-nowrap"
+            style={{ background:"var(--primary)", boxShadow:"0 2px 12px rgba(124,104,214,0.35)" }}>
             <ShoppingCart size={13} /> {t.product.buyNow}
           </Link>
         </div>
@@ -182,9 +182,9 @@ function TabPavos({ products }: { products: FortniteProduct[] }) {
 
       <div className="rounded-2xl overflow-hidden" style={{ border:"1px solid var(--border)" }}>
         <div className="px-6 py-4 flex items-center gap-3"
-          style={{ background:"linear-gradient(135deg,rgba(124,58,237,0.15),rgba(59,130,246,0.08))", borderBottom:"1px solid var(--border)" }}>
+          style={{ background:"linear-gradient(135deg,rgba(124,104,214,0.15),rgba(59,130,246,0.08))", borderBottom:"1px solid var(--border)" }}>
           <div className="w-9 h-9 rounded-xl flex items-center justify-center"
-            style={{ background:"rgba(124,58,237,0.2)", border:"1px solid rgba(124,58,237,0.3)" }}>
+            style={{ background:"rgba(124,104,214,0.2)", border:"1px solid rgba(124,104,214,0.3)" }}>
             <span className="text-lg">⬡</span>
           </div>
           <div>
@@ -220,15 +220,15 @@ function TabPavos({ products }: { products: FortniteProduct[] }) {
             </div>
             <div className="rounded-xl p-4 space-y-3" style={{ background:"var(--surface)", border:"1px solid var(--border)" }}>
               <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background:"rgba(124,58,237,0.15)" }}>
-                  <Sparkles size={15} className="text-purple-400"/>
+                <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background:"rgba(124,104,214,0.15)" }}>
+                  <Sparkles size={15} className="text-[var(--primary)]"/>
                 </div>
                 <p className="text-xs font-bold" style={{ color:"var(--text)" }}>{lang === "EN" ? "Benefits" : "Beneficios"}</p>
               </div>
               <ul className="space-y-1.5">
                 {(lang === "EN" ? ["Exclusive cosmetics","Customize your character","Season skins","Unique emotes and dances","Access to premium content"] : ["Cosméticos exclusivos","Personaliza tu personaje","Skins de temporada","Gestos y bailes únicos","Acceso a contenido premium"]).map(b=>(
                   <li key={b} className="flex items-center gap-2 text-xs" style={{ color:"var(--text-muted)" }}>
-                    <Check size={11} className="text-purple-400 flex-shrink-0"/> {b}
+                    <Check size={11} className="text-[var(--primary)] flex-shrink-0"/> {b}
                   </li>
                 ))}
               </ul>
@@ -252,7 +252,7 @@ function TabPavos({ products }: { products: FortniteProduct[] }) {
           <div className="flex flex-wrap gap-2 pt-2" style={{ borderTop:"1px solid var(--border)" }}>
             {[
               { icon:<Smartphone size={12}/>, label: lang === "EN" ? "PC · PS · Xbox · Switch · Mobile" : "PC · PS · Xbox · Switch · Móvil", color:"text-blue-400",   bg:"rgba(59,130,246,0.1)",  border:"rgba(59,130,246,0.25)"  },
-              { icon:<Shirt      size={12}/>, label: lang === "EN" ? "Skins, emotes & cosmetics" : "Skins, emotes y cosméticos",       color:"text-purple-400", bg:"rgba(124,58,237,0.1)", border:"rgba(124,58,237,0.25)" },
+              { icon:<Shirt      size={12}/>, label: lang === "EN" ? "Skins, emotes & cosmetics" : "Skins, emotes y cosméticos",       color:"text-[var(--primary)]", bg:"rgba(124,104,214,0.1)", border:"rgba(124,104,214,0.25)" },
               { icon:<Trophy     size={12}/>, label: lang === "EN" ? "Unlock the Battle Pass" : "Desbloquea el Pase de Batalla",    color:"text-yellow-400", bg:"rgba(245,158,11,0.1)",  border:"rgba(245,158,11,0.25)"  },
             ].map(chip=>(
               <div key={chip.label} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-medium ${chip.color}`}
@@ -280,9 +280,9 @@ function TabPaquetes({ products }: { products: FortniteProduct[] }) {
       </div>
       <div className="rounded-2xl overflow-hidden" style={{ border:"1px solid var(--border)" }}>
         <div className="px-6 py-4 flex items-center gap-3"
-          style={{ background:"linear-gradient(135deg,rgba(124,58,237,0.15),rgba(236,72,153,0.08))", borderBottom:"1px solid var(--border)" }}>
+          style={{ background:"linear-gradient(135deg,rgba(124,104,214,0.15),rgba(236,72,153,0.08))", borderBottom:"1px solid var(--border)" }}>
           <div className="w-9 h-9 rounded-xl flex items-center justify-center"
-            style={{ background:"rgba(124,58,237,0.2)", border:"1px solid rgba(124,58,237,0.3)" }}>
+            style={{ background:"rgba(124,104,214,0.2)", border:"1px solid rgba(124,104,214,0.3)" }}>
             <span className="text-lg">📦</span>
           </div>
           <div>
@@ -299,7 +299,7 @@ function TabPaquetes({ products }: { products: FortniteProduct[] }) {
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {[
-              { icon:<Shirt size={20} className="text-purple-400"/>, title: lang === "EN" ? "Exclusive outfits" : "Outfits exclusivos", desc: lang === "EN" ? "Skins only available in bundles, not in the daily shop." : "Skins que solo se consiguen en paquetes, no disponibles en la tienda diaria.", bg:"rgba(124,58,237,0.1)", border:"rgba(124,58,237,0.2)" },
+              { icon:<Shirt size={20} className="text-[var(--primary)]"/>, title: lang === "EN" ? "Exclusive outfits" : "Outfits exclusivos", desc: lang === "EN" ? "Skins only available in bundles, not in the daily shop." : "Skins que solo se consiguen en paquetes, no disponibles en la tienda diaria.", bg:"rgba(124,104,214,0.1)", border:"rgba(124,104,214,0.2)" },
               { icon:<Coins size={20} className="text-yellow-400"/>, title: lang === "EN" ? "V-Bucks included" : "V-Bucks incluidos",  desc: lang === "EN" ? "Each bundle includes V-Bucks to spend freely in the in-game shop." : "Cada paquete trae V-Bucks para gastar libremente en tienda del juego.",         bg:"rgba(245,158,11,0.1)",  border:"rgba(245,158,11,0.2)"  },
               { icon:<Zap   size={20} className="text-green-400"/>,  title: lang === "EN" ? "Instant access" : "Acceso inmediato",   desc: lang === "EN" ? "Cosmetics unlock instantly when activated on your account." : "Los cosméticos se desbloquean al instante al activarlos en tu cuenta.",          bg:"rgba(16,185,129,0.1)",  border:"rgba(16,185,129,0.2)"  },
             ].map(item=>(
@@ -349,7 +349,7 @@ function TabPases({ club, bp }: { club: FortniteProduct[]; bp: FortniteProduct[]
       )}
       <div className="rounded-2xl overflow-hidden" style={{ border:"1px solid var(--border)" }}>
         <div className="px-6 py-4 flex items-center gap-3"
-          style={{ background:"linear-gradient(135deg,rgba(245,158,11,0.12),rgba(124,58,237,0.08))", borderBottom:"1px solid var(--border)" }}>
+          style={{ background:"linear-gradient(135deg,rgba(245,158,11,0.12),rgba(124,104,214,0.08))", borderBottom:"1px solid var(--border)" }}>
           <div className="w-9 h-9 rounded-xl flex items-center justify-center"
             style={{ background:"rgba(245,158,11,0.15)", border:"1px solid rgba(245,158,11,0.3)" }}>
             <span className="text-lg">⭐</span>
@@ -363,8 +363,8 @@ function TabPases({ club, bp }: { club: FortniteProduct[]; bp: FortniteProduct[]
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
             <div className="rounded-xl p-5 space-y-3" style={{ background:"var(--surface)", border:"1px solid var(--border)" }}>
               <div className="flex items-center gap-2 mb-1">
-                <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background:"rgba(124,58,237,0.15)" }}>
-                  <Gamepad2 size={16} className="text-purple-400"/>
+                <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background:"rgba(124,104,214,0.15)" }}>
+                  <Gamepad2 size={16} className="text-[var(--primary)]"/>
                 </div>
                 <p className="text-sm font-bold" style={{ color:"var(--text)" }}>🎮 Club de Fortnite</p>
               </div>
@@ -374,7 +374,7 @@ function TabPases({ club, bp }: { club: FortniteProduct[]; bp: FortniteProduct[]
               <ul className="space-y-1.5">
                 {(lang === "EN" ? ["1,000 V-Bucks every month","Battle Pass included","Exclusive Club skin and cosmetics"] : ["1.000 V-Bucks cada mes","Pase de Batalla incluido","Skin y cosméticos exclusivos del Club"]).map(b=>(
                   <li key={b} className="flex items-center gap-2 text-xs" style={{ color:"var(--text-muted)" }}>
-                    <Check size={11} className="text-purple-400 flex-shrink-0"/> {b}
+                    <Check size={11} className="text-[var(--primary)] flex-shrink-0"/> {b}
                   </li>
                 ))}
               </ul>
@@ -418,7 +418,7 @@ function TabPases({ club, bp }: { club: FortniteProduct[]; bp: FortniteProduct[]
           </div>
           <div className="flex flex-wrap gap-2 pt-2" style={{ borderTop:"1px solid var(--border)" }}>
             {[
-              { label: lang === "EN" ? "🎮 Club — Monthly subscription" : "🎮 Club — Suscripción mensual",     color:"text-purple-400", bg:"rgba(124,58,237,0.1)", border:"rgba(124,58,237,0.2)" },
+              { label: lang === "EN" ? "🎮 Club — Monthly subscription" : "🎮 Club — Suscripción mensual",     color:"text-[var(--primary)]", bg:"rgba(124,104,214,0.1)", border:"rgba(124,104,214,0.2)" },
               { label: lang === "EN" ? "⭐ Battle Pass — 100+ rewards" : "⭐ Battle Pass — 100+ recompensas", color:"text-yellow-400", bg:"rgba(245,158,11,0.1)",  border:"rgba(245,158,11,0.2)"  },
               { label: lang === "EN" ? "🎵 Special Passes — Unique modes" : "🎵 Pases Especiales — Modos únicos",color:"text-emerald-400",bg:"rgba(16,185,129,0.1)", border:"rgba(16,185,129,0.2)"  },
             ].map(chip=>(
@@ -514,11 +514,11 @@ function FortnitePageInner({ TABS, pavos, paquetes, club, battlePasses }: {
                 {TABS.map(tab => (
                   <button key={tab.id} onClick={() => handleTabClick(tab.id)}
                     className="flex-shrink-0 px-5 py-4 text-sm font-semibold transition-all relative whitespace-nowrap"
-                    style={{ color: shownTab === tab.id ? "var(--brand-light)" : "var(--text-muted)" }}>
+                    style={{ color: shownTab === tab.id ? "var(--primary)" : "var(--text-muted)" }}>
                     {tab.label}
                     {shownTab === tab.id && (
                       <div className="absolute bottom-0 left-3 right-3 h-[2px] rounded-full"
-                        style={{ background:"linear-gradient(90deg,#7C3AED,#A78BFA)" }}/>
+                        style={{ background:"var(--primary)" }}/>
                     )}
                   </button>
                 ))}

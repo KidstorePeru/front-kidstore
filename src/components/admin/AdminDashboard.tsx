@@ -150,7 +150,7 @@ const PAYMENT: Record<string, { label: string; color: string; bg: string }> = {
   binance:       { label: "Binance",       color: "#F0B90B", bg: "rgba(240,185,11,0.12)" },
   bizum:         { label: "Bizum",         color: "#22D3EE", bg: "rgba(34,211,238,0.12)" },
 };
-function paymentInfo(m: string) { return PAYMENT[m] ?? { label: m || "—", color: "#A78BFA", bg: "rgba(167,139,250,0.12)" }; }
+function paymentInfo(m: string) { return PAYMENT[m] ?? { label: m || "—", color: "#AA91FF", bg: "rgba(170,145,255,0.12)" }; }
 
 // ── Shared styles ──────────────────────────────────────────────
 const card = { background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 16 };
@@ -441,7 +441,7 @@ export default function AdminDashboard() {
     if ("Notification" in window && Notification.permission === "granted") {
       new Notification(`🛒 Nuevo pedido #${latest.id}`, {
         body: `${latest.customerName} — ${money1(latest.total, latest.currency)}`,
-        icon: "/logo/isotipo-kidstore.png",
+        icon: "/brand/kidstore-isotipo.png",
       });
     }
     setToast(latest);
@@ -449,22 +449,22 @@ export default function AdminDashboard() {
   }, [orders, lastSync]);
 
   if (loading || !admin) return (
-    <div className="min-h-screen flex items-center justify-center" style={{ background: "#080C18" }}>
+    <div data-theme="dark" className="min-h-screen flex items-center justify-center" style={{ background: "var(--bg)" }}>
       <span className="w-8 h-8 border-2 border-t-transparent rounded-full animate-spin"
-        style={{ borderColor: "#EA580C", borderTopColor: "transparent" }} />
+        style={{ borderColor: "var(--primary)", borderTopColor: "transparent" }} />
     </div>
   );
 
   const pending = orders.filter(o => o.status === "pendiente").length;
 
   return (
-    <div className="h-screen flex overflow-hidden" style={{ background: "#080C18", color: "#E6EDF3" }}>
+    <div data-theme="dark" className="h-screen flex overflow-hidden" style={{ background: "var(--bg)", color: "var(--text)" }}>
 
       {/* Toast */}
       {toast && (
         <div className="fixed top-4 right-4 z-[100]" style={{ animation: "fadeSlideIn 0.3s ease" }}>
           <div className="flex items-center gap-3 px-5 py-4 rounded-2xl shadow-2xl"
-            style={{ background: "linear-gradient(135deg,#7C3AED,#5B21B6)", border: "1px solid rgba(255,255,255,0.15)", minWidth: 320 }}>
+            style={{ background: "var(--brand-panel)", border: "1px solid rgba(255,255,255,0.15)", minWidth: 320 }}>
             <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: "rgba(255,255,255,0.15)" }}>
               <ShoppingBag size={18} className="text-white" />
             </div>
@@ -484,16 +484,16 @@ export default function AdminDashboard() {
 
       {/* Sidebar */}
       <aside className={`fixed inset-y-0 left-0 z-50 w-60 flex flex-col transition-transform duration-300 lg:translate-x-0 lg:static lg:z-auto ${sidebar ? "translate-x-0" : "-translate-x-full"}`}
-        style={{ background: "#0A0F1C", borderRight: "1px solid rgba(255,255,255,0.06)" }}>
+        style={{ background: "var(--surface)", borderRight: "1px solid rgba(255,255,255,0.06)" }}>
         <div className="flex items-center gap-3 px-5 py-4" style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-          <Image src="/logo/imagotipo-kidstore.png" alt="KidStore" width={120} height={44}
-            className="object-contain" style={{ filter: "brightness(0) invert(1)" }} />
+          <Image src="/brand/kidstore-imagotipo.png" alt="KidStore" width={161} height={42}
+            className="object-contain" />
         </div>
 
-        <div className="mx-3 mt-4 mb-2 px-3 py-3 rounded-2xl" style={{ background: "rgba(124,58,237,0.06)", border: "1px solid rgba(124,58,237,0.14)" }}>
+        <div className="mx-3 mt-4 mb-2 px-3 py-3 rounded-2xl" style={{ background: "rgba(124,104,214,0.06)", border: "1px solid rgba(124,104,214,0.14)" }}>
           <div className="flex items-center gap-2.5 mb-1.5">
-            <div className="w-8 h-8 rounded-xl flex items-center justify-center text-xs font-black text-white flex-shrink-0"
-              style={{ background: "linear-gradient(135deg,#7C3AED,#EA580C)" }}>
+            <div className="w-8 h-8 rounded-xl flex items-center justify-center text-xs font-black text-[var(--on-primary)] flex-shrink-0"
+              style={{ background: "var(--primary)" }}>
               {admin.name[0]}
             </div>
             <div className="min-w-0">
@@ -502,8 +502,8 @@ export default function AdminDashboard() {
             </div>
           </div>
           <div className="flex items-center gap-1.5 ml-[42px]">
-            <Shield size={9} style={{ color: "#7C3AED" }} />
-            <span className="text-[9px] font-bold uppercase tracking-[0.12em]" style={{ color: "#7C3AED" }}>
+            <Shield size={9} style={{ color: "var(--primary)" }} />
+            <span className="text-[9px] font-bold uppercase tracking-[0.12em]" style={{ color: "var(--primary)" }}>
               {admin.role === "owner" ? "Propietario" : "Colaborador"}
             </span>
           </div>
@@ -515,8 +515,8 @@ export default function AdminDashboard() {
             return (
               <button key={item.id} onClick={() => { setTab(item.id); setSidebar(false); }}
                 className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-semibold transition-all text-left"
-                style={{ background: active ? "rgba(124,58,237,0.10)" : "transparent", color: active ? "#fff" : "rgba(255,255,255,0.38)" }}>
-                <span style={{ color: active ? "#7C3AED" : "rgba(255,255,255,0.22)" }}>{item.icon}</span>
+                style={{ background: active ? "rgba(124,104,214,0.10)" : "transparent", color: active ? "#fff" : "rgba(255,255,255,0.38)" }}>
+                <span style={{ color: active ? "var(--primary)" : "rgba(255,255,255,0.22)" }}>{item.icon}</span>
                 {item.label}
                 {item.id === "pedidos" && pending > 0 && (
                   <span className="ml-auto text-[10px] font-black w-5 h-5 flex items-center justify-center rounded-full"
@@ -541,7 +541,7 @@ export default function AdminDashboard() {
       {/* Main */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         <header className="flex items-center justify-between px-4 lg:px-6 h-14 flex-shrink-0"
-          style={{ background: "#0A0F1C", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+          style={{ background: "var(--surface)", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
           <div className="flex items-center gap-3 min-w-0">
             <button className="lg:hidden" onClick={() => setSidebar(true)} style={{ color: "rgba(255,255,255,0.5)" }}><Menu size={20} /></button>
             <div className="min-w-0">
@@ -579,13 +579,13 @@ export default function AdminDashboard() {
             </button>
             <Link href="/" target="_blank"
               className="hidden sm:flex items-center gap-1.5 text-[12px] font-medium px-3 py-1.5 rounded-xl transition-all hover:opacity-70"
-              style={{ background: "rgba(234,88,12,0.08)", border: "1px solid rgba(234,88,12,0.2)", color: "#EA580C" }}>
+              style={{ background: "rgba(206,116,58,0.08)", border: "1px solid rgba(206,116,58,0.2)", color: "var(--primary)" }}>
               <ExternalLink size={12} /> Ver tienda
             </Link>
           </div>
         </header>
 
-        <main className="flex-1 overflow-auto p-4 lg:p-6" style={{ background: "#080C18" }}>
+        <main className="flex-1 overflow-auto p-4 lg:p-6" style={{ background: "var(--bg)" }}>
           {tab === "dashboard"   && <TabDashboard orders={orders} clientes={clientes} onChangeTab={setTab} onRefresh={refresh} />}
           {tab === "pedidos"     && <TabPedidos orders={orders} onRefresh={refresh} />}
           {tab === "clientes"    && <TabClientes clientes={clientes} orders={orders} />}
@@ -638,7 +638,7 @@ function TabDashboard({ orders, clientes, onChangeTab, onRefresh }: {
     { label: "Pendientes",  value: String(pending.length),    color: "#F59E0B", icon: <Clock size={17} />,      hint: pending.length ? "Requieren tu atención" : "Todo al día", go: "pedidos" },
     { label: "En proceso",  value: String(processing.length), color: "#60A5FA", icon: <RotateCcw size={17} />,  hint: "Los estás atendiendo" },
     { label: "Entregados",  value: String(delivered.length),  color: "#22C55E", icon: <CheckCircle size={17} />, hint: "Completados con éxito" },
-    { label: "Pedidos hoy", value: String(ordersToday.length), color: "#A78BFA", icon: <ShoppingBag size={17} />, hint: `${orders.length} en total` },
+    { label: "Pedidos hoy", value: String(ordersToday.length), color: "#AA91FF", icon: <ShoppingBag size={17} />, hint: `${orders.length} en total` },
   ];
 
   return (
@@ -670,12 +670,12 @@ function TabDashboard({ orders, clientes, onChangeTab, onRefresh }: {
         <div className="rounded-2xl p-4 flex items-center justify-between" style={card}>
           <div>
             <p className="text-[10px] font-bold uppercase tracking-[0.1em] mb-1.5" style={{ color: "rgba(255,255,255,0.35)" }}>Clientes</p>
-            <p className="text-xl font-black" style={{ color: "#7C3AED" }}>{clientes.length}</p>
+            <p className="text-xl font-black" style={{ color: "var(--primary)" }}>{clientes.length}</p>
             <p className="text-[11px] mt-1" style={{ color: "rgba(255,255,255,0.28)" }}>
               {clientes.filter(c => c.registered).length} registrados · {clientes.filter(c => !c.registered).length} invitados
             </p>
           </div>
-          <button onClick={() => onChangeTab("clientes")} className="text-[11px] font-semibold hover:opacity-70" style={{ color: "#7C3AED" }}>Ver todos →</button>
+          <button onClick={() => onChangeTab("clientes")} className="text-[11px] font-semibold hover:opacity-70" style={{ color: "var(--primary)" }}>Ver todos →</button>
         </div>
       </div>
 
@@ -686,7 +686,7 @@ function TabDashboard({ orders, clientes, onChangeTab, onRefresh }: {
             {pending.length > 0 && <span className="w-2 h-2 rounded-full" style={{ background: "#F59E0B" }} />}
             Pedidos por atender
           </p>
-          {pending.length > 0 && <button onClick={() => onChangeTab("pedidos")} className="text-[11px] font-semibold hover:opacity-70" style={{ color: "#7C3AED" }}>Ir a pedidos →</button>}
+          {pending.length > 0 && <button onClick={() => onChangeTab("pedidos")} className="text-[11px] font-semibold hover:opacity-70" style={{ color: "var(--primary)" }}>Ir a pedidos →</button>}
         </div>
         {pending.length === 0 ? (
           <div className="p-10 text-center">
@@ -709,11 +709,11 @@ function TabDashboard({ orders, clientes, onChangeTab, onRefresh }: {
           <div className="flex gap-1.5 h-36">
             {days.map(d => (
               <div key={d.key} className="flex-1 flex flex-col justify-end items-center gap-1.5 group">
-                <span className="text-[9px] font-bold transition-opacity" style={{ color: "#A78BFA", opacity: d.count > 0 ? 1 : 0 }}>{d.count}</span>
+                <span className="text-[9px] font-bold transition-opacity" style={{ color: "#AA91FF", opacity: d.count > 0 ? 1 : 0 }}>{d.count}</span>
                 <div className="w-full rounded-md transition-all" style={{
                   height: `${Math.max((d.count / maxDay) * 100, 2)}%`,
                   minHeight: d.count > 0 ? 8 : 3,
-                  background: d.count > 0 ? "linear-gradient(180deg,#8B5CF6,#6D28D9)" : "rgba(255,255,255,0.06)",
+                  background: d.count > 0 ? "var(--primary)" : "rgba(255,255,255,0.06)",
                 }} />
                 <span className="text-[9px]" style={{ color: "rgba(255,255,255,0.25)" }}>{d.label}</span>
               </div>
@@ -730,9 +730,9 @@ function TabDashboard({ orders, clientes, onChangeTab, onRefresh }: {
             {topProducts.map((p, i) => (
               <div key={p.name} className="flex items-center gap-3 px-5 py-2.5">
                 <span className="w-5 h-5 rounded-md flex items-center justify-center text-[10px] font-black flex-shrink-0"
-                  style={{ background: i === 0 ? "rgba(234,88,12,0.15)" : "rgba(255,255,255,0.04)", color: i === 0 ? "#EA580C" : "rgba(255,255,255,0.3)" }}>{i + 1}</span>
+                  style={{ background: i === 0 ? "rgba(206,116,58,0.15)" : "rgba(255,255,255,0.04)", color: i === 0 ? "var(--primary)" : "rgba(255,255,255,0.3)" }}>{i + 1}</span>
                 <p className="text-[12px] font-medium truncate flex-1 text-white/90">{p.name}</p>
-                <span className="text-[11px] font-bold flex-shrink-0" style={{ color: "#A78BFA" }}>{p.units}</span>
+                <span className="text-[11px] font-bold flex-shrink-0" style={{ color: "#AA91FF" }}>{p.units}</span>
               </div>
             ))}
           </div>
@@ -769,7 +769,7 @@ function OrderRow({ order, onRefresh }: { order: Order; onRefresh: () => void })
           {order.customerName} · {order.items.map(i => i.name).join(", ")}
         </p>
       </div>
-      <span className="text-[14px] font-black flex-shrink-0" style={{ color: "#EA580C" }}>{money1(order.total, order.currency)}</span>
+      <span className="text-[14px] font-black flex-shrink-0" style={{ color: "var(--primary)" }}>{money1(order.total, order.currency)}</span>
       <WhatsAppButton order={order} compact />
       {next && (
         <button onClick={advance} disabled={busy}
@@ -835,9 +835,9 @@ function TabPedidos({ orders, onRefresh }: { orders: Order[]; onRefresh: () => v
             <button key={f.id} onClick={() => setStatus(f.id)}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[12px] font-semibold transition-all"
               style={{
-                background: active ? (sc?.bg ?? "rgba(124,58,237,0.12)") : "rgba(255,255,255,0.03)",
-                border: `1px solid ${active ? (sc?.border ?? "rgba(124,58,237,0.3)") : "rgba(255,255,255,0.06)"}`,
-                color: active ? (sc?.color ?? "#7C3AED") : "rgba(255,255,255,0.35)",
+                background: active ? (sc?.bg ?? "rgba(124,104,214,0.12)") : "rgba(255,255,255,0.03)",
+                border: `1px solid ${active ? (sc?.border ?? "rgba(124,104,214,0.3)") : "rgba(255,255,255,0.06)"}`,
+                color: active ? (sc?.color ?? "var(--primary)") : "rgba(255,255,255,0.35)",
               }}>
               {active && sc?.icon}
               {f.label}
@@ -854,9 +854,9 @@ function TabPedidos({ orders, onRefresh }: { orders: Order[]; onRefresh: () => v
             <button key={r.id} onClick={() => setRange(r.id)}
               className="px-3 py-1.5 rounded-xl text-[12px] font-semibold transition-all"
               style={{
-                background: range === r.id ? "rgba(124,58,237,0.12)" : "rgba(255,255,255,0.03)",
-                border: `1px solid ${range === r.id ? "rgba(124,58,237,0.3)" : "rgba(255,255,255,0.06)"}`,
-                color: range === r.id ? "#7C3AED" : "rgba(255,255,255,0.35)",
+                background: range === r.id ? "rgba(124,104,214,0.12)" : "rgba(255,255,255,0.03)",
+                border: `1px solid ${range === r.id ? "rgba(124,104,214,0.3)" : "rgba(255,255,255,0.06)"}`,
+                color: range === r.id ? "var(--primary)" : "rgba(255,255,255,0.35)",
               }}>{r.label}</button>
           ))}
         </div>
@@ -915,7 +915,7 @@ function TabPedidos({ orders, onRefresh }: { orders: Order[]; onRefresh: () => v
                   </div>
 
                   <div className="flex flex-col items-end gap-2 flex-shrink-0">
-                    <p className="text-[16px] font-black" style={{ color: "#EA580C" }}>{money1(order.total, order.currency)}</p>
+                    <p className="text-[16px] font-black" style={{ color: "var(--primary)" }}>{money1(order.total, order.currency)}</p>
                     <div className="flex items-center gap-1.5" onClick={e => e.stopPropagation()}>
                       <WhatsAppButton order={order} compact />
                       <div className="w-7 h-7 rounded-lg flex items-center justify-center cursor-pointer"
@@ -996,16 +996,16 @@ function TabPedidos({ orders, onRefresh }: { orders: Order[]; onRefresh: () => v
                                 {item.quantity} × {money1(item.price, order.currency)}
                               </p>
                             </div>
-                            <p className="text-[13px] font-black flex-shrink-0" style={{ color: "#EA580C" }}>{money1(item.price * item.quantity, order.currency)}</p>
+                            <p className="text-[13px] font-black flex-shrink-0" style={{ color: "var(--primary)" }}>{money1(item.price * item.quantity, order.currency)}</p>
                           </div>
                         ))}
                       </div>
                       <div className="flex items-center justify-between px-4 py-3 mt-2 rounded-xl"
-                        style={{ background: "rgba(234,88,12,0.06)", border: "1px solid rgba(234,88,12,0.15)" }}>
+                        style={{ background: "rgba(206,116,58,0.06)", border: "1px solid rgba(206,116,58,0.15)" }}>
                         <span className="text-[12px] font-bold px-2 py-0.5 rounded-full" style={{ color: pm.color, background: pm.bg }}>{pm.label}</span>
                         <div className="text-right">
                           <p className="text-[10px] uppercase tracking-[0.08em] font-bold" style={{ color: "rgba(255,255,255,0.3)" }}>Total</p>
-                          <p className="text-xl font-black" style={{ color: "#EA580C" }}>{money1(order.total, order.currency)}</p>
+                          <p className="text-xl font-black" style={{ color: "var(--primary)" }}>{money1(order.total, order.currency)}</p>
                         </div>
                       </div>
                     </div>
@@ -1092,7 +1092,7 @@ function TabClientes({ clientes, orders }: { clientes: Cliente[]; orders: Order[
       {/* Stats */}
       <div className="grid grid-cols-3 gap-3">
         {[
-          { label: "Total", value: clientes.length, color: "#7C3AED" },
+          { label: "Total", value: clientes.length, color: "var(--primary)" },
           { label: "Registrados", value: clientes.filter(c => c.registered).length, color: "#22C55E" },
           { label: "Invitados", value: clientes.filter(c => !c.registered).length, color: "#60A5FA" },
         ].map(s => (
@@ -1124,10 +1124,10 @@ function TabClientes({ clientes, orders }: { clientes: Cliente[]; orders: Order[
             const waMsg = `¡Hola ${c.name}! 👋 Te escribo de KidStore.`;
             const wa = waLink(c.phone, waMsg);
             return (
-              <div key={c.email} className="rounded-2xl overflow-hidden" style={{ ...card, ...(exp ? { border: "1px solid rgba(124,58,237,0.25)" } : {}) }}>
+              <div key={c.email} className="rounded-2xl overflow-hidden" style={{ ...card, ...(exp ? { border: "1px solid rgba(124,104,214,0.25)" } : {}) }}>
                 <div className="px-5 py-3.5 flex items-center gap-3 cursor-pointer" onClick={() => setExpanded(exp ? null : c.email)}>
-                  <div className="w-10 h-10 rounded-xl flex items-center justify-center text-[13px] font-black text-white flex-shrink-0"
-                    style={{ background: "linear-gradient(135deg,#7C3AED,#EA580C)" }}>
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center text-[13px] font-black text-[var(--on-primary)] flex-shrink-0"
+                    style={{ background: "var(--primary)" }}>
                     {c.name[0]?.toUpperCase() ?? "?"}
                   </div>
                   <div className="flex-1 min-w-0">
@@ -1147,7 +1147,7 @@ function TabClientes({ clientes, orders }: { clientes: Cliente[]; orders: Order[
                   </div>
                   <div className="flex items-center gap-3 flex-shrink-0">
                     <div className="text-right hidden sm:block">
-                      <p className="text-[12px] font-bold" style={{ color: "#7C3AED" }}>{c.orders.length} pedido{c.orders.length !== 1 ? "s" : ""}</p>
+                      <p className="text-[12px] font-bold" style={{ color: "var(--primary)" }}>{c.orders.length} pedido{c.orders.length !== 1 ? "s" : ""}</p>
                       {Object.keys(c.spent).length > 0 && <p className="text-[10px]" style={{ color: "#22C55E" }}>{fmtMoney(c.spent)}</p>}
                     </div>
                     <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: "rgba(255,255,255,0.04)", color: "rgba(255,255,255,0.35)" }}>
@@ -1196,7 +1196,7 @@ function TabClientes({ clientes, orders }: { clientes: Cliente[]; orders: Order[
                               <StatusPill status={o.status} />
                               <span className="text-[11px] flex-1 truncate" style={{ color: "rgba(255,255,255,0.28)" }}>{o.items.map(i => i.name).join(", ")}</span>
                               <span className="text-[11px]" style={{ color: "rgba(255,255,255,0.25)" }}>{relativeTime(o.createdAt)}</span>
-                              <span className="text-[12px] font-black flex-shrink-0" style={{ color: "#EA580C" }}>{money1(o.total, o.currency)}</span>
+                              <span className="text-[12px] font-black flex-shrink-0" style={{ color: "var(--primary)" }}>{money1(o.total, o.currency)}</span>
                             </div>
                           ))}
                         </div>
@@ -1312,12 +1312,12 @@ function TabVisibilidad() {
         </div>
         <div className="px-4 py-4 rounded-2xl flex items-center gap-3" style={card}>
           <div className="w-9 h-9 rounded-xl flex items-center justify-center"
-            style={{ background:"rgba(234,88,12,0.08)", color:"#EA580C" }}>
+            style={{ background:"rgba(206,116,58,0.08)", color:"var(--primary)" }}>
             <EyeOff size={16}/>
           </div>
           <div>
             <p className="text-[10px] font-bold uppercase tracking-[0.1em]" style={{ color:"rgba(255,255,255,0.35)" }}>Juegos ocultos</p>
-            <p className="text-xl font-black" style={{ color:"#EA580C" }}>{hiddenGames}</p>
+            <p className="text-xl font-black" style={{ color:"var(--primary)" }}>{hiddenGames}</p>
           </div>
         </div>
       </div>
@@ -1381,7 +1381,7 @@ function TabVisibilidad() {
                     const ev = visible(ex.key);
                     return (
                       <div key={ex.key} className="rounded-xl mt-1.5 px-3 py-2 flex items-center gap-2"
-                        style={{ background:"rgba(234,88,12,0.05)", opacity: ev ? 1 : 0.55 }}>
+                        style={{ background:"rgba(206,116,58,0.05)", opacity: ev ? 1 : 0.55 }}>
                         <span className="text-[12px] font-semibold text-white/80 flex-1 min-w-0 truncate">{ex.label}</span>
                         <VisSwitch on={ev} busy={saving === ex.key}
                           onClick={() => toggle(ex.key, !ev, ev ? `"${ex.label}" oculto.` : `"${ex.label}" visible.`)}

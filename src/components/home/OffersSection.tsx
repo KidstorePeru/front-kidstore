@@ -29,7 +29,7 @@ export default function OffersSection() {
         <Link
           href="/games"
           className="arrow-link text-xs font-semibold transition-colors hover:opacity-80"
-          style={{ color: "var(--brand)" }}
+          style={{ color: "var(--primary)" }}
         >
           {t.home.viewAll.replace("→", "")}
           <span>→</span>
@@ -90,7 +90,7 @@ export default function OffersSection() {
                     </span>
                     <span
                       className="text-sm font-bold"
-                      style={{ color: "var(--brand-light)" }}
+                      style={{ color: "var(--primary)" }}
                     >
                       {formatPrice(minPrice)}
                     </span>
@@ -106,7 +106,7 @@ export default function OffersSection() {
               {/* Hover glow */}
               <div
                 className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none rounded-2xl"
-                style={{ boxShadow: "inset 0 0 0 1px rgba(124,58,237,0.3)" }}
+                style={{ boxShadow: "inset 0 0 0 1px rgba(124,104,214,0.3)" }}
               />
             </Link>
           );

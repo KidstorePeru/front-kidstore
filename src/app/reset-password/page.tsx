@@ -78,20 +78,20 @@ export default function ResetPasswordPage() {
   if (!email) return null;
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4"
-      style={{ background: "linear-gradient(135deg, #080C18 0%, #0F0A1E 50%, #06091A 100%)" }}>
+    <div data-theme="dark" className="min-h-screen flex items-center justify-center p-4"
+      style={{ background: "linear-gradient(135deg, #10121C 0%, #161020 100%)", color: "var(--text)" }}>
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div className="absolute -left-40 -top-40 w-96 h-96 rounded-full"
-          style={{ background: "radial-gradient(circle,rgba(124,58,237,0.15),transparent 70%)" }}/>
+          style={{ background: "radial-gradient(circle,rgba(124,104,214,0.15),transparent 70%)" }}/>
         <div className="absolute -right-40 -bottom-40 w-96 h-96 rounded-full"
-          style={{ background: "radial-gradient(circle,rgba(234,88,12,0.1),transparent 70%)" }}/>
+          style={{ background: "radial-gradient(circle,rgba(206,116,58,0.1),transparent 70%)" }}/>
         <div className="absolute inset-0"
           style={{ backgroundImage: "radial-gradient(rgba(255,255,255,0.03) 1px,transparent 1px)", backgroundSize: "32px 32px" }}/>
       </div>
 
       <div className="w-full max-w-md relative z-10">
         <div className="flex justify-center mb-8">
-          <Link href="/"><Image src="/logo/imagotipo-kidstore.png" alt="KidStore" width={160} height={48} className="h-10 w-auto" style={{ filter: "brightness(0) invert(1)" }}/></Link>
+          <Link href="/"><Image src="/brand/kidstore-imagotipo.png" alt="KidStore" width={161} height={42} className="h-[42px] w-auto"/></Link>
         </div>
 
         {success ? (
@@ -113,8 +113,8 @@ export default function ResetPasswordPage() {
             style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", backdropFilter: "blur(16px)" }}>
             <div className="px-8 pt-8 pb-4 text-center">
               <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4"
-                style={{ background: "rgba(124,58,237,0.12)", border: "1px solid rgba(124,58,237,0.2)" }}>
-                <Lock size={24} style={{ color: "#A78BFA" }}/>
+                style={{ background: "rgba(124,104,214,0.12)", border: "1px solid rgba(124,104,214,0.2)" }}>
+                <Lock size={24} style={{ color: "#AA91FF" }}/>
               </div>
               <h1 className="text-xl font-bold text-white mb-1">
                 {isEN ? "Set new password" : "Nueva contraseña"}
@@ -181,10 +181,10 @@ export default function ResetPasswordPage() {
               </div>
 
               <button type="submit" disabled={loading || !password || !confirm}
-                className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl text-sm font-bold text-white transition-all hover:scale-[1.02] disabled:opacity-50"
-                style={{ background: "linear-gradient(135deg, #7C3AED, #5B21B6)", boxShadow: "0 4px 20px rgba(124,58,237,0.3)" }}>
+                className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl text-sm font-bold text-[var(--on-primary)] transition-all hover:scale-[1.02] disabled:opacity-50"
+                style={{ background: "var(--primary)", boxShadow: "0 4px 20px rgba(124,104,214,0.3)" }}>
                 {loading ? (
-                  <div className="w-5 h-5 border-2 border-t-transparent rounded-full animate-spin" style={{ borderColor: "white", borderTopColor: "transparent" }}/>
+                  <div className="w-5 h-5 border-2 border-t-transparent rounded-full animate-spin" style={{ borderColor: "var(--on-primary)", borderTopColor: "transparent" }}/>
                 ) : (
                   <>{isEN ? "Update password" : "Actualizar contraseña"} <ArrowRight size={15}/></>
                 )}

@@ -17,13 +17,13 @@ export default function TermsPage() {
 
         {/* ═══ Hero ═══ */}
         <div className="relative overflow-hidden"
-          style={{ background: "linear-gradient(135deg, #7C3AED 0%, #5B21B6 50%, #4C1D95 100%)" }}>
+          style={{ background: "var(--brand-panel)" }}>
           <div className="absolute inset-0 pointer-events-none"
             style={{ backgroundImage: "radial-gradient(rgba(255,255,255,0.06) 1px,transparent 1px)", backgroundSize: "28px 28px" }}/>
           <div className="absolute -left-32 top-0 w-80 h-80 rounded-full pointer-events-none"
-            style={{ background: "radial-gradient(circle,rgba(167,139,250,0.25),transparent 70%)" }}/>
+            style={{ background: "radial-gradient(circle,rgba(170,145,255,0.25),transparent 70%)" }}/>
           <div className="absolute -right-20 -bottom-20 w-60 h-60 rounded-full pointer-events-none"
-            style={{ background: "radial-gradient(circle,rgba(234,88,12,0.15),transparent 70%)" }}/>
+            style={{ background: "radial-gradient(circle,rgba(206,116,58,0.15),transparent 70%)" }}/>
 
           <div className="max-w-[860px] mx-auto px-4 lg:px-8 py-16 md:py-20 text-center relative z-10">
             <div className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6"
@@ -46,7 +46,7 @@ export default function TermsPage() {
           <div className="rounded-2xl p-6 mb-8 relative overflow-hidden"
             style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
             <div className="absolute -right-8 -top-8 w-28 h-28 rounded-full pointer-events-none"
-              style={{ background: "radial-gradient(circle,rgba(124,58,237,0.06),transparent 70%)" }}/>
+              style={{ background: "radial-gradient(circle,rgba(124,104,214,0.06),transparent 70%)" }}/>
             <p className="text-sm leading-[1.8] relative z-10" style={{ color: "var(--text-muted)" }}>
               {isEN
                 ? <>These <strong style={{ color: "var(--text)" }}>Terms and Conditions</strong> govern the use of the KidStore website and the purchase of digital products offered. By accessing, browsing or purchasing, you accept these Terms.</>
@@ -102,7 +102,7 @@ export default function TermsPage() {
                 ].map(g => (
                   <div key={g.label} className="rounded-xl p-4"
                     style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
-                    <p className="text-[10px] font-bold uppercase tracking-wider mb-1" style={{ color: "var(--brand-light)" }}>{g.label}</p>
+                    <p className="text-[10px] font-bold uppercase tracking-wider mb-1" style={{ color: "var(--primary)" }}>{g.label}</p>
                     <p className="text-sm font-semibold" style={{ color: "var(--text)" }}>{g.methods}</p>
                   </div>
                 ))}
@@ -112,8 +112,8 @@ export default function TermsPage() {
             {/* 5 */}
             <Section icon={<Package size={18}/>} title={isEN ? "5. Available products" : "5. Productos disponibles"}>
               <P isEN={isEN}
-                en={<>We sell <strong>in-game currencies</strong> (V-Bucks, Robux, Genesis Crystals, Wild Cores, Lattice, Pok&eacute;Coins, Tokens, TFT Coins, etc.), <strong>battle passes</strong>, <strong>subscriptions</strong> (Fortnite Club, Welkin Moon, Discord Nitro) and <strong>server boosts</strong>. Each <Link href="/games" className="font-semibold underline" style={{ color: "var(--brand-light)" }}>game page</Link> shows the full product catalog.</>}
-                es={<>Vendemos <strong>monedas in-game</strong> (V-Bucks, Robux, Cristales G&eacute;nesis, Wild Cores, Lattice, Pok&eacute;Monedas, Tokens, TFT Coins, etc.), <strong>pases de batalla</strong>, <strong>suscripciones</strong> (Club Fortnite, Welkin Moon, Discord Nitro) y <strong>server boosts</strong>. Cada <Link href="/games" className="font-semibold underline" style={{ color: "var(--brand-light)" }}>p&aacute;gina de juego</Link> muestra el cat&aacute;logo completo.</>}/>
+                en={<>We sell <strong>in-game currencies</strong> (V-Bucks, Robux, Genesis Crystals, Wild Cores, Lattice, Pok&eacute;Coins, Tokens, TFT Coins, etc.), <strong>battle passes</strong>, <strong>subscriptions</strong> (Fortnite Club, Welkin Moon, Discord Nitro) and <strong>server boosts</strong>. Each <Link href="/games" className="font-semibold underline" style={{ color: "var(--primary)" }}>game page</Link> shows the full product catalog.</>}
+                es={<>Vendemos <strong>monedas in-game</strong> (V-Bucks, Robux, Cristales G&eacute;nesis, Wild Cores, Lattice, Pok&eacute;Monedas, Tokens, TFT Coins, etc.), <strong>pases de batalla</strong>, <strong>suscripciones</strong> (Club Fortnite, Welkin Moon, Discord Nitro) y <strong>server boosts</strong>. Cada <Link href="/games" className="font-semibold underline" style={{ color: "var(--primary)" }}>p&aacute;gina de juego</Link> muestra el cat&aacute;logo completo.</>}/>
             </Section>
 
             {/* 6 */}
@@ -140,8 +140,8 @@ export default function TermsPage() {
             {/* 7 */}
             <Section icon={<Mail size={18}/>} title={isEN ? "7. Notifications" : "7. Notificaciones"}>
               <P isEN={isEN}
-                en={<>You will receive <strong>email notifications</strong> when your payment is approved and when your order is delivered. You can also track the status of your orders from your <Link href="/profile?tab=pedidos" className="font-semibold underline" style={{ color: "var(--brand-light)" }}>profile</Link>.</>}
-                es={<>Recibir&aacute;s <strong>notificaciones por correo</strong> cuando tu pago sea aprobado y cuando tu pedido sea entregado. Tambi&eacute;n puedes seguir el estado de tus pedidos desde tu <Link href="/profile?tab=pedidos" className="font-semibold underline" style={{ color: "var(--brand-light)" }}>perfil</Link>.</>}/>
+                en={<>You will receive <strong>email notifications</strong> when your payment is approved and when your order is delivered. You can also track the status of your orders from your <Link href="/profile?tab=pedidos" className="font-semibold underline" style={{ color: "var(--primary)" }}>profile</Link>.</>}
+                es={<>Recibir&aacute;s <strong>notificaciones por correo</strong> cuando tu pago sea aprobado y cuando tu pedido sea entregado. Tambi&eacute;n puedes seguir el estado de tus pedidos desde tu <Link href="/profile?tab=pedidos" className="font-semibold underline" style={{ color: "var(--primary)" }}>perfil</Link>.</>}/>
             </Section>
 
             {/* 8 */}
@@ -154,24 +154,24 @@ export default function TermsPage() {
             {/* 9 */}
             <Section icon={<RefreshCw size={18}/>} title={isEN ? "9. Refunds" : "9. Reembolsos"}>
               <P isEN={isEN}
-                en={<>Due to the digital nature of the products, <strong>all purchases are final</strong> once delivered. If there is a problem attributable to KidStore (non-delivery, wrong product, duplicate charge), we will resolve it with a retry, exchange or store credit. See our <Link href="/refunds" className="font-semibold underline" style={{ color: "var(--brand-light)" }}>Refund Policy</Link> for full details.</>}
-                es={<>Por la naturaleza digital de los productos, <strong>todas las compras son finales</strong> una vez entregadas. Si hay un problema atribuible a KidStore (no entrega, producto equivocado, cobro duplicado), lo resolveremos con un reintento, cambio o cr&eacute;dito. Consulta nuestra <Link href="/refunds" className="font-semibold underline" style={{ color: "var(--brand-light)" }}>Pol&iacute;tica de Reembolsos</Link> para m&aacute;s detalles.</>}/>
+                en={<>Due to the digital nature of the products, <strong>all purchases are final</strong> once delivered. If there is a problem attributable to KidStore (non-delivery, wrong product, duplicate charge), we will resolve it with a retry, exchange or store credit. See our <Link href="/refunds" className="font-semibold underline" style={{ color: "var(--primary)" }}>Refund Policy</Link> for full details.</>}
+                es={<>Por la naturaleza digital de los productos, <strong>todas las compras son finales</strong> una vez entregadas. Si hay un problema atribuible a KidStore (no entrega, producto equivocado, cobro duplicado), lo resolveremos con un reintento, cambio o cr&eacute;dito. Consulta nuestra <Link href="/refunds" className="font-semibold underline" style={{ color: "var(--primary)" }}>Pol&iacute;tica de Reembolsos</Link> para m&aacute;s detalles.</>}/>
             </Section>
 
             {/* 10 */}
             <Section icon={<Mail size={18}/>} title={isEN ? "10. Contact" : "10. Contacto"}>
               <P isEN={isEN}
-                en={<>For inquiries, <Link href="/contact" className="font-semibold underline" style={{ color: "var(--brand-light)" }}>contact us</Link> through our support channels: <strong>WhatsApp, Discord, Instagram, Facebook</strong> or <strong>TikTok</strong>.</>}
-                es={<>Para consultas, <Link href="/contact" className="font-semibold underline" style={{ color: "var(--brand-light)" }}>cont&aacute;ctanos</Link> por nuestros canales de soporte: <strong>WhatsApp, Discord, Instagram, Facebook</strong> o <strong>TikTok</strong>.</>}/>
+                en={<>For inquiries, <Link href="/contact" className="font-semibold underline" style={{ color: "var(--primary)" }}>contact us</Link> through our support channels: <strong>WhatsApp, Discord, Instagram, Facebook</strong> or <strong>TikTok</strong>.</>}
+                es={<>Para consultas, <Link href="/contact" className="font-semibold underline" style={{ color: "var(--primary)" }}>cont&aacute;ctanos</Link> por nuestros canales de soporte: <strong>WhatsApp, Discord, Instagram, Facebook</strong> o <strong>TikTok</strong>.</>}/>
             </Section>
 
           </div>
 
           {/* CTA */}
           <div className="mt-10 rounded-2xl p-8 text-center relative overflow-hidden"
-            style={{ background: "linear-gradient(135deg, rgba(124,58,237,0.08), rgba(124,58,237,0.02))", border: "1px solid var(--border)" }}>
+            style={{ background: "linear-gradient(135deg, rgba(124,104,214,0.08), rgba(124,104,214,0.02))", border: "1px solid var(--border)" }}>
             <div className="absolute -right-16 -top-16 w-48 h-48 rounded-full pointer-events-none"
-              style={{ background: "radial-gradient(circle,rgba(124,58,237,0.08),transparent 70%)" }}/>
+              style={{ background: "radial-gradient(circle,rgba(124,104,214,0.08),transparent 70%)" }}/>
             <div className="relative z-10 flex flex-col md:flex-row items-center gap-6 justify-center">
               <p className="text-sm" style={{ color: "var(--text-muted)" }}>
                 {isEN ? "Have questions about these terms?" : "\u00bfTienes preguntas sobre estos t\u00e9rminos?"}
@@ -181,8 +181,8 @@ export default function TermsPage() {
                   style={{ background: "var(--card)", border: "1px solid var(--border)", color: "var(--text-muted)" }}>
                   {isEN ? "FAQ" : "FAQ"}
                 </Link>
-                <Link href="/contact" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold text-white transition-all hover:scale-105"
-                  style={{ background: "var(--brand)", boxShadow: "0 4px 16px rgba(124,58,237,0.25)" }}>
+                <Link href="/contact" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold text-[var(--on-primary)] transition-all hover:scale-105"
+                  style={{ background: "var(--primary)", boxShadow: "0 4px 16px rgba(124,104,214,0.25)" }}>
                   {isEN ? "Contact us" : "Cont\u00e1ctanos"} <ArrowRight size={13}/>
                 </Link>
               </div>
@@ -202,10 +202,10 @@ function Section({ icon, title, children }: { icon: React.ReactNode; title: stri
     <section className="rounded-2xl p-6 relative overflow-hidden"
       style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
       <div className="absolute -right-6 -top-6 w-20 h-20 rounded-full pointer-events-none"
-        style={{ background: "radial-gradient(circle,rgba(124,58,237,0.04),transparent 70%)" }}/>
+        style={{ background: "radial-gradient(circle,rgba(124,104,214,0.04),transparent 70%)" }}/>
       <div className="flex items-center gap-3 mb-4 relative z-10">
         <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
-          style={{ background: "linear-gradient(135deg, rgba(124,58,237,0.12), rgba(124,58,237,0.06))", border: "1px solid rgba(124,58,237,0.15)", color: "var(--brand-light)" }}>
+          style={{ background: "linear-gradient(135deg, rgba(124,104,214,0.12), rgba(124,104,214,0.06))", border: "1px solid rgba(124,104,214,0.15)", color: "var(--primary)" }}>
           {icon}
         </div>
         <h2 className="text-base font-bold" style={{ color: "var(--text)" }}>{title}</h2>
@@ -227,11 +227,11 @@ function Bullets({ isEN, en, es, numbered }: { isEN: boolean; en: React.ReactNod
         <li key={i} className="flex items-start gap-3 text-[13px] leading-[1.7]" style={{ color: "var(--text-muted)" }}>
           {numbered ? (
             <span className="w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5 text-[10px] font-bold"
-              style={{ background: "rgba(124,58,237,0.08)", color: "var(--brand-light)", border: "1px solid rgba(124,58,237,0.12)" }}>
+              style={{ background: "rgba(124,104,214,0.08)", color: "var(--primary)", border: "1px solid rgba(124,104,214,0.12)" }}>
               {i + 1}
             </span>
           ) : (
-            <span className="w-1.5 h-1.5 rounded-full flex-shrink-0 mt-[9px]" style={{ background: "var(--brand-light)" }}/>
+            <span className="w-1.5 h-1.5 rounded-full flex-shrink-0 mt-[9px]" style={{ background: "var(--primary)" }}/>
           )}
           <span>{item}</span>
         </li>

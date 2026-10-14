@@ -20,13 +20,13 @@ export default function RefundsPage() {
 
         {/* ═══ Hero ═══ */}
         <div className="relative overflow-hidden"
-          style={{ background: "linear-gradient(135deg, #7C3AED 0%, #5B21B6 50%, #4C1D95 100%)" }}>
+          style={{ background: "var(--brand-panel)" }}>
           <div className="absolute inset-0 pointer-events-none"
             style={{ backgroundImage: "radial-gradient(rgba(255,255,255,0.06) 1px,transparent 1px)", backgroundSize: "28px 28px" }}/>
           <div className="absolute -left-32 top-0 w-80 h-80 rounded-full pointer-events-none"
-            style={{ background: "radial-gradient(circle,rgba(167,139,250,0.25),transparent 70%)" }}/>
+            style={{ background: "radial-gradient(circle,rgba(170,145,255,0.25),transparent 70%)" }}/>
           <div className="absolute -right-20 -bottom-20 w-60 h-60 rounded-full pointer-events-none"
-            style={{ background: "radial-gradient(circle,rgba(234,88,12,0.15),transparent 70%)" }}/>
+            style={{ background: "radial-gradient(circle,rgba(206,116,58,0.15),transparent 70%)" }}/>
 
           <div className="max-w-[860px] mx-auto px-4 lg:px-8 py-16 md:py-20 text-center relative z-10">
             <div className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6"
@@ -181,8 +181,8 @@ export default function RefundsPage() {
             <Section icon={<MessageCircle size={18}/>} title={isEN ? "8. How to request a refund" : "8. C\u00f3mo solicitar un reembolso"}>
               <P>
                 {isEN
-                  ? <><Link href="/contact" className="font-semibold underline" style={{ color: "var(--brand-light)" }}>Contact us</Link> through our support channels and include:</>
-                  : <><Link href="/contact" className="font-semibold underline" style={{ color: "var(--brand-light)" }}>Cont&aacute;ctanos</Link> por nuestros canales de soporte e incluye:</>}
+                  ? <><Link href="/contact" className="font-semibold underline" style={{ color: "var(--primary)" }}>Contact us</Link> through our support channels and include:</>
+                  : <><Link href="/contact" className="font-semibold underline" style={{ color: "var(--primary)" }}>Cont&aacute;ctanos</Link> por nuestros canales de soporte e incluye:</>}
               </P>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 mt-4">
                 {(isEN
@@ -191,7 +191,7 @@ export default function RefundsPage() {
                 ).map((item) => (
                   <div key={item} className="flex items-center gap-2 px-3.5 py-3 rounded-xl text-xs font-semibold"
                     style={{ background: "var(--surface)", border: "1px solid var(--border)", color: "var(--text)" }}>
-                    <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: "var(--brand-light)" }}/>
+                    <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: "var(--primary)" }}/>
                     {item}
                   </div>
                 ))}
@@ -202,7 +202,7 @@ export default function RefundsPage() {
 
           {/* CTA */}
           <div className="mt-10 rounded-2xl p-8 text-center relative overflow-hidden"
-            style={{ background: "linear-gradient(135deg, rgba(124,58,237,0.08), rgba(124,58,237,0.02))", border: "1px solid var(--border)" }}>
+            style={{ background: "linear-gradient(135deg, rgba(124,104,214,0.08), rgba(124,104,214,0.02))", border: "1px solid var(--border)" }}>
             <div className="relative z-10 flex flex-col md:flex-row items-center gap-6 justify-center">
               <p className="text-sm" style={{ color: "var(--text-muted)" }}>
                 {isEN ? "See also:" : "Ver tambi\u00e9n:"}
@@ -216,8 +216,8 @@ export default function RefundsPage() {
                   style={{ background: "var(--card)", border: "1px solid var(--border)", color: "var(--text-muted)" }}>
                   {isEN ? "Privacy" : "Privacidad"}
                 </Link>
-                <Link href="/contact" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold text-white transition-all hover:scale-105"
-                  style={{ background: "var(--brand)", boxShadow: "0 4px 16px rgba(124,58,237,0.25)" }}>
+                <Link href="/contact" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold text-[var(--on-primary)] transition-all hover:scale-105"
+                  style={{ background: "var(--primary)", boxShadow: "0 4px 16px rgba(124,104,214,0.25)" }}>
                   {isEN ? "Contact" : "Contacto"} <ArrowRight size={13}/>
                 </Link>
               </div>
@@ -236,13 +236,13 @@ function Section({ icon, title, children, iconColor, iconBg }: { icon: React.Rea
     <section className="rounded-2xl p-6 relative overflow-hidden"
       style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
       <div className="absolute -right-6 -top-6 w-20 h-20 rounded-full pointer-events-none"
-        style={{ background: "radial-gradient(circle,rgba(124,58,237,0.04),transparent 70%)" }}/>
+        style={{ background: "radial-gradient(circle,rgba(124,104,214,0.04),transparent 70%)" }}/>
       <div className="flex items-center gap-3 mb-4 relative z-10">
         <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
           style={{
-            background: iconBg ?? "linear-gradient(135deg, rgba(124,58,237,0.12), rgba(124,58,237,0.06))",
-            border: `1px solid ${iconColor ? iconColor + "25" : "rgba(124,58,237,0.15)"}`,
-            color: iconColor ?? "var(--brand-light)",
+            background: iconBg ?? "linear-gradient(135deg, rgba(124,104,214,0.12), rgba(124,104,214,0.06))",
+            border: `1px solid ${iconColor ? iconColor + "25" : "rgba(124,104,214,0.15)"}`,
+            color: iconColor ?? "var(--primary)",
           }}>
           {icon}
         </div>

@@ -71,7 +71,7 @@ export default function HomePageClient() {
               <Link
                 href="/games"
                 className="arrow-link text-xs font-semibold transition-colors hover:opacity-80"
-                style={{ color: "var(--brand)" }}
+                style={{ color: "var(--primary)" }}
               >
                 {t.home.viewAll.replace("→", "")}
                 <span>→</span>

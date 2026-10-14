@@ -27,17 +27,17 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4"
-      style={{ background: "#080C18" }}>
+    <div data-theme="dark" className="min-h-screen flex items-center justify-center p-4"
+      style={{ background: "var(--hero-bg)" }}>
 
       {/* Fondo píxeles decorativos */}
       {[
-        { w:8,  h:8,  bg:"#1D4ED8", op:.35, top:"10%", left:"6%"   },
-        { w:6,  h:6,  bg:"#FF6B1A", op:.35, top:"15%", right:"10%" },
-        { w:10, h:10, bg:"#7C3AED", op:.25, top:"8%",  right:"22%" },
-        { w:5,  h:5,  bg:"#E53E3E", op:.3,  top:"28%", right:"5%"  },
-        { w:7,  h:7,  bg:"#3B82F6", op:.2,  bottom:"20%", left:"8%" },
-        { w:5,  h:5,  bg:"#A855F7", op:.25, bottom:"15%", right:"8%"},
+        { w:8,  h:8,  bg:"#7C68D6", op:.35, top:"10%", left:"6%"   },
+        { w:6,  h:6,  bg:"#CE743A", op:.35, top:"15%", right:"10%" },
+        { w:10, h:10, bg:"var(--primary)", op:.25, top:"8%",  right:"22%" },
+        { w:5,  h:5,  bg:"#CE743A", op:.3,  top:"28%", right:"5%"  },
+        { w:7,  h:7,  bg:"#7C68D6", op:.2,  bottom:"20%", left:"8%" },
+        { w:5,  h:5,  bg:"#AA91FF", op:.25, bottom:"15%", right:"8%"},
       ].map((px, i) => (
         <div key={i} className="absolute pointer-events-none rounded-sm" style={{
           width: px.w, height: px.h, background: px.bg, opacity: px.op,
@@ -52,18 +52,17 @@ export default function AdminLoginPage() {
         {/* Logo */}
         <div className="flex flex-col items-center mb-8">
           <Image
-            src="/logo/imagotipo-kidstore.png"
+            src="/brand/kidstore-imagotipo.png"
             alt="KidStore"
             width={200}
-            height={76}
+            height={52}
             className="object-contain mb-4"
-            style={{ filter: "brightness(0) invert(1)" }}
             priority
           />
           <div className="flex items-center gap-2 px-4 py-2 rounded-full"
-            style={{ background: "rgba(234,88,12,0.12)", border: "1px solid rgba(234,88,12,0.3)" }}>
-            <Shield size={14} style={{ color: "#F97316" }}/>
-            <span className="text-xs font-bold uppercase tracking-widest" style={{ color: "#F97316" }}>
+            style={{ background: "rgba(206,116,58,0.12)", border: "1px solid rgba(206,116,58,0.3)" }}>
+            <Shield size={14} style={{ color: "var(--primary)" }}/>
+            <span className="text-xs font-bold uppercase tracking-widest" style={{ color: "var(--primary)" }}>
               Panel de Administración
             </span>
           </div>
@@ -99,7 +98,7 @@ export default function AdminLoginPage() {
                 required
                 className="w-full px-4 py-3 rounded-xl text-sm outline-none transition-all text-white"
                 style={{ background: "rgba(255,255,255,0.06)", border: "1.5px solid rgba(255,255,255,0.1)" }}
-                onFocus={e => (e.currentTarget.style.borderColor = "#EA580C")}
+                onFocus={e => (e.currentTarget.style.borderColor = "var(--primary)")}
                 onBlur={e  => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)")}
               />
             </div>
@@ -118,7 +117,7 @@ export default function AdminLoginPage() {
                   required
                   className="w-full px-4 py-3 pr-11 rounded-xl text-sm outline-none transition-all text-white"
                   style={{ background: "rgba(255,255,255,0.06)", border: "1.5px solid rgba(255,255,255,0.1)" }}
-                  onFocus={e => (e.currentTarget.style.borderColor = "#EA580C")}
+                  onFocus={e => (e.currentTarget.style.borderColor = "var(--primary)")}
                   onBlur={e  => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)")}
                 />
                 <button type="button" onClick={() => setShowPass(!showPass)}
@@ -132,10 +131,10 @@ export default function AdminLoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl text-sm font-bold text-white transition-all hover:opacity-90 disabled:opacity-50 mt-2"
-              style={{ background: "linear-gradient(135deg,#1E3A8A,#EA580C)", boxShadow: "0 4px 20px rgba(234,88,12,0.3)" }}>
+              className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl text-sm font-bold text-[var(--on-primary)] transition-all hover:opacity-90 disabled:opacity-50 mt-2"
+              style={{ background: "var(--primary)", boxShadow: "0 4px 20px rgba(206,116,58,0.3)" }}>
               {loading
-                ? <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"/>
+                ? <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"/>
                 : <><Shield size={15}/> Ingresar al panel</>
               }
             </button>

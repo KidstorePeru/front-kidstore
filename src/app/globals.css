@@ -46,53 +46,65 @@
    VARIABLES DE TEMA
 ══════════════════════════════════════ */
 
+/* Paleta del kit de marca KidStore (Casco KS · violeta + naranja, edición 01 · octubre 2026).
+   --brand y --accent son los colores del logo (fijos). Botones y enlaces usan --primary con
+   --on-primary encima: el tono cambia con el tema para mantener el contraste. El naranja se
+   reserva para detalles puntuales; éxito, aviso y error conservan sus colores propios. */
+
 /* Tema claro — DEFAULT */
 :root,
 [data-theme="light"] {
-  --bg:              #F2F2F8;
+  --brand:           #7C68D6;
+  --accent:          #CE743A;
+  --primary:         #6846C5;
+  --on-primary:      #FFFFFF;
+  --link:            #6846C5;
+  --bg:              #F6F7FB;
   --surface:         #FFFFFF;
   --card:            #FFFFFF;
-  --card-hover:      #F5F5FC;
-  --border:          #E0E0EE;
-  --border-glow:     rgba(124,58,237,0.25);
-  --text:            #0D0D1A;
-  --text-muted:      #5A5A78;
-  --text-subtle:     #9090B0;
+  --card-hover:      #F2F0FB;
+  --border:          #D9DDE8;
+  --border-glow:     rgba(124,104,214,0.35);
+  --text:            #171B2A;
+  --text-muted:      #5E6578;
+  --text-subtle:     #767C90;
   --navbar-bg:       rgba(255,255,255,0.96);
-  --brand:           #7C3AED;
-  --brand-light:     #6D28D9;
-  --brand-dark:      #5B21B6;
-  --hero-bg:         #1a0533;
+  /* Superficie de marca para cabeceras destacadas (texto blanco en ambos temas). */
+  --brand-panel:     linear-gradient(135deg, #7C68D6 0%, #6846C5 100%);
+  --hero-bg:         #161020;
   --hero-text:       #FFFFFF;
   --trust-bg:        #FFFFFF;
-  --trust-border:    #E0E0EE;
-  --promo-bg:        linear-gradient(135deg, #f0ebff 0%, #e8e0ff 100%);
-  --promo-border:    rgba(124,58,237,0.2);
-  --section-divider: #E0E0EE;
+  --trust-border:    #D9DDE8;
+  --promo-bg:        linear-gradient(135deg, #F1EEFC 0%, #E9E4FA 100%);
+  --promo-border:    rgba(124,104,214,0.25);
+  --section-divider: #D9DDE8;
 }
 
 /* Tema oscuro */
 [data-theme="dark"] {
-  --bg:              #08080E;
-  --surface:         #0F0F18;
-  --card:            #16161F;
-  --card-hover:      #1E1E2A;
-  --border:          #242433;
-  --border-glow:     rgba(124,58,237,0.35);
-  --text:            #E8E8F0;
-  --text-muted:      #8888A8;
-  --text-subtle:     #52526A;
-  --navbar-bg:       rgba(8,8,14,0.94);
-  --brand:           #7C3AED;
-  --brand-light:     #A78BFA;
-  --brand-dark:      #5B21B6;
-  --hero-bg:         #06091a;
+  --brand:           #7C68D6;
+  --accent:          #CE743A;
+  --primary:         #AA91FF;
+  --on-primary:      #161020;
+  --link:            #AA91FF;
+  --bg:              #10121C;
+  --surface:         #151826;
+  --card:            #1B1E2C;
+  --card-hover:      #232738;
+  --border:          #3B4256;
+  --border-glow:     rgba(170,145,255,0.40);
+  --text:            #F3F5FB;
+  --text-muted:      #B4BDCF;
+  --text-subtle:     #7E879C;
+  --navbar-bg:       rgba(16,18,28,0.94);
+  --brand-panel:     linear-gradient(135deg, #7C68D6 0%, #6846C5 100%);
+  --hero-bg:         #161020;
   --hero-text:       #FFFFFF;
-  --trust-bg:        #0F0F18;
-  --trust-border:    #1A1A26;
-  --promo-bg:        linear-gradient(135deg, #16061f 0%, #0f0a1e 50%, #06091a 100%);
-  --promo-border:    rgba(124,58,237,0.2);
-  --section-divider: #1A1A26;
+  --trust-bg:        #151826;
+  --trust-border:    #2A2F42;
+  --promo-bg:        linear-gradient(135deg, #1D1933 0%, #171628 50%, #10121C 100%);
+  --promo-border:    rgba(124,104,214,0.25);
+  --section-divider: #2A2F42;
 }
 
 @theme {
@@ -137,8 +149,8 @@
     border: 3px solid var(--bg);
     border-radius: 999px;
   }
-  html::-webkit-scrollbar-thumb:hover, body::-webkit-scrollbar-thumb:hover { background: var(--brand-light); }
-  html::-webkit-scrollbar-thumb:active, body::-webkit-scrollbar-thumb:active { background: var(--brand-dark); }
+  html::-webkit-scrollbar-thumb:hover, body::-webkit-scrollbar-thumb:hover { background: var(--brand); }
+  html::-webkit-scrollbar-thumb:active, body::-webkit-scrollbar-thumb:active { background: var(--primary); }
 
   /* Firefox no soporta ::-webkit-scrollbar: usa los estándar (solo se aplican ahí para no
      anular los estilos de arriba en Chrome) */
@@ -162,28 +174,32 @@
   .game-card:hover {
     border-color: var(--border-glow);
     transform: translateY(-4px);
-    box-shadow: 0 12px 40px rgba(124,58,237,0.15);
+    box-shadow: 0 12px 40px rgba(124,104,214,0.18);
   }
 
   .btn-primary {
-    background: linear-gradient(135deg, #7C3AED, #5B21B6);
-    box-shadow: 0 4px 20px rgba(124,58,237,0.35);
+    background: var(--primary);
+    box-shadow: 0 4px 20px rgba(124,104,214,0.30);
     transition: box-shadow 0.2s ease, transform 0.2s ease, filter 0.2s ease;
-    color: #fff;
+    color: var(--on-primary);
   }
   .btn-primary:hover {
-    box-shadow: 0 6px 28px rgba(124,58,237,0.55);
+    box-shadow: 0 6px 28px rgba(124,104,214,0.45);
     transform: translateY(-1px);
     filter: brightness(1.1);
   }
 
-  .badge-popular { background: rgba(124,58,237,0.18); color: #A78BFA; border: 1px solid rgba(124,58,237,0.3); }
+  .badge-popular { background: rgba(124,104,214,0.16); color: var(--primary); border: 1px solid rgba(124,104,214,0.3); }
   .badge-oferta  { background: rgba(239,68,68,0.15);  color: #FCA5A5; border: 1px solid rgba(239,68,68,0.3); }
   .badge-nuevo   { background: rgba(16,185,129,0.15); color: #6EE7B7; border: 1px solid rgba(16,185,129,0.3); }
   .badge-valor   { background: rgba(245,158,11,0.15); color: #FCD34D; border: 1px solid rgba(245,158,11,0.3); }
+  /* En tema claro, los mismos tonos más oscuros para que el texto se lea sobre fondo blanco. */
+  [data-theme="light"] .badge-oferta { color: #B91C1C; }
+  [data-theme="light"] .badge-nuevo  { color: #047857; }
+  [data-theme="light"] .badge-valor  { color: #B45309; }
 
   .gradient-text {
-    background: linear-gradient(135deg, #C4B5FD, #7C3AED);
+    background: linear-gradient(135deg, #AA91FF, #7C68D6);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -203,7 +219,7 @@
     display: block;
     width: 4px;
     height: 20px;
-    background: linear-gradient(180deg, #7C3AED, #A78BFA);
+    background: linear-gradient(180deg, var(--brand), var(--accent));
     border-radius: 2px;
     flex-shrink: 0;
   }
@@ -261,7 +277,7 @@
   }
   .lift:hover {
     transform: translateY(-4px);
-    box-shadow: 0 14px 40px rgba(124,58,237,0.16);
+    box-shadow: 0 14px 40px rgba(124,104,214,0.18);
   }
   .lift:active {
     transform: translateY(-1px) scale(0.99);

@@ -139,7 +139,7 @@ function WhatsappToggle({ active, onToggle }: { active: boolean; onToggle: () =>
         style={{ background: active ? "rgba(37,211,102,0.15)" : "var(--surface)" }}>💬</div>
       <div className="flex-1">
         <p className="text-[10px] font-bold uppercase tracking-wider mb-0.5"
-          style={{ color: active ? "#4ADE80" : "var(--brand-light)" }}>{lang === "EN" ? "Recommended option" : "Opción recomendada"}</p>
+          style={{ color: active ? "#4ADE80" : "var(--primary)" }}>{lang === "EN" ? "Recommended option" : "Opción recomendada"}</p>
         <p className="text-xs font-semibold" style={{ color:"var(--text)" }}>
           {lang === "EN" ? "I prefer to send the information via WhatsApp or Messenger" : "Prefiero enviar la información por WhatsApp o Messenger"}
         </p>
@@ -373,7 +373,7 @@ export default function RocketLeagueProductClient({ slug }: { slug: string }) {
                 {TABS.map(tab => (
                   <Link key={tab.id} href={`/games/rocket-league?tab=${tab.id}`}
                     className="flex-shrink-0 px-5 py-4 text-sm font-semibold transition-all relative whitespace-nowrap"
-                    style={{ color: p.tab === tab.id ? "var(--brand-light)" : "var(--text-muted)" }}>
+                    style={{ color: p.tab === tab.id ? "var(--primary)" : "var(--text-muted)" }}>
                     {tab.label}
                     {p.tab === tab.id && (
                       <div className="absolute bottom-0 left-3 right-3 h-[2px] rounded-full"
@@ -445,13 +445,13 @@ export default function RocketLeagueProductClient({ slug }: { slug: string }) {
                   <p className="text-sm mt-1" style={{ color:"var(--text-subtle)" }}>{activeSubtitle}</p>
                 )}
                 {p.amount && p.name && (
-                  <p className="text-sm mt-1 font-semibold" style={{ color:"var(--brand-light)" }}>{lang==="EN" ? p.amountEN || p.amount : p.amount}</p>
+                  <p className="text-sm mt-1 font-semibold" style={{ color:"var(--primary)" }}>{lang==="EN" ? p.amountEN || p.amount : p.amount}</p>
                 )}
               </div>
 
               {/* Precio */}
               <div className="flex items-end gap-3">
-                <p className="text-3xl font-bold" style={{ color:"var(--brand-light)" }}>{formatPrice(activePrice)}</p>
+                <p className="text-3xl font-bold" style={{ color:"var(--primary)" }}>{formatPrice(activePrice)}</p>
                 <p className="text-base line-through mb-0.5" style={{ color:"var(--text-subtle)" }}>{formatPrice(activePriceOld)}</p>
                 <span className="mb-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold"
                   style={{ background:"rgba(16,185,129,0.15)", border:"1px solid rgba(16,185,129,0.3)", color:"#4ADE80" }}>
@@ -568,8 +568,8 @@ export default function RocketLeagueProductClient({ slug }: { slug: string }) {
                   className="flex items-center justify-center gap-2 py-4 rounded-xl text-sm font-bold transition-all hover:scale-[1.02]"
                   style={{
                     background: alreadyInCart ? "rgba(234,88,12,0.12)" : "var(--card)",
-                    border:`1.5px solid ${alreadyInCart || addedCart ? "#EA580C" : "var(--brand)"}`,
-                    color:"var(--brand-light)",
+                    border:`1.5px solid ${alreadyInCart || addedCart ? "#EA580C" : "var(--primary)"}`,
+                    color:"var(--primary)",
                   }}>
                   {addedCart ? <Check size={16}/> : <ShoppingCart size={16}/>}
                   {addedCart ? t.product.added : alreadyInCart ? t.product.inCart : t.product.addToCart}

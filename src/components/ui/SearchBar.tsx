@@ -155,7 +155,7 @@ export default function SearchBar() {
                           <p className="text-xs" style={{ color: "var(--text-subtle)" }}>
                             {game.products.length}{" "}
                             {t.search.optionsFrom}{" "}
-                            <span style={{ color: "var(--brand-light)" }}>
+                            <span style={{ color: "var(--primary)" }}>
                               {formatPrice(minPrice)}
                             </span>
                           </p>
@@ -177,7 +177,7 @@ export default function SearchBar() {
                     href={`/games?q=${encodeURIComponent(query)}&cat=${catFilter}`}
                     onClick={() => setOpen(false)}
                     className="flex items-center justify-center py-3 text-xs font-semibold transition-colors hover:opacity-80"
-                    style={{ color: "var(--brand)" }}
+                    style={{ color: "var(--primary)" }}
                   >
                     {t.search.seeAll} {results.length} {t.search.seeAllSuffix} →
                   </Link>

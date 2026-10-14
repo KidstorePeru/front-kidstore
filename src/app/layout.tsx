@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 import { PreferencesProvider } from "@/context/PreferencesContext";
@@ -35,6 +35,14 @@ export const metadata: Metadata = {
       "Recargas de juegos con entrega instantánea y pago seguro en Perú.",
   },
   robots: { index: true, follow: true },
+};
+
+// Color de la barra del navegador en móviles (fondos del kit de marca).
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#F6F7FB" },
+    { media: "(prefers-color-scheme: dark)", color: "#10121C" },
+  ],
 };
 
 export default function RootLayout({

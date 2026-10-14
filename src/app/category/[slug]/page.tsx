@@ -60,9 +60,9 @@ export default function CategoryPage({ params }: Props) {
                 href={`/category/${c.slug}`}
                 className="px-4 py-2 rounded-xl text-xs font-bold transition-all"
                 style={{
-                  background: c.slug === slug ? "var(--brand)" : "var(--card)",
-                  border:     `1px solid ${c.slug === slug ? "var(--brand)" : "var(--border)"}`,
-                  color:      c.slug === slug ? "#fff" : "var(--text-muted)",
+                  background: c.slug === slug ? "var(--primary)" : "var(--card)",
+                  border:     `1px solid ${c.slug === slug ? "var(--primary)" : "var(--border)"}`,
+                  color:      c.slug === slug ? "var(--on-primary)" : "var(--text-muted)",
                 }}
               >
                 {c.icon} {lang === "EN" ? c.nameEN : c.name}
@@ -79,8 +79,8 @@ export default function CategoryPage({ params }: Props) {
                 {t.category.comingSoonDesc}
               </p>
               <Link href="/games"
-                className="inline-block mt-6 px-5 py-2.5 rounded-xl text-xs font-bold text-white transition-all hover:scale-105"
-                style={{ background: "var(--brand)" }}>
+                className="inline-block mt-6 px-5 py-2.5 rounded-xl text-xs font-bold text-[var(--on-primary)] transition-all hover:scale-105"
+                style={{ background: "var(--primary)" }}>
                 {t.home.allGames}
               </Link>
             </div>

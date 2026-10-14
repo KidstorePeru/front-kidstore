@@ -16,7 +16,7 @@ export default function NotFound() {
       <main className="flex flex-col items-center justify-center px-4 py-24 text-center"
         style={{ background: "var(--bg)", minHeight: "70vh" }}>
         <p className="text-6xl font-black mb-4"
-          style={{ background: "linear-gradient(135deg,#1E3A8A,#EA580C)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+          style={{ background: "var(--primary)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
           404
         </p>
         <h1 className="text-2xl md:text-3xl font-bold mb-3" style={{ color: "var(--text)" }}>
@@ -29,8 +29,8 @@ export default function NotFound() {
         </p>
         <div className="flex flex-col sm:flex-row gap-3">
           <Link href="/games"
-            className="px-6 py-3 rounded-xl text-sm font-bold text-white"
-            style={{ background: "linear-gradient(135deg,#1E3A8A,#EA580C)" }}>
+            className="px-6 py-3 rounded-xl text-sm font-bold text-[var(--on-primary)]"
+            style={{ background: "var(--primary)" }}>
             {EN ? "View all games" : "Ver todos los juegos"}
           </Link>
           <a href={whatsappLink()} target="_blank" rel="noopener noreferrer"

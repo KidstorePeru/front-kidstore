@@ -60,9 +60,9 @@ export default function AllGamesClient() {
               onClick={() => setActive("all")}
               className="px-4 py-2 rounded-xl text-xs font-bold transition-all"
               style={{
-                background: active === "all" ? "var(--brand)" : "var(--card)",
-                border: `1px solid ${active === "all" ? "var(--brand)" : "var(--border)"}`,
-                color: active === "all" ? "#fff" : "var(--text-muted)",
+                background: active === "all" ? "var(--primary)" : "var(--card)",
+                border: `1px solid ${active === "all" ? "var(--primary)" : "var(--border)"}`,
+                color: active === "all" ? "var(--on-primary)" : "var(--text-muted)",
               }}
             >
               🎮 {t.nav.allGames}
@@ -73,9 +73,9 @@ export default function AllGamesClient() {
                 onClick={() => setActive(c.slug)}
                 className="px-4 py-2 rounded-xl text-xs font-bold transition-all"
                 style={{
-                  background: c.slug === active ? "var(--brand)" : "var(--card)",
-                  border: `1px solid ${c.slug === active ? "var(--brand)" : "var(--border)"}`,
-                  color: c.slug === active ? "#fff" : "var(--text-muted)",
+                  background: c.slug === active ? "var(--primary)" : "var(--card)",
+                  border: `1px solid ${c.slug === active ? "var(--primary)" : "var(--border)"}`,
+                  color: c.slug === active ? "var(--on-primary)" : "var(--text-muted)",
                 }}
               >
                 {c.icon} {lang === "EN" ? c.nameEN : c.name}

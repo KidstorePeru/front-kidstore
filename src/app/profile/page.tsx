@@ -40,7 +40,7 @@ function ProfilePageInner() {
   if (loading || !user) return (
     <div className="min-h-screen flex items-center justify-center" style={{ background: "var(--bg)" }}>
       <span className="w-8 h-8 border-2 border-t-transparent rounded-full animate-spin"
-        style={{ borderColor: "#EA580C", borderTopColor: "transparent" }}/>
+        style={{ borderColor: "var(--primary)", borderTopColor: "transparent" }}/>
     </div>
   );
 
@@ -60,8 +60,8 @@ function ProfilePageInner() {
           {/* Header */}
           <div className="flex items-center gap-4 mb-6 p-5 rounded-2xl"
             style={{ background:"var(--card)", border:"1px solid var(--border)" }}>
-            <div className="w-14 h-14 rounded-2xl overflow-hidden flex items-center justify-center text-2xl font-black text-white flex-shrink-0"
-              style={{ background:"linear-gradient(135deg,#1E3A8A,#EA580C)" }}>
+            <div className="w-14 h-14 rounded-2xl overflow-hidden flex items-center justify-center text-2xl font-black text-[var(--on-primary)] flex-shrink-0"
+              style={{ background:"var(--primary)" }}>
               {user.avatar
                 // eslint-disable-next-line @next/next/no-img-element -- foto local en base64 (data URL)
                 ? <img src={user.avatar} alt="avatar" className="w-full h-full object-cover"/>
@@ -91,13 +91,13 @@ function ProfilePageInner() {
                   onClick={() => setTab(item.id)}
                   className="w-full flex items-center justify-between px-4 py-3.5 text-left transition-all"
                   style={{
-                    background: tab===item.id ? "linear-gradient(135deg,rgba(30,58,138,0.08),rgba(234,88,12,0.06))" : "transparent",
+                    background: tab===item.id ? "linear-gradient(135deg,rgba(124,104,214,0.08),rgba(206,116,58,0.06))" : "transparent",
                     borderBottom: i<arr.length-1 ? "1px solid var(--border)" : "none",
-                    borderLeft: `2px solid ${tab===item.id ? "#EA580C" : "transparent"}`,
+                    borderLeft: `2px solid ${tab===item.id ? "var(--primary)" : "transparent"}`,
                     color: tab===item.id ? "var(--text)" : "var(--text-muted)",
                   }}>
                   <div className="flex items-center gap-2.5 text-xs font-semibold">
-                    <span style={{ color: tab===item.id ? "#EA580C" : "var(--text-subtle)" }}>{item.icon}</span>
+                    <span style={{ color: tab===item.id ? "var(--primary)" : "var(--text-subtle)" }}>{item.icon}</span>
                     {item.label}
                   </div>
                 </button>
@@ -227,11 +227,11 @@ function TabPerfil({ user, updateProfile, loading }: { user: User; updateProfile
           <div className="flex items-start gap-6">
             <div className="relative flex-shrink-0">
               <div className="w-20 h-20 rounded-2xl overflow-hidden flex items-center justify-center"
-                style={{ background:"linear-gradient(135deg,#1E3A8A,#EA580C)" }}>
+                style={{ background:"var(--primary)" }}>
                 {avatar
                   // eslint-disable-next-line @next/next/no-img-element -- foto local en base64 (data URL)
                   ? <img src={avatar} alt="avatar" className="w-full h-full object-cover"/>
-                  : <span className="text-3xl font-black text-white">{user.username[0].toUpperCase()}</span>
+                  : <span className="text-3xl font-black text-[var(--on-primary)]">{user.username[0].toUpperCase()}</span>
                 }
               </div>
             </div>
@@ -239,8 +239,8 @@ function TabPerfil({ user, updateProfile, loading }: { user: User; updateProfile
               <p className="text-sm font-bold mb-2" style={{ color:"var(--text)" }}>{lang === "ES" ? "Tu foto" : "Your photo"}</p>
               <div className="flex items-center gap-2 mb-3">
                 <button onClick={() => fileRef.current?.click()}
-                  className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold text-white transition-all hover:opacity-90"
-                  style={{ background:"linear-gradient(135deg,#1E3A8A,#EA580C)" }}>
+                  className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold text-[var(--on-primary)] transition-all hover:opacity-90"
+                  style={{ background:"var(--primary)" }}>
                   <Upload size={13}/> {lang === "ES" ? "Subir" : "Upload"}
                 </button>
                 {avatar && (
@@ -280,7 +280,7 @@ function TabPerfil({ user, updateProfile, loading }: { user: User; updateProfile
             onChange={e => { setUsername(e.target.value); setUsernameErr(""); }}
             className="w-full px-4 py-3 rounded-xl text-sm outline-none transition-all"
             style={{ background:"var(--surface)", border:"1.5px solid var(--border)", color:"var(--text)" }}
-            onFocus={e => (e.currentTarget.style.borderColor="#1E3A8A")}
+            onFocus={e => (e.currentTarget.style.borderColor="var(--primary)")}
             onBlur={e  => (e.currentTarget.style.borderColor="var(--border)")}/>
           <p className="text-xs" style={{ color:"var(--text-subtle)" }}>
             {lang === "ES" ? "Nombre único en el sitio. Entre 3 y 32 caracteres. Sin espacios ni caracteres especiales." : "Unique name on the site. Between 3 and 32 characters. No spaces or special characters."}
@@ -292,9 +292,9 @@ function TabPerfil({ user, updateProfile, loading }: { user: User; updateProfile
           )}
           <div className="flex items-center gap-3">
             <button type="submit" disabled={loading}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold text-white hover:opacity-90 disabled:opacity-60"
-              style={{ background:"linear-gradient(135deg,#1E3A8A,#EA580C)", boxShadow:"0 4px 14px rgba(234,88,12,0.25)" }}>
-              {loading ? <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"/> : (lang === "ES" ? "Cambiar" : "Change")}
+              className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold text-[var(--on-primary)] hover:opacity-90 disabled:opacity-60"
+              style={{ background:"var(--primary)", boxShadow:"0 4px 14px rgba(206,116,58,0.25)" }}>
+              {loading ? <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"/> : (lang === "ES" ? "Cambiar" : "Change")}
             </button>
             {saved && <span className="text-xs font-semibold text-green-400 flex items-center gap-1"><Check size={13}/> {lang === "ES" ? "¡Guardado!" : "Saved!"}</span>}
           </div>
@@ -327,7 +327,7 @@ function TabPerfil({ user, updateProfile, loading }: { user: User; updateProfile
               placeholder={ES ? "Tu nombre y apellido" : "Your first and last name"}
               className="w-full px-4 py-3 rounded-xl text-sm outline-none transition-all"
               style={{ background:"var(--surface)", border:"1.5px solid var(--border)", color:"var(--text)" }}
-              onFocus={e => (e.currentTarget.style.borderColor="#1E3A8A")}
+              onFocus={e => (e.currentTarget.style.borderColor="var(--primary)")}
               onBlur={e  => (e.currentTarget.style.borderColor="var(--border)")}/>
           </div>
 
@@ -354,7 +354,7 @@ function TabPerfil({ user, updateProfile, loading }: { user: User; updateProfile
               placeholder="+51 999 999 999"
               className="w-full px-4 py-3 rounded-xl text-sm outline-none transition-all"
               style={{ background:"var(--surface)", border:"1.5px solid var(--border)", color:"var(--text)" }}
-              onFocus={e => (e.currentTarget.style.borderColor="#1E3A8A")}
+              onFocus={e => (e.currentTarget.style.borderColor="var(--primary)")}
               onBlur={e  => (e.currentTarget.style.borderColor="var(--border)")}/>
             <p className="text-[11px] mt-1" style={{ color:"var(--text-subtle)" }}>
               {ES ? "Te contactamos por aquí para coordinar la entrega." : "We contact you here to coordinate delivery."}
@@ -363,9 +363,9 @@ function TabPerfil({ user, updateProfile, loading }: { user: User; updateProfile
 
           <div className="flex items-center gap-3">
             <button type="submit" disabled={buyLoading}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold text-white hover:opacity-90 disabled:opacity-60"
-              style={{ background:"linear-gradient(135deg,#1E3A8A,#EA580C)", boxShadow:"0 4px 14px rgba(234,88,12,0.25)" }}>
-              {buyLoading ? <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"/> : (ES ? "Guardar" : "Save")}
+              className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold text-[var(--on-primary)] hover:opacity-90 disabled:opacity-60"
+              style={{ background:"var(--primary)", boxShadow:"0 4px 14px rgba(206,116,58,0.25)" }}>
+              {buyLoading ? <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"/> : (ES ? "Guardar" : "Save")}
             </button>
             {buySaved && <span className="text-xs font-semibold text-green-400 flex items-center gap-1"><Check size={13}/> {ES ? "¡Guardado!" : "Saved!"}</span>}
           </div>
@@ -516,7 +516,7 @@ function TabSeguridad({ user, updateProfile }: { user: User; updateProfile: Upda
 
       {/* Aviso */}
       <div className="px-5 py-4 rounded-2xl flex items-start gap-3"
-        style={{ background:"rgba(30,58,138,0.06)", border:"1px solid rgba(30,58,138,0.2)" }}>
+        style={{ background:"rgba(124,104,214,0.06)", border:"1px solid rgba(124,104,214,0.2)" }}>
         <Shield size={16} className="flex-shrink-0 mt-0.5" style={{ color:"#60A5FA" }}/>
         <div>
           <p className="text-sm font-bold mb-0.5" style={{ color:"var(--text)" }}>{lang === "ES" ? "Seguridad" : "Security"}</p>
@@ -558,7 +558,7 @@ function TabSeguridad({ user, updateProfile }: { user: User; updateProfile: Upda
       {/* Teléfono → se gestiona en "Datos de compra" de la pestaña Perfil */}
       <div className="rounded-2xl px-6 py-4 flex items-center gap-3"
         style={{ background:"var(--card)", border:"1px solid var(--border)" }}>
-        <Phone size={14} style={{ color:"#F97316", flexShrink:0 }}/>
+        <Phone size={14} style={{ color:"var(--primary)", flexShrink:0 }}/>
         <p className="text-xs" style={{ color:"var(--text-muted)" }}>
           {ES
             ? <>Tu teléfono está en <strong style={{ color:"var(--text)" }}>Perfil → Datos de compra</strong>. Se usa para coordinar la entrega por WhatsApp.</>
@@ -570,7 +570,7 @@ function TabSeguridad({ user, updateProfile }: { user: User; updateProfile: Upda
       <div className="rounded-2xl overflow-hidden" style={{ background:"var(--card)", border:"1px solid var(--border)" }}>
         <div className="px-6 py-4 flex items-center gap-2"
           style={{ borderBottom:"1px solid var(--border)", background:"var(--surface)" }}>
-          <Lock size={14} style={{ color:"#A78BFA" }}/>
+          <Lock size={14} style={{ color:"#AA91FF" }}/>
           <p className="text-sm font-bold" style={{ color:"var(--text)" }}>{lang === "ES" ? "Contraseña" : "Password"}</p>
         </div>
         <form onSubmit={handleChangePassword} className="p-6 space-y-4">
@@ -598,7 +598,7 @@ function TabSeguridad({ user, updateProfile }: { user: User; updateProfile: Upda
                   onChange={e => { f.set(e.target.value); setPassError(""); }}
                   className="w-full px-4 py-3 pr-11 rounded-xl text-sm outline-none transition-all"
                   style={{ background:"var(--surface)", border:"1.5px solid var(--border)", color:"var(--text)" }}
-                  onFocus={e => (e.currentTarget.style.borderColor="#1E3A8A")}
+                  onFocus={e => (e.currentTarget.style.borderColor="var(--primary)")}
                   onBlur={e  => (e.currentTarget.style.borderColor="var(--border)")}/>
                 <button type="button" onClick={() => setShow(!show)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 hover:opacity-70"
@@ -611,10 +611,10 @@ function TabSeguridad({ user, updateProfile }: { user: User; updateProfile: Upda
 
           <div className="flex items-center gap-3 pt-1">
             <button type="submit" disabled={passLoading}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold text-white hover:opacity-90 disabled:opacity-60"
-              style={{ background:"linear-gradient(135deg,#1E3A8A,#EA580C)", boxShadow:"0 4px 14px rgba(234,88,12,0.25)" }}>
+              className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold text-[var(--on-primary)] hover:opacity-90 disabled:opacity-60"
+              style={{ background:"var(--primary)", boxShadow:"0 4px 14px rgba(206,116,58,0.25)" }}>
               {passLoading
-                ? <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"/>
+                ? <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"/>
                 : (lang === "ES" ? "Cambiar contraseña" : "Change password")}
             </button>
             {passSaved && (
@@ -668,12 +668,12 @@ function TabSeguridad({ user, updateProfile }: { user: User; updateProfile: Upda
                       onChange={e => { setNewEmail(e.target.value); setEmailErr(""); }}
                       className="w-full px-4 py-3 rounded-xl text-sm outline-none"
                       style={{ background:"var(--surface)", border:"1.5px solid var(--border)", color:"var(--text)" }}
-                      onFocus={e => (e.currentTarget.style.borderColor="#1E3A8A")}
+                      onFocus={e => (e.currentTarget.style.borderColor="var(--primary)")}
                       onBlur={e  => (e.currentTarget.style.borderColor="var(--border)")}/>
                   </div>
                   <button onClick={handleEmailSend} disabled={emailBusy}
-                    className="w-full py-3 rounded-xl text-sm font-bold text-white hover:opacity-90 disabled:opacity-60"
-                    style={{ background:"linear-gradient(135deg,#1E3A8A,#EA580C)" }}>
+                    className="w-full py-3 rounded-xl text-sm font-bold text-[var(--on-primary)] hover:opacity-90 disabled:opacity-60"
+                    style={{ background:"var(--primary)" }}>
                     {emailBusy ? (ES ? "Enviando…" : "Sending…") : (ES ? "Enviar código de verificación →" : "Send verification code →")}
                   </button>
                 </>
@@ -683,7 +683,7 @@ function TabSeguridad({ user, updateProfile }: { user: User; updateProfile: Upda
                     {lang === "ES" ? "Código enviado a" : "Code sent to"} <strong style={{ color:"var(--text)" }}>{newEmail}</strong>.
                   </p>
                   <div className="px-3 py-2 rounded-xl text-xs"
-                    style={{ background:"rgba(234,88,12,0.07)", border:"1px solid rgba(234,88,12,0.2)", color:"var(--text-muted)" }}>
+                    style={{ background:"rgba(206,116,58,0.07)", border:"1px solid rgba(206,116,58,0.2)", color:"var(--text-muted)" }}>
                     {lang === "ES" ? "Revisa tu bandeja de entrada e ingresa el código de 6 dígitos." : "Check your inbox and enter the 6-digit code."}
                   </div>
                   {emailErr && (
@@ -699,7 +699,7 @@ function TabSeguridad({ user, updateProfile }: { user: User; updateProfile: Upda
                       onChange={e => { setEmailCode(e.target.value); setEmailErr(""); }}
                       className="w-full px-4 py-3 rounded-xl text-sm outline-none text-center tracking-[.3em] font-bold"
                       style={{ background:"var(--surface)", border:"1.5px solid var(--border)", color:"var(--text)" }}
-                      onFocus={e => (e.currentTarget.style.borderColor="#1E3A8A")}
+                      onFocus={e => (e.currentTarget.style.borderColor="var(--primary)")}
                       onBlur={e  => (e.currentTarget.style.borderColor="var(--border)")}/>
                   </div>
                   {emailSaved ? (
@@ -714,8 +714,8 @@ function TabSeguridad({ user, updateProfile }: { user: User; updateProfile: Upda
                         {lang === "ES" ? "← Volver" : "← Back"}
                       </button>
                       <button onClick={handleEmailVerify} disabled={emailBusy || emailCode.length < 6}
-                        className="flex-1 py-3 rounded-xl text-sm font-bold text-white hover:opacity-90 disabled:opacity-50"
-                        style={{ background:"linear-gradient(135deg,#1E3A8A,#EA580C)" }}>
+                        className="flex-1 py-3 rounded-xl text-sm font-bold text-[var(--on-primary)] hover:opacity-90 disabled:opacity-50"
+                        style={{ background:"var(--primary)" }}>
                         {emailBusy ? (ES ? "Verificando…" : "Verifying…") : (ES ? "Verificar" : "Verify")}
                       </button>
                     </div>
@@ -813,11 +813,11 @@ function TabPedidos() {
         {ORDER_TABS.map((ot) => (
           <button key={ot.id} onClick={() => setActiveTab(ot.id)}
             className="flex-shrink-0 px-4 py-3 text-xs font-semibold transition-all relative whitespace-nowrap"
-            style={{ color: activeTab===ot.id ? "#EA580C" : "var(--text-muted)" }}>
+            style={{ color: activeTab===ot.id ? "var(--primary)" : "var(--text-muted)" }}>
             {ot.label}
             {activeTab===ot.id && (
               <div className="absolute bottom-0 left-2 right-2 h-0.5 rounded-full"
-                style={{ background:"linear-gradient(90deg,#1E3A8A,#EA580C)" }}/>
+                style={{ background:"var(--primary)" }}/>
             )}
           </button>
         ))}
@@ -840,7 +840,7 @@ function TabPedidos() {
         )}
         {loading && orders.length === 0 ? (
           <div className="py-12 flex justify-center">
-            <span className="w-6 h-6 border-2 border-t-transparent rounded-full animate-spin" style={{ borderColor:"#EA580C", borderTopColor:"transparent" }}/>
+            <span className="w-6 h-6 border-2 border-t-transparent rounded-full animate-spin" style={{ borderColor:"var(--primary)", borderTopColor:"transparent" }}/>
           </div>
         ) : filtered.length === 0 ? (
           <div className="py-12 text-center">
@@ -856,8 +856,8 @@ function TabPedidos() {
             </p>
             {!orders.length && (
               <Link href="/games"
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold text-white"
-                style={{ background:"linear-gradient(135deg,#1E3A8A,#EA580C)" }}>
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold text-[var(--on-primary)]"
+                style={{ background:"var(--primary)" }}>
                 {ES ? "Ver todos los juegos →" : "View all games →"}
               </Link>
             )}
@@ -897,7 +897,7 @@ function TabPedidos() {
                   ))}
                   <div className="px-4 py-3 flex items-center justify-between gap-3 text-xs" style={{ borderTop:"1px solid var(--border)" }}>
                     <span style={{ color:"var(--text-muted)" }}>{ES ? "Pago:" : "Payment:"} <strong style={{ color:"var(--text)" }}>{PAYMENT_LABEL[order.paymentMethod] ?? order.paymentMethod}</strong></span>
-                    <span className="text-sm font-black" style={{ color:"#EA580C" }}>{sym} {order.total.toFixed(2)}</span>
+                    <span className="text-sm font-black" style={{ color:"var(--primary)" }}>{sym} {order.total.toFixed(2)}</span>
                   </div>
                 </div>
               );
@@ -955,8 +955,8 @@ function TabWishlist({ items, removeWish, addToCart, formatPrice }: {
             {lang === "ES" ? "Guarda productos con ❤️ para encontrarlos fácilmente." : "Save products with ❤️ to find them easily."}
           </p>
           <Link href="/"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold text-white"
-            style={{ background:"linear-gradient(135deg,#1E3A8A,#EA580C)" }}>
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold text-[var(--on-primary)]"
+            style={{ background:"var(--primary)" }}>
             {lang === "ES" ? "Explorar juegos →" : "Explore games →"}
           </Link>
         </div>
@@ -971,7 +971,7 @@ function TabWishlist({ items, removeWish, addToCart, formatPrice }: {
               <div key={item.slug} className="p-4 flex items-center gap-4">
                 {/* Imagen */}
                 <div className="relative w-16 h-16 rounded-xl overflow-hidden flex-shrink-0"
-                  style={{ background:"linear-gradient(135deg,rgba(30,58,138,0.1),rgba(234,88,12,0.1))" }}>
+                  style={{ background:"linear-gradient(135deg,rgba(124,104,214,0.1),rgba(206,116,58,0.1))" }}>
                   <Image src={item.img} alt={item.name} fill sizes="80px" className="object-contain p-1"/>
                   {disc > 0 && (
                     <span className="absolute top-0.5 left-0.5 text-[9px] font-black text-white px-1 py-0.5 rounded"
@@ -986,7 +986,7 @@ function TabWishlist({ items, removeWish, addToCart, formatPrice }: {
                     <p className="text-[10px] mt-0.5" style={{ color:"var(--text-subtle)" }}>{item.game}</p>
                   )}
                   <div className="flex items-baseline gap-2 mt-1">
-                    <span className="text-sm font-black" style={{ color:"#EA580C" }}>
+                    <span className="text-sm font-black" style={{ color:"var(--primary)" }}>
                       {formatPrice(item.price)}
                     </span>
                     {disc > 0 && (
@@ -1034,7 +1034,7 @@ export default function ProfilePage() {
     <Suspense fallback={
       <div className="min-h-screen flex items-center justify-center" style={{ background:"var(--bg)" }}>
         <span className="w-8 h-8 border-2 border-t-transparent rounded-full animate-spin"
-          style={{ borderColor:"#EA580C", borderTopColor:"transparent" }}/>
+          style={{ borderColor:"var(--primary)", borderTopColor:"transparent" }}/>
       </div>
     }>
       <ProfilePageInner/>

@@ -125,7 +125,7 @@ function WhatsappToggle({ active, onToggle }: { active: boolean; onToggle: () =>
         style={{ background: active ? "rgba(37,211,102,0.15)" : "var(--surface)" }}>💬</div>
       <div className="flex-1">
         <p className="text-[10px] font-bold uppercase tracking-wider mb-0.5"
-          style={{ color: active ? "#4ADE80" : "var(--brand-light)" }}>{lang === "EN" ? "Recommended option" : "Opción recomendada"}</p>
+          style={{ color: active ? "#4ADE80" : "var(--primary)" }}>{lang === "EN" ? "Recommended option" : "Opción recomendada"}</p>
         <p className="text-xs font-semibold" style={{ color:"var(--text)" }}>
           {lang === "EN" ? "I prefer to send the information via WhatsApp or Messenger" : "Prefiero enviar la información por WhatsApp o Messenger"}
         </p>
@@ -387,20 +387,20 @@ function MonthSelector({
             <button key={opt.months} onClick={() => onSelect(opt)}
               className="relative flex flex-col items-center gap-1 py-3 px-2 rounded-xl text-center transition-all"
               style={{
-                background: active ? "rgba(124,58,237,0.10)" : "var(--card)",
-                border:`1.5px solid ${active ? "#7C3AED" : "var(--border)"}`,
-                boxShadow: active ? "0 0 0 3px rgba(124,58,237,0.08)" : "none",
+                background: active ? "rgba(124,104,214,0.10)" : "var(--card)",
+                border:`1.5px solid ${active ? "var(--primary)" : "var(--border)"}`,
+                boxShadow: active ? "0 0 0 3px rgba(124,104,214,0.08)" : "none",
               }}>
               {opt.badge && (
                 <span className="absolute -top-2 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-full text-[9px] font-bold whitespace-nowrap"
-                  style={{ background:"var(--brand)", color:"white" }}>
+                  style={{ background:"var(--primary)", color:"var(--on-primary)" }}>
                   {opt.badge}
                 </span>
               )}
-              <span className="text-sm font-bold mt-1" style={{ color: active ? "var(--brand-light)" : "var(--text)" }}>
+              <span className="text-sm font-bold mt-1" style={{ color: active ? "var(--primary)" : "var(--text)" }}>
                 {lang === "EN" ? opt.labelEN : opt.label}
               </span>
-              <span className="text-xs font-bold" style={{ color: active ? "var(--brand-light)" : "var(--text-muted)" }}>
+              <span className="text-xs font-bold" style={{ color: active ? "var(--primary)" : "var(--text-muted)" }}>
                 {formatPrice(opt.price)}
               </span>
               <span className="text-[10px] px-1.5 py-0.5 rounded-full font-semibold"
@@ -558,11 +558,11 @@ export default function FortniteProductClient({ slug }: { slug: string }) {
                 {TABS.map(tab => (
                   <Link key={tab.id} href={`/games/fortnite?tab=${tab.id}`}
                     className="flex-shrink-0 px-5 py-4 text-sm font-semibold transition-all relative whitespace-nowrap"
-                    style={{ color: p.tab === tab.id ? "var(--brand-light)" : "var(--text-muted)" }}>
+                    style={{ color: p.tab === tab.id ? "var(--primary)" : "var(--text-muted)" }}>
                     {tab.label}
                     {p.tab === tab.id && (
                       <div className="absolute bottom-0 left-3 right-3 h-[2px] rounded-full"
-                        style={{ background:"linear-gradient(90deg,#7C3AED,#A78BFA)" }}/>
+                        style={{ background:"var(--primary)" }}/>
                     )}
                   </Link>
                 ))}
@@ -591,7 +591,7 @@ export default function FortniteProductClient({ slug }: { slug: string }) {
             {/* ── IZQUIERDA: imagen + descripción ─────────────── */}
             <div className="space-y-6">
               <div className="relative w-full rounded-2xl overflow-hidden"
-                style={{ aspectRatio:"4/3", background:"linear-gradient(135deg,rgba(124,58,237,0.18),rgba(15,10,40,0.7))", border:"1px solid var(--border)" }}>
+                style={{ aspectRatio:"4/3", background:"linear-gradient(135deg,rgba(124,104,214,0.18),rgba(22,16,32,0.7))", border:"1px solid var(--border)" }}>
                 <Image src={p.img} alt={displayName} fill sizes="(max-width: 1024px) 90vw, 520px" className="object-contain p-8" priority/>
               </div>
 
@@ -652,13 +652,13 @@ export default function FortniteProductClient({ slug }: { slug: string }) {
                   <p className="text-sm mt-1" style={{ color:"var(--text-subtle)" }}>{activeSubtitle}</p>
                 )}
                 {p.amount && p.name && (
-                  <p className="text-sm mt-1 font-semibold" style={{ color:"var(--brand-light)" }}>{lang==="EN" ? p.amountEN || p.amount : p.amount}</p>
+                  <p className="text-sm mt-1 font-semibold" style={{ color:"var(--primary)" }}>{lang==="EN" ? p.amountEN || p.amount : p.amount}</p>
                 )}
               </div>
 
               {/* Precio */}
               <div className="flex items-end gap-3">
-                <p className="text-3xl font-bold" style={{ color:"var(--brand-light)" }}>{formatPrice(activePrice)}</p>
+                <p className="text-3xl font-bold" style={{ color:"var(--primary)" }}>{formatPrice(activePrice)}</p>
                 <p className="text-base line-through mb-0.5" style={{ color:"var(--text-subtle)" }}>{formatPrice(activePriceOld)}</p>
                 <span className="mb-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold"
                   style={{ background:"rgba(16,185,129,0.15)", border:"1px solid rgba(16,185,129,0.3)", color:"#4ADE80" }}>
@@ -730,7 +730,7 @@ export default function FortniteProductClient({ slug }: { slug: string }) {
                           border:`1px solid ${errors.user ? "#EF4444" : "var(--border)"}`,
                           color:"var(--text)",
                         }}
-                        onFocus={e => (e.currentTarget.style.borderColor = errors.user ? "#EF4444" : "#7C3AED")}
+                        onFocus={e => (e.currentTarget.style.borderColor = errors.user ? "#EF4444" : "var(--primary)")}
                         onBlur={e  => (e.currentTarget.style.borderColor = errors.user ? "#EF4444" : "var(--border)")}
                       />
                       <p className="text-[11px] mt-1.5 flex items-center gap-1.5" style={{ color:"var(--text-subtle)" }}>
@@ -762,7 +762,7 @@ export default function FortniteProductClient({ slug }: { slug: string }) {
                         border:`1px solid ${errors.gameName ? "#EF4444" : "var(--border)"}`,
                         color:"var(--text)",
                       }}
-                      onFocus={e => (e.currentTarget.style.borderColor = errors.gameName ? "#EF4444" : "#7C3AED")}
+                      onFocus={e => (e.currentTarget.style.borderColor = errors.gameName ? "#EF4444" : "var(--primary)")}
                       onBlur={e  => (e.currentTarget.style.borderColor = errors.gameName ? "#EF4444" : "var(--border)")}
                     />
                   </div>
@@ -792,16 +792,16 @@ export default function FortniteProductClient({ slug }: { slug: string }) {
                 <button onClick={handleAddToCart}
                   className="flex items-center justify-center gap-2 py-4 rounded-xl text-sm font-bold transition-all hover:scale-[1.02]"
                   style={{
-                    background: alreadyInCart ? "rgba(124,58,237,0.12)" : "var(--card)",
-                    border:`1.5px solid ${alreadyInCart || addedCart ? "#7C3AED" : "var(--brand)"}`,
-                    color:"var(--brand-light)",
+                    background: alreadyInCart ? "rgba(124,104,214,0.12)" : "var(--card)",
+                    border:`1.5px solid ${alreadyInCart || addedCart ? "var(--primary)" : "var(--primary)"}`,
+                    color:"var(--primary)",
                   }}>
                   {addedCart ? <Check size={16}/> : <ShoppingCart size={16}/>}
                   {addedCart ? t.product.added : alreadyInCart ? t.product.inCart : t.product.addToCart}
                 </button>
                 <button onClick={handleBuyNow}
-                  className="flex items-center justify-center gap-2 py-4 rounded-xl text-sm font-bold text-white transition-all hover:scale-[1.02]"
-                  style={{ background:"linear-gradient(135deg,#7C3AED,#5B21B6)", boxShadow:"0 4px 20px rgba(124,58,237,0.4)" }}>
+                  className="flex items-center justify-center gap-2 py-4 rounded-xl text-sm font-bold text-[var(--on-primary)] transition-all hover:scale-[1.02]"
+                  style={{ background:"var(--primary)", boxShadow:"0 4px 20px rgba(124,104,214,0.4)" }}>
                   <Zap size={16}/> {t.product.buyNow}
                 </button>
               </div>

@@ -17,11 +17,11 @@ import CartDrawer from "@/components/ui/CartDrawer";
 function UserAvatar({ user, size, radius }: { user: { username: string; avatar?: string }; size: number; radius: number }) {
   return (
     <div
-      className="flex items-center justify-center font-black text-white flex-shrink-0 overflow-hidden"
+      className="flex items-center justify-center font-black text-[var(--on-primary)] flex-shrink-0 overflow-hidden"
       style={{
         width: size, height: size, borderRadius: radius,
         fontSize: size <= 28 ? 12 : 14,
-        background: user.avatar ? "var(--surface)" : "linear-gradient(135deg,#1E3A8A,#EA580C)",
+        background: user.avatar ? "var(--surface)" : "var(--primary)",
       }}
     >
       {user.avatar
@@ -81,13 +81,13 @@ function Dropdown<T extends string>({
               onClick={() => { onSelect(opt.value); setOpen(false); }}
               className="w-full px-4 py-2.5 text-xs text-left transition-colors flex items-center justify-between"
               style={{
-                color:      opt.value === value ? "var(--brand-light)" : "var(--text-muted)",
-                background: opt.value === value ? "rgba(124,58,237,0.1)" : "transparent",
+                color:      opt.value === value ? "var(--primary)" : "var(--text-muted)",
+                background: opt.value === value ? "rgba(124,104,214,0.1)" : "transparent",
               }}
             >
               {opt.label}
               {opt.value === value && (
-                <span style={{ color: "var(--brand-light)" }}>✓</span>
+                <span style={{ color: "var(--primary)" }}>✓</span>
               )}
             </button>
           ))}
@@ -152,7 +152,7 @@ export default function Navbar() {
           className="h-[2px]"
           style={{
             background:
-              "linear-gradient(90deg, transparent, #7C3AED, #A78BFA, #7C3AED, transparent)",
+              "linear-gradient(90deg,transparent,var(--primary),transparent)",
           }}
         />
 
@@ -162,11 +162,11 @@ export default function Navbar() {
           {/* Logo */}
           <Link href="/" className="flex items-center">
             <Image
-              src="/logo/imagotipo-kidstore.png"
+              src="/brand/kidstore-imagotipo.png"
               alt="KidStore"
-              width={200}
-              height={56}
-              className="h-12 w-auto object-contain"
+              width={161}
+              height={42}
+              className="h-[42px] w-auto object-contain"
               priority
             />
           </Link>
@@ -408,7 +408,7 @@ export default function Navbar() {
                 <Link
                   href="/games"
                   className="flex items-center gap-1.5 px-2.5 lg:px-3 py-1.5 rounded-md text-xs font-bold transition-colors whitespace-nowrap"
-                  style={{ color: "var(--brand)" }}
+                  style={{ color: "var(--primary)" }}
                 >
                   🎮 {t.allGames}
                 </Link>
@@ -470,8 +470,8 @@ export default function Navbar() {
             ) : (
               <div className="flex gap-2 mb-4">
                 <button onClick={() => { openModal("login"); setMenuOpen(false); }}
-                  className="flex-1 flex items-center justify-center py-2.5 rounded-xl text-xs font-bold text-white"
-                  style={{ background: "linear-gradient(135deg,#1E3A8A,#EA580C)" }}>
+                  className="flex-1 flex items-center justify-center py-2.5 rounded-xl text-xs font-bold text-[var(--on-primary)]"
+                  style={{ background: "var(--primary)" }}>
                   {t.login}
                 </button>
                 <button onClick={() => { openModal("register"); setMenuOpen(false); }}

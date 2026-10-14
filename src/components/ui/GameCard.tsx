@@ -80,7 +80,7 @@ export default function GameCard({ game }: GameCardProps) {
           <div className="absolute bottom-0 left-0 right-0 p-3 translate-y-2 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
             <div
               className="w-full py-1.5 rounded-lg text-center text-xs font-bold text-white"
-              style={{ background: "rgba(124,58,237,0.85)" }}
+              style={{ background: "rgba(124,104,214,0.85)" }}
             >
               {t.gameCard.viewProducts}
             </div>
@@ -98,7 +98,7 @@ export default function GameCard({ game }: GameCardProps) {
           <div className="flex items-center justify-between">
             <p className="text-xs" style={{ color: "var(--text-subtle)" }}>
               {t.gameCard.from}{" "}
-              <span className="font-bold" style={{ color: "var(--brand-light)" }}>
+              <span className="font-bold" style={{ color: "var(--primary)" }}>
                 {formatPrice(minPrice)}
               </span>
             </p>

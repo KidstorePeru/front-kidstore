@@ -182,7 +182,7 @@ function CopyBtn({ text }: { text: string }) {
   return (
     <button onClick={handle}
       className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all hover:opacity-80"
-      style={{ background:"rgba(124,58,237,0.12)", border:"1px solid rgba(124,58,237,0.25)", color:"var(--brand-light)" }}>
+      style={{ background:"rgba(124,104,214,0.12)", border:"1px solid rgba(124,104,214,0.25)", color:"var(--primary)" }}>
       {copied ? <CheckCheck size={12}/> : <Copy size={12}/>}
       {copied ? t.checkout.copied : t.checkout.copy}
     </button>
@@ -389,7 +389,7 @@ function PaymentModal({ paymentId, total, onConfirm, onClose, loading: confirmLo
             className="w-full py-3.5 rounded-xl text-sm font-black tracking-wide text-white transition-all hover:scale-[1.02] disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             style={{ background:`linear-gradient(135deg,${info.color},${info.colorLight})`, boxShadow:`0 4px 20px ${info.color}60` }}>
             {confirmLoading ? (
-              <><span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"/> {lang === "EN" ? "Processing..." : "Procesando..."}</>
+              <><span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"/> {lang === "EN" ? "Processing..." : "Procesando..."}</>
             ) : t.checkout.confirmOrder}
           </button>
           <button onClick={onClose}
@@ -503,7 +503,7 @@ function SuccessScreen({ total, paymentMethod, items, contact, orderNumber, curr
             {items.map(item => (
               <div key={item.slug} className="flex items-center gap-3">
                 <div className="relative w-12 h-12 rounded-xl overflow-hidden flex-shrink-0"
-                  style={{ background:"linear-gradient(135deg,rgba(124,58,237,0.15),rgba(15,10,40,0.5))" }}>
+                  style={{ background:"linear-gradient(135deg,rgba(124,104,214,0.15),rgba(22,16,32,0.5))" }}>
                   <Image src={item.img} alt={item.name} fill sizes="80px" className="object-contain p-1"/>
                 </div>
                 <div className="flex-1 min-w-0">
@@ -554,8 +554,8 @@ function OrderSummary({ selectedMethod }: { selectedMethod: PaymentId }) {
       <ShoppingCart size={32} style={{ color:"var(--text-subtle)", margin:"0 auto" }}/>
       <p className="text-sm font-semibold" style={{ color:"var(--text)" }}>{t.checkout.emptyCart}</p>
       <Link href="/"
-        className="inline-block px-5 py-2.5 rounded-xl text-xs font-bold text-white"
-        style={{ background:"linear-gradient(135deg,#7C3AED,#5B21B6)" }}>
+        className="inline-block px-5 py-2.5 rounded-xl text-xs font-bold text-[var(--on-primary)]"
+        style={{ background:"var(--primary)" }}>
         {t.checkout.goToShop}
       </Link>
     </div>
@@ -566,7 +566,7 @@ function OrderSummary({ selectedMethod }: { selectedMethod: PaymentId }) {
       <div className="rounded-2xl overflow-hidden" style={{ background:"var(--card)", border:"1px solid var(--border)" }}>
         <div className="px-5 py-3.5 flex items-center gap-2"
           style={{ borderBottom:"1px solid var(--border)", background:"var(--surface)" }}>
-          <ShoppingCart size={15} style={{ color:"var(--brand-light)" }}/>
+          <ShoppingCart size={15} style={{ color:"var(--primary)" }}/>
           <p className="text-xs font-bold uppercase tracking-wider" style={{ color:"var(--text)" }}>
             {t.checkout.summary} ({totalItems} {totalItems === 1 ? t.checkout.product : t.checkout.productsPlural})
           </p>
@@ -580,13 +580,13 @@ function OrderSummary({ selectedMethod }: { selectedMethod: PaymentId }) {
               <div key={item.slug} className="p-4 space-y-2">
                 <div className="flex gap-3">
                   <div className="relative w-14 h-14 rounded-xl overflow-hidden flex-shrink-0"
-                    style={{ background:"linear-gradient(135deg,rgba(124,58,237,0.15),rgba(15,10,40,0.5))" }}>
+                    style={{ background:"linear-gradient(135deg,rgba(124,104,214,0.15),rgba(22,16,32,0.5))" }}>
                     <Image src={item.img} alt={item.name} fill sizes="80px" className="object-contain p-1.5"/>
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-bold truncate" style={{ color:"var(--text)" }}>{item.name}</p>
                     <div className="flex items-baseline gap-2 mt-1">
-                      <span className="text-sm font-bold" style={{ color:"var(--brand-light)" }}>
+                      <span className="text-sm font-bold" style={{ color:"var(--primary)" }}>
                         {formatPrice(item.price * item.quantity)}
                       </span>
                       {disc > 0 && (
@@ -663,7 +663,7 @@ function OrderSummary({ selectedMethod }: { selectedMethod: PaymentId }) {
         <div className="flex justify-between text-sm font-bold pt-2"
           style={{ borderTop:"1px solid var(--border)", paddingTop:"10px", color:"var(--text)" }}>
           <span>{t.checkout.total}</span>
-          <span style={{ color:"var(--brand-light)" }}>
+          <span style={{ color:"var(--primary)" }}>
             {hasFee ? `${selectedMethod === "bizum" ? "€" : "$"} ${breakdown.total.toFixed(2)}` : `S/ ${breakdown.total.toFixed(2)}`}
           </span>
         </div>
@@ -766,7 +766,7 @@ function CheckoutForm({ onOpenModal, onMethodChange }: {
                 onChange={e => { (f.set as (v: string) => void)(e.target.value); setErrors(p => ({ ...p, [f.key]:false })); }}
                 className="w-full px-4 py-3 rounded-xl text-sm outline-none transition-all"
                 style={{ background:"var(--card)", color:"var(--text)", border:`1px solid ${f.err ? "#EF4444" : "var(--border)"}` }}
-                onFocus={e => (e.currentTarget.style.borderColor = f.err ? "#EF4444" : "#7C3AED")}
+                onFocus={e => (e.currentTarget.style.borderColor = f.err ? "#EF4444" : "var(--primary)")}
                 onBlur={e  => (e.currentTarget.style.borderColor = f.err ? "#EF4444" : "var(--border)")}
               />
             </div>

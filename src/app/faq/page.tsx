@@ -27,9 +27,9 @@ function FaqAccordion({ item }: { item: FaqItem }) {
     <div className="group rounded-2xl overflow-hidden transition-all duration-300"
       style={{
         background: "var(--card)",
-        border: `1px solid ${open ? "rgba(124,58,237,0.4)" : "var(--border)"}`,
+        border: `1px solid ${open ? "rgba(124,104,214,0.4)" : "var(--border)"}`,
         boxShadow: open
-          ? "0 8px 32px rgba(124,58,237,0.1), 0 0 0 1px rgba(124,58,237,0.05)"
+          ? "0 8px 32px rgba(124,104,214,0.1), 0 0 0 1px rgba(124,104,214,0.05)"
           : "0 2px 8px rgba(0,0,0,0.03)",
       }}>
       <button
@@ -41,11 +41,11 @@ function FaqAccordion({ item }: { item: FaqItem }) {
         <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 transition-all duration-300"
           style={{
             background: open
-              ? "linear-gradient(135deg, rgba(124,58,237,0.15), rgba(124,58,237,0.08))"
+              ? "linear-gradient(135deg, rgba(124,104,214,0.15), rgba(124,104,214,0.08))"
               : "var(--surface)",
-            border: `1px solid ${open ? "rgba(124,58,237,0.25)" : "var(--border)"}`,
-            color: open ? "var(--brand-light)" : "var(--text-subtle)",
-            boxShadow: open ? "0 4px 12px rgba(124,58,237,0.1)" : "none",
+            border: `1px solid ${open ? "rgba(124,104,214,0.25)" : "var(--border)"}`,
+            color: open ? "var(--primary)" : "var(--text-subtle)",
+            boxShadow: open ? "0 4px 12px rgba(124,104,214,0.1)" : "none",
           }}>
           {item.icon}
         </div>
@@ -60,13 +60,13 @@ function FaqAccordion({ item }: { item: FaqItem }) {
         {/* Chevron in circle */}
         <div className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 transition-all duration-300"
           style={{
-            background: open ? "rgba(124,58,237,0.1)" : "var(--surface)",
-            border: `1px solid ${open ? "rgba(124,58,237,0.2)" : "var(--border)"}`,
+            background: open ? "rgba(124,104,214,0.1)" : "var(--surface)",
+            border: `1px solid ${open ? "rgba(124,104,214,0.2)" : "var(--border)"}`,
           }}>
           <ChevronDown size={14}
             className="transition-transform duration-300"
             style={{
-              color: open ? "var(--brand-light)" : "var(--text-subtle)",
+              color: open ? "var(--primary)" : "var(--text-subtle)",
               transform: open ? "rotate(180deg)" : "rotate(0deg)",
             }}/>
         </div>
@@ -83,7 +83,7 @@ function FaqAccordion({ item }: { item: FaqItem }) {
             }}>
             {/* Subtle corner glow */}
             <div className="absolute -right-8 -top-8 w-24 h-24 rounded-full pointer-events-none"
-              style={{ background: "radial-gradient(circle,rgba(124,58,237,0.05),transparent 70%)" }}/>
+              style={{ background: "radial-gradient(circle,rgba(124,104,214,0.05),transparent 70%)" }}/>
             <p className="text-[13px] leading-[1.8] whitespace-pre-line relative z-10" style={{ color: "var(--text-muted)" }}>
               {item.a}
             </p>
@@ -215,14 +215,14 @@ export default function FaqPage() {
 
         {/* ═══ Hero ═══ */}
         <div className="relative overflow-hidden"
-          style={{ background: "linear-gradient(135deg, #7C3AED 0%, #5B21B6 50%, #4C1D95 100%)" }}>
+          style={{ background: "var(--brand-panel)" }}>
           {/* Patterns */}
           <div className="absolute inset-0 pointer-events-none"
             style={{ backgroundImage: "radial-gradient(rgba(255,255,255,0.06) 1px,transparent 1px)", backgroundSize: "28px 28px" }}/>
           <div className="absolute -left-32 top-0 w-80 h-80 rounded-full pointer-events-none"
-            style={{ background: "radial-gradient(circle,rgba(167,139,250,0.25),transparent 70%)" }}/>
+            style={{ background: "radial-gradient(circle,rgba(170,145,255,0.25),transparent 70%)" }}/>
           <div className="absolute -right-20 -bottom-20 w-60 h-60 rounded-full pointer-events-none"
-            style={{ background: "radial-gradient(circle,rgba(234,88,12,0.15),transparent 70%)" }}/>
+            style={{ background: "radial-gradient(circle,rgba(206,116,58,0.15),transparent 70%)" }}/>
 
           <div className="max-w-[860px] mx-auto px-4 lg:px-8 py-16 md:py-20 text-center relative z-10">
             <div className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6"
@@ -278,10 +278,10 @@ export default function FaqPage() {
                 onClick={() => setFilter(cat.id)}
                 className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all duration-200 hover:-translate-y-0.5"
                 style={{
-                  background: filter === cat.id ? "var(--brand)" : "var(--card)",
-                  border: `1px solid ${filter === cat.id ? "var(--brand)" : "var(--border)"}`,
-                  color: filter === cat.id ? "#fff" : "var(--text-muted)",
-                  boxShadow: filter === cat.id ? "0 4px 16px rgba(124,58,237,0.25)" : "0 2px 8px rgba(0,0,0,0.04)",
+                  background: filter === cat.id ? "var(--primary)" : "var(--card)",
+                  border: `1px solid ${filter === cat.id ? "var(--primary)" : "var(--border)"}`,
+                  color: filter === cat.id ? "var(--on-primary)" : "var(--text-muted)",
+                  boxShadow: filter === cat.id ? "0 4px 16px rgba(124,104,214,0.25)" : "0 2px 8px rgba(0,0,0,0.04)",
                 }}>
                 {cat.icon}
                 {cat.label}
@@ -312,18 +312,18 @@ export default function FaqPage() {
           {/* ═══ Contact CTA ═══ */}
           <div className="rounded-2xl p-8 md:p-10 relative overflow-hidden"
             style={{
-              background: "linear-gradient(135deg, rgba(124,58,237,0.08), rgba(124,58,237,0.02))",
+              background: "linear-gradient(135deg, rgba(124,104,214,0.08), rgba(124,104,214,0.02))",
               border: "1px solid var(--border)",
             }}>
             <div className="absolute -right-16 -top-16 w-48 h-48 rounded-full pointer-events-none"
-              style={{ background: "radial-gradient(circle,rgba(124,58,237,0.1),transparent 70%)" }}/>
+              style={{ background: "radial-gradient(circle,rgba(124,104,214,0.1),transparent 70%)" }}/>
             <div className="absolute -left-16 -bottom-16 w-40 h-40 rounded-full pointer-events-none"
-              style={{ background: "radial-gradient(circle,rgba(234,88,12,0.08),transparent 70%)" }}/>
+              style={{ background: "radial-gradient(circle,rgba(206,116,58,0.08),transparent 70%)" }}/>
 
             <div className="relative z-10 flex flex-col md:flex-row items-center gap-6 md:gap-10">
               <div className="w-16 h-16 rounded-2xl flex items-center justify-center flex-shrink-0"
-                style={{ background: "rgba(124,58,237,0.1)", border: "1px solid rgba(124,58,237,0.15)" }}>
-                <MessageCircle size={28} style={{ color: "var(--brand-light)" }}/>
+                style={{ background: "rgba(124,104,214,0.1)", border: "1px solid rgba(124,104,214,0.15)" }}>
+                <MessageCircle size={28} style={{ color: "var(--primary)" }}/>
               </div>
               <div className="flex-1 text-center md:text-left">
                 <h3 className="text-lg font-bold mb-1" style={{ color: "var(--text)" }}>
@@ -336,8 +336,8 @@ export default function FaqPage() {
                 </p>
               </div>
               <Link href="/contact"
-                className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl text-sm font-bold text-white transition-all hover:scale-105 hover:-translate-y-0.5 flex-shrink-0"
-                style={{ background: "var(--brand)", boxShadow: "0 4px 24px rgba(124,58,237,0.3)" }}>
+                className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl text-sm font-bold text-[var(--on-primary)] transition-all hover:scale-105 hover:-translate-y-0.5 flex-shrink-0"
+                style={{ background: "var(--primary)", boxShadow: "0 4px 24px rgba(124,104,214,0.3)" }}>
                 {isEN ? "Contact support" : "Contactar soporte"}
                 <ArrowRight size={15}/>
               </Link>

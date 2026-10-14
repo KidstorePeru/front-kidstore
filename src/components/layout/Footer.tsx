@@ -51,7 +51,7 @@ function FooterLinkCol({ title, links, hrefs }: { title: string; links: string[]
           <li key={l}>
             <Link href={hrefs?.[i] ?? "#"} className="text-[13px] group flex items-center gap-1.5 transition-colors"
               style={{ color: "var(--text-subtle)" }}
-              onMouseEnter={e => (e.currentTarget.style.color = "var(--brand-light)")}
+              onMouseEnter={e => (e.currentTarget.style.color = "var(--primary)")}
               onMouseLeave={e => (e.currentTarget.style.color = "var(--text-subtle)")}>
               <ArrowRight size={10} className="opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200"/>
               <span>{l}</span>
@@ -76,7 +76,7 @@ export default function Footer({ showExtras = false }: { showExtras?: boolean })
         <div style={{ background: "var(--bg)", transition: "background 0.35s ease" }}>
           <div className="max-w-[1400px] mx-auto px-4 lg:px-6 py-8">
             <div className="flex items-center justify-center gap-3 mb-6">
-              <CreditCard size={20} style={{ color: "var(--brand-light)" }}/>
+              <CreditCard size={20} style={{ color: "var(--primary)" }}/>
               <h3 className="text-lg font-bold tracking-tight" style={{ color: "var(--text)" }}>
                 {t.footer.paymentMethods}
               </h3>
@@ -88,15 +88,15 @@ export default function Footer({ showExtras = false }: { showExtras?: boolean })
 
       {/* ═══ Trust strip ═══ */}
       <div className="relative overflow-hidden"
-        style={{ background: "linear-gradient(135deg, #7C3AED 0%, #5B21B6 50%, #4C1D95 100%)" }}>
+        style={{ background: "var(--brand-panel)" }}>
         {/* dot pattern */}
         <div className="absolute inset-0 pointer-events-none"
           style={{ backgroundImage: "radial-gradient(rgba(255,255,255,0.07) 1px,transparent 1px)", backgroundSize: "24px 24px" }}/>
         {/* glow */}
         <div className="absolute -left-20 -top-20 w-60 h-60 rounded-full pointer-events-none"
-          style={{ background: "radial-gradient(circle,rgba(167,139,250,0.25),transparent 70%)" }}/>
+          style={{ background: "radial-gradient(circle,rgba(170,145,255,0.25),transparent 70%)" }}/>
         <div className="absolute -right-20 -bottom-20 w-60 h-60 rounded-full pointer-events-none"
-          style={{ background: "radial-gradient(circle,rgba(234,88,12,0.15),transparent 70%)" }}/>
+          style={{ background: "radial-gradient(circle,rgba(206,116,58,0.15),transparent 70%)" }}/>
 
         <div className="max-w-[1400px] mx-auto px-4 lg:px-6 py-5 relative z-10 flex items-center justify-center gap-6 md:gap-14 flex-wrap">
           {[
@@ -122,15 +122,15 @@ export default function Footer({ showExtras = false }: { showExtras?: boolean })
 
         {/* Subtle decorative gradient */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[1px] pointer-events-none"
-          style={{ background: "linear-gradient(90deg,transparent,var(--brand),transparent)", opacity: 0.3 }}/>
+          style={{ background: "linear-gradient(90deg,transparent,var(--primary),transparent)", opacity: 0.3 }}/>
 
         <div className="max-w-[1400px] mx-auto px-4 lg:px-6 pt-14 pb-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-6">
 
             {/* ── Brand + Socials ── */}
             <div className="lg:col-span-4">
-              <Image src="/logo/imagotipo-kidstore.png" alt="KidStore"
-                width={160} height={48} className="h-10 w-auto mb-5"/>
+              <Image src="/brand/kidstore-imagotipo.png" alt="KidStore"
+                width={161} height={42} className="h-[42px] w-auto mb-5"/>
               <p className="text-[13px] leading-relaxed max-w-[280px] mb-6" style={{ color: "var(--text-subtle)" }}>
                 {t.footer.tagline}
               </p>
@@ -194,7 +194,7 @@ export default function Footer({ showExtras = false }: { showExtras?: boolean })
               </h4>
               <div className="space-y-3.5">
                 {[
-                  { icon: <Clock size={14}/>,          label: t.footer.hoursValue,          color: "var(--brand-light)" },
+                  { icon: <Clock size={14}/>,          label: t.footer.hoursValue,          color: "var(--primary)" },
                   { icon: <Mail size={14}/>,           label: CONTACT_EMAIL, href: `mailto:${CONTACT_EMAIL}` },
                   { icon: <MessageCircle size={14}/>,  label: `WhatsApp: ${WHATSAPP_DISPLAY}`, href: whatsappLink() },
                   { icon: <MapPin size={14}/>,         label: "Lima, Perú" },
@@ -208,7 +208,7 @@ export default function Footer({ showExtras = false }: { showExtras?: boolean })
                       <a href={c.href} className="text-[13px] transition-colors"
                         {...(c.href.startsWith("http") ? { target: "_blank", rel: "noopener noreferrer" } : {})}
                         style={{ color: "var(--text-subtle)" }}
-                        onMouseEnter={e => (e.currentTarget.style.color = "var(--brand-light)")}
+                        onMouseEnter={e => (e.currentTarget.style.color = "var(--primary)")}
                         onMouseLeave={e => (e.currentTarget.style.color = "var(--text-subtle)")}>
                         {c.label}
                       </a>
@@ -231,12 +231,12 @@ export default function Footer({ showExtras = false }: { showExtras?: boolean })
             </p>
             <div className="flex items-center gap-6 text-xs" style={{ color: "var(--text-subtle)" }}>
               <Link href="/terms" className="transition-colors hover:opacity-80"
-                onMouseEnter={e => (e.currentTarget.style.color = "var(--brand-light)")}
+                onMouseEnter={e => (e.currentTarget.style.color = "var(--primary)")}
                 onMouseLeave={e => (e.currentTarget.style.color = "var(--text-subtle)")}>
                 {t.footer.terms}
               </Link>
               <Link href="/privacy" className="transition-colors hover:opacity-80"
-                onMouseEnter={e => (e.currentTarget.style.color = "var(--brand-light)")}
+                onMouseEnter={e => (e.currentTarget.style.color = "var(--primary)")}
                 onMouseLeave={e => (e.currentTarget.style.color = "var(--text-subtle)")}>
                 {t.footer.privacy}
               </Link>

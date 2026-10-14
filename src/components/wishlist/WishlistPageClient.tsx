@@ -50,7 +50,7 @@ function WishCard({ item, onRemove, onAddCart, inCart }: {
 
       {/* Image */}
       <div className="relative w-full overflow-hidden"
-        style={{ aspectRatio:"4/3", background:"linear-gradient(135deg,rgba(124,58,237,0.15),rgba(15,10,40,0.6))" }}>
+        style={{ aspectRatio:"4/3", background:"linear-gradient(135deg,rgba(124,104,214,0.15),rgba(22,16,32,0.6))" }}>
         <Link href={`/games/${item.gameSlug}/${item.slug}`}>
           <Image src={item.img} alt={item.name} fill sizes="80px"
             className="object-contain p-4 transition-transform duration-300 group-hover:scale-105"/>
@@ -71,7 +71,7 @@ function WishCard({ item, onRemove, onAddCart, inCart }: {
       {/* Info */}
       <div className="p-4 flex flex-col flex-1 gap-2">
         <div>
-          <p className="text-xs font-semibold mb-0.5" style={{ color:"var(--brand-light)" }}>
+          <p className="text-xs font-semibold mb-0.5" style={{ color:"var(--primary)" }}>
             {item.game} · {label}
           </p>
           <Link href={`/games/${item.gameSlug}/${item.slug}`}>
@@ -92,7 +92,7 @@ function WishCard({ item, onRemove, onAddCart, inCart }: {
 
         {/* Price */}
         <div className="flex items-end gap-2 mt-auto">
-          <p className="text-lg font-bold" style={{ color:"var(--brand-light)" }}>{formatPrice(item.price)}</p>
+          <p className="text-lg font-bold" style={{ color:"var(--primary)" }}>{formatPrice(item.price)}</p>
           <p className="text-xs line-through mb-0.5" style={{ color:"var(--text-subtle)" }}>{formatPrice(item.priceOld)}</p>
         </div>
 
@@ -101,16 +101,16 @@ function WishCard({ item, onRemove, onAddCart, inCart }: {
           <button onClick={handleCart}
             className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-bold transition-all hover:scale-[1.02]"
             style={{
-              background: inCart ? "rgba(124,58,237,0.1)" : "var(--surface)",
-              border:`1.5px solid ${inCart ? "#7C3AED" : "var(--border)"}`,
-              color:"var(--brand-light)",
+              background: inCart ? "rgba(124,104,214,0.1)" : "var(--surface)",
+              border:`1.5px solid ${inCart ? "var(--primary)" : "var(--border)"}`,
+              color:"var(--primary)",
             }}>
             <ShoppingCart size={13}/>
             {added ? t.product.added : inCart ? t.product.inCart : t.wishlist.toCart}
           </button>
           <Link href={`/games/${item.gameSlug}/${item.slug}`}
-            className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-bold text-white transition-all hover:scale-[1.02]"
-            style={{ background:"linear-gradient(135deg,#7C3AED,#5B21B6)" }}>
+            className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-bold text-[var(--on-primary)] transition-all hover:scale-[1.02]"
+            style={{ background:"var(--primary)" }}>
             {t.wishlist.viewProduct}
           </Link>
         </div>
@@ -192,8 +192,8 @@ export default function WishlistPage() {
                 </p>
               </div>
               <button onClick={() => router.back()}
-                className="px-6 py-3 rounded-xl text-sm font-bold text-white transition-all hover:scale-105"
-                style={{ background:"linear-gradient(135deg,#7C3AED,#5B21B6)", boxShadow:"0 4px 20px rgba(124,58,237,0.3)" }}>
+                className="px-6 py-3 rounded-xl text-sm font-bold text-[var(--on-primary)] transition-all hover:scale-105"
+                style={{ background:"var(--primary)", boxShadow:"0 4px 20px rgba(124,104,214,0.3)" }}>
                 {t.wishlist.explore}
               </button>
             </div>
