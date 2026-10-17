@@ -53,9 +53,9 @@ export const PAQUETES: FortniteProduct[] = [
 
 export const CLUB: FortniteProduct[] = [
   { id:"c1", name:"Club de Fortnite", nameEN:"Fortnite Crew", subtitle:"Región Turquía", subtitleEN:"Turkey Region", priceOld:39.00, price:19.90, badge:"", img:"/fortnite/club.png", description:"Activación directa en tu cuenta Epic con región TRY.", descriptionEN:"Direct activation on your Epic account with TRY region.", slug:"club-turquia", format:"Digital", region:"Turquía", needsTurkey:true, tab:"pases", tabLabel:"Pases", tabLabelEN:"Passes", productType:"club-turquia" },
-  { id:"c2", name:"Club de Fortnite", nameEN:"Fortnite Crew", subtitle:"Activación Vía Xbox", subtitleEN:"Xbox Activation", priceOld:39.90, price:17.99, badge:"", img:"/fortnite/club.png", description:"Activación mensual a través de una cuenta Xbox vinculada a Epic Games.", descriptionEN:"Monthly activation through an Xbox account linked to Epic Games.", slug:"club-xbox", format:"Digital", region:"Global", needsTurkey:false, tab:"pases", tabLabel:"Pases", tabLabelEN:"Passes", productType:"club-xbox",
+  { id:"c2", name:"Club de Fortnite", nameEN:"Fortnite Crew", subtitle:"Activación Vía Xbox", subtitleEN:"Xbox Activation", priceOld:39.90, price:19.90, badge:"", img:"/fortnite/club.png", description:"Activación mensual a través de una cuenta Xbox vinculada a Epic Games.", descriptionEN:"Monthly activation through an Xbox account linked to Epic Games.", slug:"club-xbox", format:"Digital", region:"Global", needsTurkey:false, tab:"pases", tabLabel:"Pases", tabLabelEN:"Passes", productType:"club-xbox",
     monthOptions:[
-      { months:1, label:"1 Mes",   labelEN:"1 Month",   price:17.99, priceOld:39.90, badge:"" },
+      { months:1, label:"1 Mes",   labelEN:"1 Month",   price:19.90, priceOld:39.90, badge:"" },
       { months:3, label:"3 Meses", labelEN:"3 Months",  price:39.99, priceOld:119.70, badge:"Popular" },
       { months:6, label:"6 Meses", labelEN:"6 Months",  price:59.99, priceOld:239.40, badge:"Mejor valor" },
     ],
