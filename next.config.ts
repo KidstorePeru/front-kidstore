@@ -12,7 +12,12 @@ const nextConfig: NextConfig = {
       ["pokemon-go/pokecoins-1200", "pokemon-go/pokecoins-1300"], ["pokemon-go/pokecoins-2500", "pokemon-go/pokecoins-2700"],
       ["pokemon-go/pokecoins-5200", "pokemon-go/pokecoins-5600"], ["pokemon-go/pokecoins-14500", "pokemon-go/pokecoins-15500"],
       ["pokemon-go/pase-go-deluxe-julio-plus", "pokemon-go/pase-go-deluxe-plus"],
-    ].map(([from, to]) => ({ source: `/games/${from}`, destination: `/games/${to}`, permanent: true }));
+    ].map(([from, to]) => ({ source: `/games/${from}`, destination: `/games/${to}`, permanent: true })).concat(
+      // Pases retirados (oct 2026): llevan a la pestaña de pases.
+      ["pase-sendero-leyendas", "pase-sendero-leyendas-plus"].map((slug) => ({
+        source: `/games/pokemon-go/${slug}`, destination: "/games/pokemon-go?tab=pases", permanent: true,
+      })),
+    );
   },
   images: {
     remotePatterns: [
