@@ -71,7 +71,7 @@ export const CATALOG: CatalogGame[] = [
   },
   {
     slug: "pokemon-go", name: "Pokémon GO",
-    tabs: [{ id: "coins", label: "PokéCoins" }, { id: "pases", label: "Pases" }],
+    tabs: [{ id: "coins", label: "Pokémonedas" }, { id: "pases", label: "Pases" }, { id: "entradas", label: "Entradas" }],
     products: prods(ALL_POKEMON_GO_PRODUCTS, "coins"),
   },
   {

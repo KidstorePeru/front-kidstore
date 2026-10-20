@@ -7,7 +7,7 @@ import Link from "next/link";
 import { ShoppingCart } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import { POKECOINS, PASES, PokemonGoProduct } from "@/data/pokemongo";
+import { POKECOINS, PASES, ENTRADAS, PokemonGoProduct } from "@/data/pokemongo";
 import { usePreferences } from "@/context/PreferencesContext";
 import { useGameVisibility } from "@/hooks/useGameVisibility";
 import { useT, useBadge } from "@/i18n";
@@ -16,12 +16,14 @@ import { SeasonSky } from "@/seasons/decor";
 const SLUG = "pokemon-go";
 
 const TABS_ES = [
-  { id:"coins", label:"🪙 PokéCoins" },
+  { id:"coins", label:"🪙 Pokémonedas" },
   { id:"pases", label:"🎟️ Pases"     },
+  { id:"entradas", label:"🎫 Entradas" },
 ];
 const TABS_EN = [
   { id:"coins", label:"🪙 PokéCoins" },
   { id:"pases", label:"🎟️ Passes"    },
+  { id:"entradas", label:"🎫 Tickets" },
 ];
 
 const badgeStyle: Record<string, string> = {
@@ -50,10 +52,12 @@ function ProductCard({ p }: { p: PokemonGoProduct }) {
             {badge(p.badge)}
           </span>
         )}
-        <span className="absolute top-2 left-2 px-2 py-0.5 rounded-full text-[10px] font-bold"
-          style={{ background:"rgba(16,185,129,0.15)", border:"1px solid rgba(16,185,129,0.3)", color:"#4ADE80" }}>
-          -{disc}%
-        </span>
+        {disc > 0 && (
+          <span className="absolute top-2 left-2 px-2 py-0.5 rounded-full text-[10px] font-bold"
+            style={{ background:"rgba(16,185,129,0.15)", border:"1px solid rgba(16,185,129,0.3)", color:"#4ADE80" }}>
+            -{disc}%
+          </span>
+        )}
       </div>
       <div className="p-4 flex flex-col flex-1">
         <p className="text-sm font-bold leading-tight mb-0.5" style={{ color:"var(--text)" }}>{lang==="EN" ? p.nameEN || p.name : p.name}</p>
@@ -61,7 +65,7 @@ function ProductCard({ p }: { p: PokemonGoProduct }) {
         <p className="text-xs leading-relaxed mb-3 flex-1" style={{ color:"var(--text-muted)" }}>{lang==="EN" ? p.descriptionEN || p.description : p.description}</p>
         <div className="flex items-end justify-between gap-2 mt-auto">
           <div>
-            <p className="text-[11px] line-through" style={{ color:"var(--text-subtle)" }}>{formatPrice(p.priceOld)}</p>
+            {disc > 0 && <p className="text-[11px] line-through" style={{ color:"var(--text-subtle)" }}>{formatPrice(p.priceOld)}</p>}
             <p className="text-xl font-bold" style={{ color:BRAND }}>{formatPrice(p.price)}</p>
           </div>
           <Link href={`/games/pokemon-go/${p.slug}`}
@@ -158,8 +162,8 @@ function AboutSection() {
 }
 
 // ── Inner ──────────────────────────────────────────────────────
-function PokemonGoPageInner({ tabDefs, coins, pases }: {
-  tabDefs: typeof TABS_ES; coins: PokemonGoProduct[]; pases: PokemonGoProduct[];
+function PokemonGoPageInner({ tabDefs, coins, pases, entradas }: {
+  tabDefs: typeof TABS_ES; coins: PokemonGoProduct[]; pases: PokemonGoProduct[]; entradas: PokemonGoProduct[];
 }) {
   const { formatPrice, lang } = usePreferences();
   const t = useT();
@@ -176,7 +180,7 @@ function PokemonGoPageInner({ tabDefs, coins, pases }: {
     router.push(`/games/pokemon-go?tab=${id}`, { scroll: false });
   }
 
-  const products = shownTab === "pases" ? pases : coins;
+  const products = shownTab === "pases" ? pases : shownTab === "entradas" ? entradas : coins;
 
   return (
     <>
@@ -275,6 +279,7 @@ export default function PokemonGoPageClient() {
         tabDefs={tabDefs}
         coins={vis.filterProducts(POKECOINS)}
         pases={vis.filterProducts(PASES)}
+        entradas={vis.filterProducts(ENTRADAS)}
       />
     </Suspense>
   );

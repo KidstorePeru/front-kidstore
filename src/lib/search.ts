@@ -14,7 +14,7 @@ const KEYWORDS: Record<string, string> = {
   "wuthering-waves":    "lunita astrita",
   "marvel-rivals":      "lattice",
   "wild-rift":          "lol league of legends wild cores",
-  "pokemon-go":         "pokecoins pokemonedas",
+  "pokemon-go":         "pokecoins pokemonedas entrada ticket area silvestre wild area",
   "honor-of-kings":     "hok tokens",
   "team-fight-tactics": "tft coins",
   "discord":            "nitro boost",

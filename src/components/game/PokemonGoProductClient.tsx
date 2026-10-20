@@ -82,7 +82,7 @@ function PGODescription({ productType }: { productType: string }) {
 
       {productType === "pokecoins" && (
         <div className="rounded-xl p-4 space-y-2" style={{ background:"var(--surface)", border:"1px solid var(--border)" }}>
-          <p className="text-xs font-bold mb-2" style={{ color:"var(--text)" }}>{lang === "ES" ? "🪙 ¿Qué son las PokéCoins?" : "🪙 What are PokéCoins?"}</p>
+          <p className="text-xs font-bold mb-2" style={{ color:"var(--text)" }}>{lang === "ES" ? "🪙 ¿Qué son las Pokémonedas?" : "🪙 What are PokéCoins?"}</p>
           {[
             { icon:"🛒", text: lang === "ES" ? "La moneda virtual para comprar en la tienda de Pokémon GO." : "The virtual currency to buy in the Pokémon GO store." },
             { icon:"🥚", text: lang === "ES" ? "Compra incubadoras, pases de incursión y módulos cebo." : "Buy incubators, raid passes and lure modules." },
@@ -278,11 +278,11 @@ export default function PokemonGoProductClient({ slug }: { slug: string }) {
               {/* Precio */}
               <div className="flex items-end gap-3">
                 <p className="text-3xl font-bold" style={{ color:BRAND }}>{formatPrice(p.price)}</p>
-                <p className="text-base line-through mb-0.5" style={{ color:"var(--text-subtle)" }}>{formatPrice(p.priceOld)}</p>
-                <span className="mb-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold"
+                {discountPct > 0 && <p className="text-base line-through mb-0.5" style={{ color:"var(--text-subtle)" }}>{formatPrice(p.priceOld)}</p>}
+                {discountPct > 0 && <span className="mb-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold"
                   style={{ background:"rgba(16,185,129,0.15)", border:"1px solid rgba(16,185,129,0.3)", color:"#4ADE80" }}>
                   -{discountPct}%
-                </span>
+                </span>}
               </div>
 
               {/* Formato + Región */}
