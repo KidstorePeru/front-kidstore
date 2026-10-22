@@ -74,8 +74,8 @@ function DiscordDescription({ productType, isTrialProduct, isKey }: {
           </p>
           <p className="text-xs leading-relaxed" style={{ color: "var(--text-muted)" }}>
             {lang === "ES"
-              ? <>Este producto solo funciona para cuentas que <strong style={{ color: "var(--text)" }}>nunca han tenido Nitro</strong> o que <strong style={{ color: "var(--text)" }}>no hayan tenido Nitro durante 1 año</strong> (probable).</>
-              : <>This product only works for accounts that have <strong style={{ color: "var(--text)" }}>never had Nitro</strong> or that <strong style={{ color: "var(--text)" }}>haven&apos;t had Nitro for 1 year</strong> (likely).</>}
+              ? <>Solo para <strong style={{ color: "var(--text)" }}>cuentas nuevas</strong> con <strong style={{ color: "var(--text)" }}>al menos un mes de antigüedad</strong>. Revisa la antigüedad de tu cuenta antes de comprar.</>
+              : <>Only for <strong style={{ color: "var(--text)" }}>new accounts</strong> that are <strong style={{ color: "var(--text)" }}>at least one month old</strong>. Check your account&apos;s age before buying.</>}
           </p>
           <p className="text-xs leading-relaxed" style={{ color: "var(--text-muted)" }}>
             {lang === "ES"
