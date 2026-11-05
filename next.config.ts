@@ -17,6 +17,10 @@ const nextConfig: NextConfig = {
       ["pase-sendero-leyendas", "pase-sendero-leyendas-plus"].map((slug) => ({
         source: `/games/pokemon-go/${slug}`, destination: "/games/pokemon-go?tab=pases", permanent: true,
       })),
+      // Paquetes retirados (nov 2026): llevan a la pestaña de paquetes.
+      ["pack-dia-del-juicio"].map((slug) => ({
+        source: `/games/fortnite/${slug}`, destination: "/games/fortnite?tab=paquetes", permanent: true,
+      })),
     );
   },
   images: {
